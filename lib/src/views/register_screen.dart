@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_spacing.dart';
 import '../constants/auth_colors.dart';
 import '../routes/app_routes.dart';
+import '../utils/app_toast.dart';
 import '../viewmodels/register_viewmodel.dart';
 import '../widgets/auth/auth_background.dart';
 import '../widgets/auth/auth_section_divider.dart';
@@ -59,7 +60,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isSubmitting = false);
 
     if (success) {
-      AppRoutes.openLogin(context);
+      if (!mounted) return;
+      AppToast.showSuccess(context, 'Đăng ký thành công!');
+      AppRoutes.openAccount(context);
+      return;
+    }
+
+    if (_viewModel.errorMessage != null) {
+      AppToast.showError(context, _viewModel.errorMessage!);
     }
   }
 
@@ -188,7 +196,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 LoginFooter(
                   promptText: 'Đã có tài khoản? ',
                   actionLabel: 'Đăng nhập',
-                  onActionTap: () => AppRoutes.openLogin(context),
+                  onActionTap: () => AppRoutes.openLogin(context, replace: true),
                 ),
               ],
             ),

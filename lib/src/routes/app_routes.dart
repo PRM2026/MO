@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../views/account_screen.dart';
 import '../views/login_screen.dart';
 import '../views/main_shell.dart';
+import '../views/jockey/jockey_change_password_screen.dart';
+import '../views/jockey/jockey_profile_screen.dart';
+import '../views/jockey/jockey_shell.dart';
+import '../views/referee/referee_change_password_screen.dart';
+import '../views/referee/referee_profile_screen.dart';
+import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
@@ -18,6 +25,52 @@ abstract final class AppRoutes {
     );
   }
 
+  static Route<void> account() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const AccountScreen(),
+    );
+  }
+
+  static Route<void> jockeyChangePassword({String? profileImageUrl}) {
+    return MaterialPageRoute<void>(
+      builder: (_) => JockeyChangePasswordScreen(
+        profileImageUrl: profileImageUrl,
+      ),
+    );
+  }
+
+  static Route<void> jockeyProfile() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const JockeyProfileScreen(),
+    );
+  }
+
+  static Route<void> jockeyPortal() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const JockeyShell(),
+    );
+  }
+
+  static Route<void> refereeChangePassword({String? profileImageUrl}) {
+    return MaterialPageRoute<void>(
+      builder: (_) => RefereeChangePasswordScreen(
+        profileImageUrl: profileImageUrl,
+      ),
+    );
+  }
+
+  static Route<void> refereeProfile() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const RefereeProfileScreen(),
+    );
+  }
+
+  static Route<void> refereePortal() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const RefereeShell(),
+    );
+  }
+
   static Route<void> main({HomeTab initialTab = HomeTab.home}) {
     return MaterialPageRoute<void>(
       builder: (_) => MainShell(initialTab: initialTab),
@@ -30,12 +83,53 @@ abstract final class AppRoutes {
 
   static Route<void> about() => main(initialTab: HomeTab.about);
 
-  static void openLogin(BuildContext context) {
-    Navigator.of(context).push(login());
+  static void openLogin(BuildContext context, {bool replace = false}) {
+    _pushAuth(context, login(), replace: replace);
   }
 
-  static void openRegister(BuildContext context) {
-    Navigator.of(context).push(register());
+  static void openRegister(BuildContext context, {bool replace = false}) {
+    _pushAuth(context, register(), replace: replace);
+  }
+
+  static void openAccount(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      account(),
+      (route) => route.isFirst,
+    );
+  }
+
+  static void openRefereePortal(BuildContext context) {
+    Navigator.of(context).push(refereePortal());
+  }
+
+  static void openJockeyPortal(BuildContext context) {
+    Navigator.of(context).push(jockeyPortal());
+  }
+
+  static void openJockeyProfile(BuildContext context) {
+    Navigator.of(context).push(jockeyProfile());
+  }
+
+  static void openJockeyChangePassword(
+    BuildContext context, {
+    String? profileImageUrl,
+  }) {
+    Navigator.of(context).push(
+      jockeyChangePassword(profileImageUrl: profileImageUrl),
+    );
+  }
+
+  static void openRefereeProfile(BuildContext context) {
+    Navigator.of(context).push(refereeProfile());
+  }
+
+  static void openRefereeChangePassword(
+    BuildContext context, {
+    String? profileImageUrl,
+  }) {
+    Navigator.of(context).push(
+      refereeChangePassword(profileImageUrl: profileImageUrl),
+    );
   }
 
   static void openHome(BuildContext context) {
@@ -56,6 +150,19 @@ abstract final class AppRoutes {
 
   static void openAbout(BuildContext context) {
     _switchTabOrReplace(context, HomeTab.about);
+  }
+
+  static void _pushAuth(
+    BuildContext context,
+    Route<void> route, {
+    required bool replace,
+  }) {
+    final navigator = Navigator.of(context);
+    if (replace) {
+      navigator.pushReplacement(route);
+    } else {
+      navigator.push(route);
+    }
   }
 
   static void _switchTabOrReplace(BuildContext context, HomeTab tab) {

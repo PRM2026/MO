@@ -23,19 +23,36 @@ class SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineSm(AppColors.secondary),
           ),
         ),
-        if (actionLabel != null)
-          TextButton.icon(
+        if (actionLabel != null) ...[
+          const SizedBox(width: AppSpacing.sm),
+          TextButton(
             onPressed: onActionTap,
-            iconAlignment: IconAlignment.end,
-            icon: const Icon(Icons.chevron_right, size: 18),
-            label: Text(
-              actionLabel!.toUpperCase(),
-              style: AppTypography.labelCaps(AppColors.primary),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    actionLabel!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelCaps(AppColors.primary),
+                  ),
+                ),
+                const Icon(Icons.chevron_right, size: 18),
+              ],
             ),
           ),
+        ],
       ],
     );
   }

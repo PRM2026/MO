@@ -1,6 +1,15 @@
+import '../repositories/auth_repository.dart';
+import '../services/auth_api_service.dart';
+
 class LoginViewModel {
+  LoginViewModel({AuthRepository? repository})
+      : _repository = repository ?? AuthRepository();
+
+  final AuthRepository _repository;
+
   bool rememberMe = false;
   bool obscurePassword = true;
+  String? errorMessage;
 
   void toggleRememberMe() => rememberMe = !rememberMe;
 
@@ -25,7 +34,19 @@ class LoginViewModel {
     required String email,
     required String password,
   }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    return email.isNotEmpty && password.isNotEmpty;
+    errorMessage = null;
+    try {
+      await _repository.login(
+        email: email,
+        password: password,
+      );
+      return true;
+    } on AuthApiException catch (error) {
+      errorMessage = error.message;
+      return false;
+    } catch (_) {
+      errorMessage = 'Không thể đăng nhập. Hãy bật BE và thử lại.';
+      return false;
+    }
   }
 }

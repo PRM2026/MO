@@ -4,6 +4,7 @@ import '../constants/app_spacing.dart';
 import '../constants/app_theme_tokens.dart';
 import '../constants/auth_colors.dart';
 import '../routes/app_routes.dart';
+import '../utils/app_toast.dart';
 import '../viewmodels/login_viewmodel.dart';
 import '../widgets/auth/auth_background.dart';
 import '../widgets/auth/auth_section_divider.dart';
@@ -55,7 +56,14 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isSubmitting = false);
 
     if (success) {
-      AppRoutes.openHome(context);
+      if (!mounted) return;
+      AppToast.showSuccess(context, 'Đăng nhập thành công!');
+      AppRoutes.openAccount(context);
+      return;
+    }
+
+    if (_viewModel.errorMessage != null) {
+      AppToast.showError(context, _viewModel.errorMessage!);
     }
   }
 
@@ -156,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 LoginFooter(
-                  onActionTap: () => AppRoutes.openRegister(context),
+                  onActionTap: () => AppRoutes.openRegister(context, replace: true),
                 ),
               ],
             ),
