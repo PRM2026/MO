@@ -47,7 +47,7 @@ class _AccountScreenState extends State<AccountScreen> {
     if (!mounted) return;
     setState(() => _isLoggingOut = false);
     AppToast.showSuccess(context, 'Đã đăng xuất');
-    Navigator.of(context).pop();
+    AppRoutes.openAfterLogout(context);
   }
 
   @override
@@ -121,36 +121,40 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: () => AppRoutes.openJockeyPortal(context),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF15130F),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      'Vào portal jockey',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                  if (_role?.toUpperCase() == 'JOCKEY') ...[
+                    FilledButton(
+                      onPressed: () => AppRoutes.openJockeyPortal(context),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF15130F),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text(
+                        'Vào portal jockey',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: () => AppRoutes.openRefereePortal(context),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF0C1D36),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      'Vào portal trọng tài',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(height: 12),
+                  ],
+                  if (_role?.toUpperCase() == 'REFEREE') ...[
+                    FilledButton(
+                      onPressed: () => AppRoutes.openRefereePortal(context),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF0C1D36),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text(
+                        'Vào portal trọng tài',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                  ],
                   OutlinedButton(
                     onPressed: _isLoggingOut ? null : _handleLogout,
                     style: OutlinedButton.styleFrom(

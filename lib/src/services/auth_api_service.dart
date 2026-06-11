@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../models/api_response.dart';
 import '../models/auth_session.dart';
+import '../models/user_profile.dart';
 
 class AuthApiException implements Exception {
   AuthApiException(this.message);
@@ -51,6 +52,38 @@ class AuthApiService {
         'password': password,
       },
     );
+  }
+
+  Future<UserProfile> getMe({required String token}) async {
+    final uri = Uri.parse('$_baseUrl/auth/me');
+    final response = await _client.get(
+      uri,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    Map<String, dynamic>? decoded;
+    try {
+      decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthApiException('Phản hồi từ máy chủ không hợp lệ.');
+    }
+
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
+      decoded,
+      (data) => data as Map<String, dynamic>,
+    );
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300 &&
+        apiResponse.success &&
+        apiResponse.data != null) {
+      return UserProfile.fromJson(apiResponse.data!);
+    }
+
+    throw AuthApiException(_resolveErrorMessage(apiResponse, decoded));
   }
 
   Future<void> changePassword({

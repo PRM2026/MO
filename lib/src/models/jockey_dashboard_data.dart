@@ -63,8 +63,6 @@ class JockeyDashboardData {
     required this.greeting,
     required this.jockeyName,
     required this.stats,
-    required this.alertTitle,
-    required this.alertMessage,
     required this.horses,
     required this.recentResults,
     required this.motivationQuote,
@@ -75,8 +73,6 @@ class JockeyDashboardData {
   final String greeting;
   final String jockeyName;
   final List<JockeyDashboardStat> stats;
-  final String alertTitle;
-  final String alertMessage;
   final List<JockeyAssignedHorse> horses;
   final List<JockeyRecentResult> recentResults;
   final String motivationQuote;
@@ -116,9 +112,6 @@ class JockeyDashboardData {
           highlight: true,
         ),
       ],
-      alertTitle: 'Cảnh báo quan trọng',
-      alertMessage:
-          'Bạn có lịch kiểm tra y tế bắt buộc vào lúc 09:00 Thứ Hai tới.',
       horses: const [
         JockeyAssignedHorse(
           name: 'Hắc Phong',

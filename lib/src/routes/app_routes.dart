@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../repositories/auth_repository.dart';
+import '../utils/role_utils.dart';
 import '../views/account_screen.dart';
 import '../views/login_screen.dart';
 import '../views/main_shell.dart';
+import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_shell.dart';
@@ -77,6 +80,8 @@ abstract final class AppRoutes {
     );
   }
 
+  static Route<void> accountTab() => main(initialTab: HomeTab.account);
+
   static Route<void> home() => main();
 
   static Route<void> news() => main(initialTab: HomeTab.news);
@@ -92,9 +97,61 @@ abstract final class AppRoutes {
   }
 
   static void openAccount(BuildContext context) {
+    final shell = MainShell.of(context);
+    if (shell != null) {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+      shell.onLoggedIn();
+      return;
+    }
+
     Navigator.of(context).pushAndRemoveUntil(
-      account(),
-      (route) => route.isFirst,
+      accountTab(),
+      (route) => false,
+    );
+  }
+
+  /// After login/register: route to role portal (jockey/referee) or main home.
+  static Future<void> openAfterAuth(BuildContext context) async {
+    final repository = AuthRepository();
+    var role = (await repository.loadProfile()).effectiveAppRole;
+
+    if (!hasDedicatedPortal(role)) {
+      try {
+        role = (await repository.refreshCurrentUser()).effectiveAppRole;
+      } catch (_) {
+        role = (await repository.loadProfile()).effectiveAppRole;
+      }
+    }
+
+    if (!context.mounted) return;
+
+    final navigator = Navigator.of(context, rootNavigator: true);
+    if (hasDedicatedPortal(role)) {
+      navigator.pushAndRemoveUntil(
+        role == 'JOCKEY' ? jockeyPortal() : refereePortal(),
+        (_) => false,
+      );
+      return;
+    }
+
+    navigator.pushAndRemoveUntil(main(initialTab: HomeTab.home), (_) => false);
+  }
+
+  /// Clears navigation stack and returns to public home after logout.
+  static void openAfterLogout(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      main(initialTab: HomeTab.home),
+      (_) => false,
+    );
+  }
+
+  static void openDedicatedPortal(BuildContext context, String role) {
+    if (!hasDedicatedPortal(role)) return;
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      role.toUpperCase() == 'JOCKEY' ? jockeyPortal() : refereePortal(),
+      (_) => false,
     );
   }
 
@@ -146,6 +203,24 @@ abstract final class AppRoutes {
 
   static void openNews(BuildContext context) {
     _switchTabOrReplace(context, HomeTab.news);
+  }
+
+  static void openProfile(BuildContext context) {
+    if (MainShell.of(context)?.isLoggedIn != true) {
+      openLogin(context);
+      return;
+    }
+    _switchTabOrReplace(context, HomeTab.account);
+    MainShell.selectAccountSubTab(context, AccountSubTab.info);
+  }
+
+  static void openRoleRequest(BuildContext context) {
+    if (MainShell.of(context)?.isLoggedIn != true) {
+      openLogin(context);
+      return;
+    }
+    _switchTabOrReplace(context, HomeTab.account);
+    MainShell.selectAccountSubTab(context, AccountSubTab.roleRequest);
   }
 
   static void openAbout(BuildContext context) {

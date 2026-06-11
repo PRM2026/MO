@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (success) {
       if (!mounted) return;
       AppToast.showSuccess(context, 'Đăng nhập thành công!');
-      AppRoutes.openAccount(context);
+      await AppRoutes.openAfterAuth(context);
       return;
     }
 

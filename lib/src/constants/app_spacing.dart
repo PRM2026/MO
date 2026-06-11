@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 abstract final class AppSpacing {
   static const double xs = 4;
   static const double sm = 8;
@@ -7,4 +9,9 @@ abstract final class AppSpacing {
   static const double section = 24;
   static const double screenPadding = 16;
   static const double bottomNavClearance = 88;
+
+  /// Bottom padding for scrollable content inside [MainShell] tabs.
+  static double contentBottomPadding(BuildContext context) {
+    return bottomNavClearance + MediaQuery.paddingOf(context).bottom;
+  }
 }

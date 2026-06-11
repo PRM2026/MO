@@ -40,7 +40,7 @@ class _RefereeProfileScreenState extends State<RefereeProfileScreen> {
     if (!mounted || !success) return;
 
     AppToast.showSuccess(context, 'Đã đăng xuất');
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    AppRoutes.openAfterLogout(context);
   }
 
   void _handleSettingTap(String title) {

@@ -7,6 +7,8 @@ class AuthSession {
     this.email,
     this.fullName,
     this.role,
+    this.pendingRole,
+    this.roleApprovalStatus,
     this.twoFactorRequired = false,
   });
 
@@ -17,6 +19,8 @@ class AuthSession {
   final String? email;
   final String? fullName;
   final String? role;
+  final String? pendingRole;
+  final String? roleApprovalStatus;
   final bool twoFactorRequired;
 
   factory AuthSession.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,8 @@ class AuthSession {
       email: json['email'] as String?,
       fullName: json['fullName'] as String?,
       role: json['role'] as String?,
+      pendingRole: json['pendingRole'] as String?,
+      roleApprovalStatus: json['roleApprovalStatus'] as String?,
       twoFactorRequired: json['twoFactorRequired'] as bool? ?? false,
     );
   }

@@ -1,7 +1,9 @@
 import '../models/auth_session.dart';
 import '../models/stored_auth_profile.dart';
+import '../models/user_profile.dart';
 import '../services/auth_api_service.dart';
 import '../services/auth_storage.dart';
+import '../utils/role_utils.dart';
 import '../utils/username_utils.dart';
 
 class AuthRepository {
@@ -23,6 +25,11 @@ class AuthRepository {
       password: password,
     );
     await _storage.saveSession(session);
+    await _syncRoleFields(
+      role: session.role,
+      pendingRole: session.pendingRole,
+      roleApprovalStatus: session.roleApprovalStatus,
+    );
     return session;
   }
 
@@ -38,6 +45,11 @@ class AuthRepository {
       password: password,
     );
     await _storage.saveSession(session);
+    await _syncRoleFields(
+      role: session.role,
+      pendingRole: session.pendingRole,
+      roleApprovalStatus: session.roleApprovalStatus,
+    );
     return session;
   }
 
@@ -62,4 +74,39 @@ class AuthRepository {
   Future<bool> isLoggedIn() => _storage.isLoggedIn();
 
   Future<StoredAuthProfile> loadProfile() => _storage.loadProfile();
+
+  Future<UserProfile> refreshCurrentUser() async {
+    final token = await _storage.getToken();
+    if (token == null || token.isEmpty) {
+      throw AuthApiException(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      );
+    }
+
+    final user = await _apiService.getMe(token: token);
+    await _syncRoleFields(
+      role: user.role,
+      pendingRole: user.pendingRole,
+      roleApprovalStatus: user.roleApprovalStatus,
+    );
+    if (user.fullName != null && user.fullName!.isNotEmpty) {
+      await _storage.updateFullName(user.fullName!);
+    }
+    return user;
+  }
+
+  Future<void> _syncRoleFields({
+    required String? role,
+    required String? pendingRole,
+    required String? roleApprovalStatus,
+  }) async {
+    await _storage.updateRole(
+      resolveEffectiveAppRole(
+        role: role,
+        roleApprovalStatus: roleApprovalStatus,
+      ),
+    );
+    await _storage.updatePendingRole(pendingRole);
+    await _storage.updateRoleApprovalStatus(roleApprovalStatus);
+  }
 }

@@ -2,12 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../../routes/app_routes.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_constants.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 
 import '../common/brand_logo.dart';
+import 'home_bottom_nav.dart';
+import '../../views/main_shell.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key, this.title});
@@ -50,13 +53,23 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(right: AppSpacing.lg),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.primaryContainer,
-                child: Text(
-                  AppConstants.userInitials,
-                  style: AppTypography.labelCaps(AppColors.onPrimaryContainer)
-                      .copyWith(fontSize: 11),
+              child: GestureDetector(
+                onTap: () {
+                  final shell = MainShell.of(context);
+                  if (shell?.isLoggedIn == true) {
+                    MainShell.selectTab(context, HomeTab.account);
+                  } else {
+                    AppRoutes.openLogin(context);
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: AppColors.primaryContainer,
+                  child: Text(
+                    AppConstants.userInitials,
+                    style: AppTypography.labelCaps(AppColors.onPrimaryContainer)
+                        .copyWith(fontSize: 11),
+                  ),
                 ),
               ),
             ),

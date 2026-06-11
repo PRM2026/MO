@@ -80,11 +80,6 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
                                 const SizedBox(height: AppSpacing.lg),
                                 JockeyStatsGrid(stats: data.stats),
                                 const SizedBox(height: AppSpacing.lg),
-                                JockeyAlertBanner(
-                                  title: data.alertTitle,
-                                  message: data.alertMessage,
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
                                 LayoutBuilder(
                                   builder: (context, constraints) {
                                     final isWide = constraints.maxWidth >= 960;
@@ -96,35 +91,16 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
                                         children: [
                                           Expanded(
                                             flex: 8,
-                                            child: Column(
-                                              children: [
-                                                JockeyHorseCarousel(
-                                                  horses: data.horses,
-                                                ),
-                                                const SizedBox(
-                                                  height: AppSpacing.lg,
-                                                ),
-                                                const JockeyQuickActions(),
-                                              ],
+                                            child: JockeyRecentResultsSection(
+                                              results: data.recentResults,
                                             ),
                                           ),
                                           const SizedBox(width: AppSpacing.lg),
                                           Expanded(
                                             flex: 4,
-                                            child: Column(
-                                              children: [
-                                                JockeyRecentResultsSection(
-                                                  results: data.recentResults,
-                                                ),
-                                                const SizedBox(
-                                                  height: AppSpacing.lg,
-                                                ),
-                                                JockeyMotivationCard(
-                                                  quote: data.motivationQuote,
-                                                  imageUrl:
-                                                      data.motivationImageUrl,
-                                                ),
-                                              ],
+                                            child: JockeyMotivationCard(
+                                              quote: data.motivationQuote,
+                                              imageUrl: data.motivationImageUrl,
                                             ),
                                           ),
                                         ],
@@ -133,10 +109,6 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
 
                                     return Column(
                                       children: [
-                                        JockeyHorseCarousel(horses: data.horses),
-                                        const SizedBox(height: AppSpacing.lg),
-                                        const JockeyQuickActions(),
-                                        const SizedBox(height: AppSpacing.lg),
                                         JockeyRecentResultsSection(
                                           results: data.recentResults,
                                         ),

@@ -75,50 +75,22 @@ class _JockeyResultsScreenState extends State<JockeyResultsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final isWide = constraints.maxWidth >= 720;
-
-                                    final titleBlock = Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'PORTAL QUẢN LÝ CAO CẤP',
-                                          style: AppTypography.labelCaps(
-                                            RefereeColors.tertiary,
-                                          ).copyWith(letterSpacing: 1.2),
-                                        ),
-                                        Text(
-                                          'Phân tích kết quả đua',
-                                          style: AppTypography.displayLg(
-                                            RefereeColors.onSurface,
-                                          ).copyWith(fontSize: 28),
-                                        ),
-                                      ],
-                                    );
-
-                                    if (isWide) {
-                                      return Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Expanded(child: titleBlock),
-                                          const JockeyResultsHeaderActions(),
-                                        ],
-                                      );
-                                    }
-
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        titleBlock,
-                                        const SizedBox(height: 16),
-                                        const JockeyResultsHeaderActions(),
-                                      ],
-                                    );
-                                  },
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'PORTAL QUẢN LÝ CAO CẤP',
+                                      style: AppTypography.labelCaps(
+                                        RefereeColors.tertiary,
+                                      ).copyWith(letterSpacing: 1.2),
+                                    ),
+                                    Text(
+                                      'Phân tích kết quả đua',
+                                      style: AppTypography.displayLg(
+                                        RefereeColors.onSurface,
+                                      ).copyWith(fontSize: 28),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: AppSpacing.xl),
                                 LayoutBuilder(

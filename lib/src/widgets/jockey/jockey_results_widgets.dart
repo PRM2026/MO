@@ -6,62 +6,6 @@ import '../../models/jockey_results_data.dart';
 import '../news/news_network_image.dart';
 import '../referee/referee_glass_card.dart';
 
-class JockeyResultsHeaderActions extends StatelessWidget {
-  const JockeyResultsHeaderActions({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 640;
-
-        final filterButton = OutlinedButton.icon(
-          onPressed: () {},
-          style: OutlinedButton.styleFrom(
-            foregroundColor: RefereeColors.onSurface,
-            backgroundColor: RefereeColors.surfaceContainer,
-            side: BorderSide.none,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
-          icon: const Icon(Icons.calendar_today_outlined, size: 20),
-          label: const Text('30 ngày qua'),
-        );
-
-        final exportButton = FilledButton.icon(
-          onPressed: () {},
-          style: FilledButton.styleFrom(
-            backgroundColor: RefereeColors.championshipGold,
-            foregroundColor: RefereeColors.onTertiary,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          ),
-          icon: const Icon(Icons.download_outlined, size: 20),
-          label: const Text('Xuất PDF'),
-        );
-
-        if (isWide) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              filterButton,
-              const SizedBox(width: 8),
-              exportButton,
-            ],
-          );
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            filterButton,
-            const SizedBox(height: 8),
-            exportButton,
-          ],
-        );
-      },
-    );
-  }
-}
-
 class JockeyResultsStatsGrid extends StatelessWidget {
   const JockeyResultsStatsGrid({super.key, required this.stats});
 

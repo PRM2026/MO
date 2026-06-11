@@ -15,6 +15,8 @@ class AuthStorage {
   static const _emailKey = 'auth_email';
   static const _fullNameKey = 'auth_full_name';
   static const _roleKey = 'auth_role';
+  static const _pendingRoleKey = 'auth_pending_role';
+  static const _roleApprovalStatusKey = 'auth_role_approval_status';
 
   Future<SharedPreferences> get _prefs async {
     return _preferences ??= await SharedPreferences.getInstance();
@@ -46,11 +48,41 @@ class AuthStorage {
     await prefs.remove(_emailKey);
     await prefs.remove(_fullNameKey);
     await prefs.remove(_roleKey);
+    await prefs.remove(_pendingRoleKey);
+    await prefs.remove(_roleApprovalStatusKey);
   }
 
   Future<String?> getToken() async {
     final prefs = await _prefs;
     return prefs.getString(_tokenKey);
+  }
+
+  Future<void> updateRole(String role) async {
+    final prefs = await _prefs;
+    await prefs.setString(_roleKey, role);
+  }
+
+  Future<void> updatePendingRole(String? pendingRole) async {
+    final prefs = await _prefs;
+    if (pendingRole == null || pendingRole.isEmpty) {
+      await prefs.remove(_pendingRoleKey);
+      return;
+    }
+    await prefs.setString(_pendingRoleKey, pendingRole);
+  }
+
+  Future<void> updateRoleApprovalStatus(String? status) async {
+    final prefs = await _prefs;
+    if (status == null || status.isEmpty) {
+      await prefs.remove(_roleApprovalStatusKey);
+      return;
+    }
+    await prefs.setString(_roleApprovalStatusKey, status);
+  }
+
+  Future<void> updateFullName(String fullName) async {
+    final prefs = await _prefs;
+    await prefs.setString(_fullNameKey, fullName);
   }
 
   Future<String?> getFullName() async {
@@ -66,6 +98,8 @@ class AuthStorage {
       email: prefs.getString(_emailKey),
       fullName: prefs.getString(_fullNameKey),
       role: prefs.getString(_roleKey),
+      pendingRole: prefs.getString(_pendingRoleKey),
+      roleApprovalStatus: prefs.getString(_roleApprovalStatusKey),
     );
   }
 

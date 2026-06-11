@@ -62,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (success) {
       if (!mounted) return;
       AppToast.showSuccess(context, 'Đăng ký thành công!');
-      AppRoutes.openAccount(context);
+      await AppRoutes.openAfterAuth(context);
       return;
     }
 
