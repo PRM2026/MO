@@ -17,8 +17,8 @@ class TournamentApiException implements Exception {
 
 class TournamentApiService {
   TournamentApiService({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? ApiConfig.baseUrl;
+    : _client = client ?? http.Client(),
+      _baseUrl = baseUrl ?? ApiConfig.baseUrl;
 
   final http.Client _client;
   final String _baseUrl;
@@ -30,31 +30,31 @@ class TournamentApiService {
       headers: const {'Accept': 'application/json'},
     );
 
-    if (response.statusCode != 200) {
-      throw TournamentApiException(
-        'API lỗi ${response.statusCode}: ${response.reasonPhrase}',
-      );
+    Map<String, dynamic> body;
+    try {
+      body = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw TournamentApiException('Phản hồi từ máy chủ không hợp lệ.');
     }
 
-    final body = jsonDecode(response.body) as Map<String, dynamic>;
-    final apiResponse = ApiResponse<List<TournamentListItem>>.fromJson(
+    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
       body,
-      (data) => (data as List<dynamic>)
-          .map(
-            (item) =>
-                TournamentListItem.fromJson(item as Map<String, dynamic>),
-          )
-          .toList(),
+      (data) => data as List<dynamic>,
     );
 
-    if (!apiResponse.success) {
-      throw TournamentApiException(
-        apiResponse.message.isEmpty
-            ? 'Không thể tải giải đấu'
-            : apiResponse.message,
-      );
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300 &&
+        apiResponse.success) {
+      return (apiResponse.data ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(TournamentListItem.fromJson)
+          .toList(growable: false);
     }
 
-    return apiResponse.data ?? [];
+    throw TournamentApiException(
+      apiResponse.message.isNotEmpty
+          ? apiResponse.message
+          : 'Không thể tải giải đấu.',
+    );
   }
 }

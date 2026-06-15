@@ -89,8 +89,9 @@ class OwnerTournamentGridCard extends StatelessWidget {
                     tournament.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.headlineSm(RefereeColors.onSurface)
-                        .copyWith(fontSize: 22),
+                    style: AppTypography.headlineSm(
+                      RefereeColors.onSurface,
+                    ).copyWith(fontSize: 22),
                   ),
                   const SizedBox(height: 12),
                   _InfoRow(
@@ -105,10 +106,13 @@ class OwnerTournamentGridCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _ParticipantAvatars(
-                        extraCount: tournament.ownerParticipantExtra,
+                      Expanded(
+                        child: _InfoRow(
+                          icon: Icons.groups_outlined,
+                          label: tournament.ownerCapacityLabel,
+                        ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 12),
                       if (tournament.canOwnerJoin)
                         FilledButton(
                           onPressed: onPrimaryAction,
@@ -177,8 +181,8 @@ class _BannerSection extends StatelessWidget {
     final badgeColor = isOngoing
         ? RefereeColors.successEmerald
         : isCompleted
-            ? RefereeColors.onSurfaceVariant
-            : RefereeColors.championshipGold;
+        ? RefereeColors.onSurfaceVariant
+        : RefereeColors.championshipGold;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
@@ -200,25 +204,25 @@ class _BannerSection extends StatelessWidget {
                     ),
                   ),
             if (!isOngoing)
-              ColoredBox(
-                color: Colors.black.withValues(alpha: 0.15),
-              ),
+              ColoredBox(color: Colors.black.withValues(alpha: 0.15)),
             Positioned(
               top: 16,
               left: 16,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: badgeColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(
-                    color: badgeColor.withValues(alpha: 0.3),
-                  ),
+                  border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   tournament.ownerPortalBadge,
-                  style: AppTypography.labelCaps(badgeColor)
-                      .copyWith(fontSize: 11),
+                  style: AppTypography.labelCaps(
+                    badgeColor,
+                  ).copyWith(fontSize: 11),
                 ),
               ),
             ),
@@ -250,69 +254,6 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ParticipantAvatars extends StatelessWidget {
-  const _ParticipantAvatars({required this.extraCount});
-
-  final int extraCount;
-
-  static const _avatarUrls = [
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuAQwak687xowDkKO_6EneECoQjgjnX43vh3g3vogOZkleMo4rKwYBzpGdw5HJxiwPrqJPAMXI7Gy8fOknkgy9N6XkhG4FVB3rg5F5zOpWQrjbsHnkJZBSClhNxlIObr62W1AlWmIA_FfDHlKBUXRcfzbGX1IJifZ_y0Bgug2FDkCM5BtC_a4oZoGGiHItAUn4MvKf_rFZLErq76T39rAnjzGkcTRJruhYhbSc8xCadLG59fSgkhq47yKu4s5D5TtzHXBJxvQ9w8K8jG',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuClWbltcWd0C9bx7mdhwfzADQ7-QRjIJ3Yg2Xik2JXcLI01A4DJ6x0ji7RZ3BRy9N9CvK-NYTStu6W0ytOa_rcbXKXRDTEpm3H4Mn3fZDd5QALlr_a3OBQBdVHEUeanq-5rnCegQB7kCkoqxqvr7PCMu601klQ0izuVVYCsl-gYPjHB08vKmLfGSZu6_TNL9dy8JS_fGcnQ-xGWxb-HHY0b73YTJzbJbqKgqzqY8Lv2lu2iE-KJVwXJtG80mXImVbeBRAElGXlxXElk',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuDFJDxlUCqCvfb9mGIaMY2soMcEKjlrLjwqvwHUKBmjPlay5h50bWntLvmkHTAXpco93gV7gNtBpHzvBqhCluwOdNoYh9xzsGHFxz18L53N-XorX2KlnnAbwzp3KyY-3KmDuYl95-EGqTTpH_E1nRAbBopXyY9Kwt3D981kQj5UmTRpLt6SSYdQ7XrspiUqRtXzhq90G0j2gRF11I3m-QpMVV0brRhLVEQxfHWoiVJx9OXyu35aheyXooSRIhxJGO1g0RUNhUUI-dfG',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 32,
-      width: 120,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          for (var i = 0; i < 3; i++)
-            Positioned(
-              left: i * 20.0,
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: RefereeColors.portalSurface,
-                    width: 2,
-                  ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: NewsNetworkImage(imageUrl: _avatarUrls[i]),
-              ),
-            ),
-          Positioned(
-            left: 60,
-            child: Container(
-              width: 32,
-              height: 32,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: RefereeColors.surfaceContainer,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: RefereeColors.portalSurface,
-                  width: 2,
-                ),
-              ),
-              child: Text(
-                '+$extraCount',
-                style: AppTypography.labelCaps(RefereeColors.onSurface)
-                    .copyWith(fontSize: 9),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

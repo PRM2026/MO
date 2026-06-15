@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../models/tournament_list_item.dart';
 import '../repositories/auth_repository.dart';
-import '../repositories/tournament_repository.dart';
+import '../repositories/owner_tournament_repository.dart';
 
 enum OwnerTournamentFilter { all, upcoming, ongoing, completed }
 
@@ -19,12 +19,12 @@ extension OwnerTournamentFilterX on OwnerTournamentFilter {
 
 class OwnerTournamentsViewModel extends ChangeNotifier {
   OwnerTournamentsViewModel({
-    TournamentRepository? repository,
+    OwnerTournamentRepository? repository,
     AuthRepository? authRepository,
-  })  : _repository = repository ?? TournamentRepository(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _repository = repository ?? OwnerTournamentRepository(),
+       _authRepository = authRepository ?? AuthRepository();
 
-  final TournamentRepository _repository;
+  final OwnerTournamentRepository _repository;
   final AuthRepository _authRepository;
 
   bool isLoading = false;
@@ -60,7 +60,7 @@ class OwnerTournamentsViewModel extends ChangeNotifier {
       _allTournaments = await _repository.fetchTournaments();
     } catch (error) {
       errorMessage = 'Không thể tải giải đấu.';
-      _allTournaments = TournamentListItem.sampleData();
+      _allTournaments = const [];
       if (kDebugMode) debugPrint('OwnerTournamentsViewModel: $error');
     } finally {
       isLoading = false;
