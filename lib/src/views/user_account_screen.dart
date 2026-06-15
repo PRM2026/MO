@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/app_theme_tokens.dart';
+import '../repositories/auth_repository.dart';
+import '../routes/app_routes.dart';
+import '../utils/role_utils.dart';
 import 'personal_info_screen.dart';
 import 'role_request_screen.dart';
 import '../widgets/home/home_app_bar.dart';
@@ -23,6 +26,8 @@ class UserAccountScreen extends StatefulWidget {
 class UserAccountScreenState extends State<UserAccountScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  final AuthRepository _authRepository = AuthRepository();
+  bool _portalRedirectScheduled = false;
 
   @override
   void initState() {
@@ -32,6 +37,21 @@ class UserAccountScreenState extends State<UserAccountScreen>
       vsync: this,
       initialIndex: widget.initialSubTab.index,
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _redirectToPortalIfNeeded();
+    });
+  }
+
+  Future<void> _redirectToPortalIfNeeded() async {
+    if (_portalRedirectScheduled) return;
+    _portalRedirectScheduled = true;
+
+    if (!await _authRepository.isLoggedIn()) return;
+
+    final role = await _authRepository.resolveNavigationRole();
+    if (!mounted || !hasDedicatedPortal(role)) return;
+
+    AppRoutes.openDedicatedPortal(context, role);
   }
 
   void selectSubTab(AccountSubTab subTab) {

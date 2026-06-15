@@ -38,6 +38,20 @@ class AuthStorage {
     if (session.role != null) {
       await prefs.setString(_roleKey, session.role!);
     }
+    if (session.pendingRole != null && session.pendingRole!.isNotEmpty) {
+      await prefs.setString(_pendingRoleKey, session.pendingRole!);
+    } else {
+      await prefs.remove(_pendingRoleKey);
+    }
+    if (session.roleApprovalStatus != null &&
+        session.roleApprovalStatus!.isNotEmpty) {
+      await prefs.setString(
+        _roleApprovalStatusKey,
+        session.roleApprovalStatus!,
+      );
+    } else {
+      await prefs.remove(_roleApprovalStatusKey);
+    }
   }
 
   Future<void> clearSession() async {

@@ -9,6 +9,7 @@ import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_shell.dart';
+import '../views/owner/owner_shell.dart';
 import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
@@ -51,6 +52,12 @@ abstract final class AppRoutes {
   static Route<void> jockeyPortal() {
     return MaterialPageRoute<void>(
       builder: (_) => const JockeyShell(),
+    );
+  }
+
+  static Route<void> ownerPortal() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const OwnerShell(),
     );
   }
 
@@ -112,25 +119,30 @@ abstract final class AppRoutes {
     );
   }
 
-  /// After login/register: route to role portal (jockey/referee) or main home.
+  static Route<void> _portalRouteForRole(String role) {
+    switch (normalizePortalRole(role)) {
+      case 'JOCKEY':
+        return jockeyPortal();
+      case 'REFEREE':
+        return refereePortal();
+      case 'OWNER':
+        return ownerPortal();
+      default:
+        return main(initialTab: HomeTab.home);
+    }
+  }
+
+  /// After login/register: route to role portal or main home.
   static Future<void> openAfterAuth(BuildContext context) async {
     final repository = AuthRepository();
-    var role = (await repository.loadProfile()).effectiveAppRole;
-
-    if (!hasDedicatedPortal(role)) {
-      try {
-        role = (await repository.refreshCurrentUser()).effectiveAppRole;
-      } catch (_) {
-        role = (await repository.loadProfile()).effectiveAppRole;
-      }
-    }
+    final role = await repository.resolveNavigationRole();
 
     if (!context.mounted) return;
 
     final navigator = Navigator.of(context, rootNavigator: true);
     if (hasDedicatedPortal(role)) {
       navigator.pushAndRemoveUntil(
-        role == 'JOCKEY' ? jockeyPortal() : refereePortal(),
+        _portalRouteForRole(role),
         (_) => false,
       );
       return;
@@ -150,9 +162,13 @@ abstract final class AppRoutes {
   static void openDedicatedPortal(BuildContext context, String role) {
     if (!hasDedicatedPortal(role)) return;
     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      role.toUpperCase() == 'JOCKEY' ? jockeyPortal() : refereePortal(),
+      _portalRouteForRole(role),
       (_) => false,
     );
+  }
+
+  static void openOwnerPortal(BuildContext context) {
+    Navigator.of(context).push(ownerPortal());
   }
 
   static void openRefereePortal(BuildContext context) {

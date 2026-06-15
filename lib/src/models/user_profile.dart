@@ -29,12 +29,18 @@ class UserProfile {
       username: json['username'] as String?,
       email: json['email'] as String?,
       fullName: json['fullName'] as String?,
-      role: json['role'] as String?,
-      pendingRole: json['pendingRole'] as String?,
-      roleApprovalStatus: json['roleApprovalStatus'] as String?,
+      role: _readString(json['role']),
+      pendingRole: _readString(json['pendingRole']),
+      roleApprovalStatus: _readString(json['roleApprovalStatus']),
       roleReviewReason: json['roleReviewReason'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
     );
+  }
+
+  static String? _readString(Object? value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
   }
 
   String get normalizedRole => (role ?? 'USER').trim().toUpperCase();

@@ -56,7 +56,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       AppRoutes.openDedicatedPortal(context, role);
     });
   }
-
   @override
   void dispose() {
     _viewModel.removeListener(_onChanged);

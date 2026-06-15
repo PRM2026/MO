@@ -1,0 +1,318 @@
+import 'package:flutter/material.dart';
+
+import '../../constants/app_theme_tokens.dart';
+import '../../constants/referee_colors.dart';
+import '../../models/tournament_list_item.dart';
+import '../../viewmodels/owner_tournaments_viewmodel.dart';
+import '../news/news_network_image.dart';
+import '../referee/referee_glass_card.dart';
+
+class OwnerTournamentFilterChips extends StatelessWidget {
+  const OwnerTournamentFilterChips({
+    super.key,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final OwnerTournamentFilter selected;
+  final ValueChanged<OwnerTournamentFilter> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: OwnerTournamentFilter.values.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final filter = OwnerTournamentFilter.values[index];
+          final isSelected = filter == selected;
+
+          return FilterChip(
+            label: Text(
+              filter.label,
+              style: AppTypography.labelCaps(
+                isSelected
+                    ? RefereeColors.championshipGold
+                    : RefereeColors.onSurfaceVariant,
+              ).copyWith(fontSize: 13, letterSpacing: 0.2),
+            ),
+            selected: isSelected,
+            showCheckmark: false,
+            onSelected: (_) => onSelected(filter),
+            backgroundColor: RefereeColors.portalSurface.withValues(alpha: 0.7),
+            selectedColor: RefereeColors.portalSurface.withValues(alpha: 0.7),
+            side: BorderSide(
+              color: isSelected
+                  ? RefereeColors.championshipGold.withValues(alpha: 0.4)
+                  : Colors.white.withValues(alpha: 0.1),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(999),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class OwnerTournamentGridCard extends StatelessWidget {
+  const OwnerTournamentGridCard({
+    super.key,
+    required this.tournament,
+    this.onPrimaryAction,
+  });
+
+  final TournamentListItem tournament;
+  final VoidCallback? onPrimaryAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefereeGlassCard(
+      padding: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onPrimaryAction,
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _BannerSection(tournament: tournament),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    tournament.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.headlineSm(RefereeColors.onSurface)
+                        .copyWith(fontSize: 22),
+                  ),
+                  const SizedBox(height: 12),
+                  _InfoRow(
+                    icon: Icons.calendar_today_outlined,
+                    label: tournament.ownerDateLabel,
+                  ),
+                  const SizedBox(height: 8),
+                  _InfoRow(
+                    icon: Icons.location_on_outlined,
+                    label: tournament.location,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _ParticipantAvatars(
+                        extraCount: tournament.ownerParticipantExtra,
+                      ),
+                      const Spacer(),
+                      if (tournament.canOwnerJoin)
+                        FilledButton(
+                          onPressed: onPrimaryAction,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: RefereeColors.championshipGold,
+                            foregroundColor: RefereeColors.onTertiary,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Tham Gia',
+                            style: AppTypography.labelCaps(
+                              RefereeColors.onTertiary,
+                            ).copyWith(fontSize: 13),
+                          ),
+                        )
+                      else
+                        OutlinedButton(
+                          onPressed: onPrimaryAction,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: RefereeColors.onSurface,
+                            side: BorderSide(
+                              color: RefereeColors.outlineVariant,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Chi Tiết',
+                            style: AppTypography.labelCaps(
+                              RefereeColors.onSurface,
+                            ).copyWith(fontSize: 13),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BannerSection extends StatelessWidget {
+  const _BannerSection({required this.tournament});
+
+  final TournamentListItem tournament;
+
+  @override
+  Widget build(BuildContext context) {
+    final isOngoing = tournament.isOwnerOngoing;
+    final isCompleted = tournament.isOwnerCompleted;
+    final badgeColor = isOngoing
+        ? RefereeColors.successEmerald
+        : isCompleted
+            ? RefereeColors.onSurfaceVariant
+            : RefereeColors.championshipGold;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+      child: SizedBox(
+        height: 224,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            tournament.imageUrl.isNotEmpty
+                ? NewsNetworkImage(imageUrl: tournament.imageUrl)
+                : ColoredBox(
+                    color: RefereeColors.surfaceContainer,
+                    child: Icon(
+                      Icons.emoji_events_outlined,
+                      size: 64,
+                      color: RefereeColors.onSurfaceVariant.withValues(
+                        alpha: 0.4,
+                      ),
+                    ),
+                  ),
+            if (!isOngoing)
+              ColoredBox(
+                color: Colors.black.withValues(alpha: 0.15),
+              ),
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: badgeColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: badgeColor.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  tournament.ownerPortalBadge,
+                  style: AppTypography.labelCaps(badgeColor)
+                      .copyWith(fontSize: 11),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: RefereeColors.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ParticipantAvatars extends StatelessWidget {
+  const _ParticipantAvatars({required this.extraCount});
+
+  final int extraCount;
+
+  static const _avatarUrls = [
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuAQwak687xowDkKO_6EneECoQjgjnX43vh3g3vogOZkleMo4rKwYBzpGdw5HJxiwPrqJPAMXI7Gy8fOknkgy9N6XkhG4FVB3rg5F5zOpWQrjbsHnkJZBSClhNxlIObr62W1AlWmIA_FfDHlKBUXRcfzbGX1IJifZ_y0Bgug2FDkCM5BtC_a4oZoGGiHItAUn4MvKf_rFZLErq76T39rAnjzGkcTRJruhYhbSc8xCadLG59fSgkhq47yKu4s5D5TtzHXBJxvQ9w8K8jG',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuClWbltcWd0C9bx7mdhwfzADQ7-QRjIJ3Yg2Xik2JXcLI01A4DJ6x0ji7RZ3BRy9N9CvK-NYTStu6W0ytOa_rcbXKXRDTEpm3H4Mn3fZDd5QALlr_a3OBQBdVHEUeanq-5rnCegQB7kCkoqxqvr7PCMu601klQ0izuVVYCsl-gYPjHB08vKmLfGSZu6_TNL9dy8JS_fGcnQ-xGWxb-HHY0b73YTJzbJbqKgqzqY8Lv2lu2iE-KJVwXJtG80mXImVbeBRAElGXlxXElk',
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuDFJDxlUCqCvfb9mGIaMY2soMcEKjlrLjwqvwHUKBmjPlay5h50bWntLvmkHTAXpco93gV7gNtBpHzvBqhCluwOdNoYh9xzsGHFxz18L53N-XorX2KlnnAbwzp3KyY-3KmDuYl95-EGqTTpH_E1nRAbBopXyY9Kwt3D981kQj5UmTRpLt6SSYdQ7XrspiUqRtXzhq90G0j2gRF11I3m-QpMVV0brRhLVEQxfHWoiVJx9OXyu35aheyXooSRIhxJGO1g0RUNhUUI-dfG',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 32,
+      width: 120,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          for (var i = 0; i < 3; i++)
+            Positioned(
+              left: i * 20.0,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: RefereeColors.portalSurface,
+                    width: 2,
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: NewsNetworkImage(imageUrl: _avatarUrls[i]),
+              ),
+            ),
+          Positioned(
+            left: 60,
+            child: Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: RefereeColors.surfaceContainer,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: RefereeColors.portalSurface,
+                  width: 2,
+                ),
+              ),
+              child: Text(
+                '+$extraCount',
+                style: AppTypography.labelCaps(RefereeColors.onSurface)
+                    .copyWith(fontSize: 9),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

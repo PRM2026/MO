@@ -3,7 +3,6 @@ import '../models/stored_auth_profile.dart';
 import '../models/user_profile.dart';
 import '../services/auth_api_service.dart';
 import '../services/auth_storage.dart';
-import '../utils/role_utils.dart';
 import '../utils/username_utils.dart';
 
 class AuthRepository {
@@ -100,13 +99,22 @@ class AuthRepository {
     required String? pendingRole,
     required String? roleApprovalStatus,
   }) async {
-    await _storage.updateRole(
-      resolveEffectiveAppRole(
-        role: role,
-        roleApprovalStatus: roleApprovalStatus,
-      ),
-    );
+    await _storage.updateRole(_normalizeRole(role));
     await _storage.updatePendingRole(pendingRole);
     await _storage.updateRoleApprovalStatus(roleApprovalStatus);
+  }
+
+  /// Role used for portal navigation — always refreshed from server when possible.
+  Future<String> resolveNavigationRole() async {
+    try {
+      final user = await refreshCurrentUser();
+      return user.effectiveAppRole;
+    } catch (_) {
+      return (await loadProfile()).effectiveAppRole;
+    }
+  }
+
+  static String _normalizeRole(String? role) {
+    return (role ?? 'USER').trim().toUpperCase();
   }
 }

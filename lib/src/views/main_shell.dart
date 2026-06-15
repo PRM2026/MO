@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../routes/app_routes.dart';
 import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../widgets/home/home_bottom_nav.dart';
@@ -7,6 +8,7 @@ import 'about_screen.dart';
 import 'home_screen.dart';
 import 'jockey/jockey_shell.dart';
 import 'news_screen.dart';
+import 'owner/owner_shell.dart';
 import 'referee/referee_shell.dart';
 import 'tournaments_screen.dart';
 import 'user_account_screen.dart';
@@ -57,12 +59,9 @@ class MainShellState extends State<MainShell> {
 
     String? portalRole;
     if (loggedIn) {
-      try {
-        await _authRepository.refreshCurrentUser();
-      } catch (_) {}
-      final role = (await _authRepository.loadProfile()).effectiveAppRole;
+      final role = await _authRepository.resolveNavigationRole();
       if (hasDedicatedPortal(role)) {
-        portalRole = role;
+        portalRole = normalizePortalRole(role);
       }
     }
 
@@ -71,9 +70,12 @@ class MainShellState extends State<MainShell> {
     if (portalRole != null) {
       Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         MaterialPageRoute<void>(
-          builder: (_) => portalRole == 'JOCKEY'
-              ? const JockeyShell()
-              : const RefereeShell(),
+          builder: (_) => switch (portalRole!) {
+            'JOCKEY' => const JockeyShell(),
+            'REFEREE' => const RefereeShell(),
+            'OWNER' => const OwnerShell(),
+            _ => const MainShell(),
+          },
         ),
         (_) => false,
       );
@@ -89,10 +91,23 @@ class MainShellState extends State<MainShell> {
     });
   }
 
+  Future<void> _redirectToPortalIfNeeded() async {
+    if (!_isLoggedIn) return;
+
+    final role = await _authRepository.resolveNavigationRole();
+    if (!mounted || !hasDedicatedPortal(role)) return;
+
+    AppRoutes.openDedicatedPortal(context, role);
+  }
+
   Future<void> onLoggedIn({AccountSubTab subTab = AccountSubTab.info}) async {
     _initialAccountSubTab = subTab;
     await _refreshAuthState();
     if (!mounted) return;
+
+    final role = await _authRepository.resolveNavigationRole();
+    if (hasDedicatedPortal(role)) return;
+
     setState(() => _currentTab = HomeTab.account);
   }
 
@@ -108,6 +123,10 @@ class MainShellState extends State<MainShell> {
 
   void selectTab(HomeTab tab) {
     if (tab == HomeTab.account && !_isLoggedIn) {
+      return;
+    }
+    if (tab == HomeTab.account && _isLoggedIn) {
+      _redirectToPortalIfNeeded();
       return;
     }
     if (_currentTab == tab) return;

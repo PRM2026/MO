@@ -16,6 +16,7 @@ class TournamentListItem {
     this.isLive = false,
     this.status = '',
     this.startAt,
+    this.maxTeams,
   });
 
   final String id;
@@ -30,6 +31,7 @@ class TournamentListItem {
   final bool isLive;
   final String status;
   final DateTime? startAt;
+  final int? maxTeams;
 
   String get homeDateLabel => _formatHomeDate(startAt);
 
@@ -74,7 +76,39 @@ class TournamentListItem {
       isLive: isLive,
       status: status,
       startAt: _parseDate(startAt),
+      maxTeams: (json['maxTeams'] as num?)?.toInt(),
     );
+  }
+
+  String get ownerDateLabel {
+    if (startAt == null) return '—';
+    final month = startAt!.month.toString().padLeft(2, '0');
+    return '${startAt!.day} Tháng $month, ${startAt!.year}';
+  }
+
+  String get ownerPortalBadge {
+    return switch (status) {
+      'ONGOING' => 'Đang diễn ra',
+      'COMPLETED' => 'Đã kết thúc',
+      'CANCELLED' => 'Đã hủy',
+      _ => 'Sắp diễn ra',
+    };
+  }
+
+  bool get isOwnerOngoing => status == 'ONGOING';
+
+  bool get isOwnerUpcoming =>
+      !isOwnerOngoing && status != 'COMPLETED' && status != 'CANCELLED';
+
+  bool get isOwnerCompleted =>
+      status == 'COMPLETED' || status == 'CANCELLED';
+
+  bool get canOwnerJoin =>
+      status == 'ONGOING' || status == 'OPEN_REGISTRATION';
+
+  int get ownerParticipantExtra {
+    final seed = int.tryParse(id) ?? title.hashCode;
+    return (seed.abs() % 80) + 8;
   }
 
   static DateTime? _parseDate(String? iso) {

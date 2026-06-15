@@ -3,7 +3,10 @@ String resolveEffectiveAppRole({
   required String? role,
   required String? roleApprovalStatus,
 }) {
-  final normalizedRole = (role ?? 'USER').trim().toUpperCase();
+  var normalizedRole = (role ?? 'USER').trim().toUpperCase();
+  if (normalizedRole == 'HORSE_OWNER') {
+    normalizedRole = 'OWNER';
+  }
   final status = (roleApprovalStatus ?? 'NONE').trim().toUpperCase();
 
   if (status == 'PENDING' || status == 'REJECTED') {
@@ -28,7 +31,14 @@ String resolveEffectiveAppRole({
 
 bool hasDedicatedPortal(String role) {
   return switch (role.toUpperCase()) {
-    'JOCKEY' || 'REFEREE' => true,
+    'JOCKEY' || 'REFEREE' || 'OWNER' || 'HORSE_OWNER' => true,
     _ => false,
+  };
+}
+
+String normalizePortalRole(String role) {
+  return switch (role.toUpperCase()) {
+    'HORSE_OWNER' => 'OWNER',
+    final value => value,
   };
 }
