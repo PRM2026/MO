@@ -59,11 +59,7 @@ class OwnerHorseFilterChips extends StatelessWidget {
 }
 
 class OwnerHorseGridCard extends StatelessWidget {
-  const OwnerHorseGridCard({
-    super.key,
-    required this.horse,
-    this.onTap,
-  });
+  const OwnerHorseGridCard({super.key, required this.horse, this.onTap});
 
   final OwnerHorseItem horse;
   final VoidCallback? onTap;
@@ -104,20 +100,12 @@ class OwnerHorseGridCard extends StatelessWidget {
                               ).copyWith(fontSize: 22),
                             ),
                             const SizedBox(height: 4),
-                            RichText(
-                              text: TextSpan(
-                                style: AppTypography.bodyMd(
-                                  RefereeColors.onSurfaceVariant,
-                                ),
-                                children: [
-                                  const TextSpan(text: 'Jockey: '),
-                                  TextSpan(
-                                    text: horse.jockeyDisplay,
-                                    style: AppTypography.bodyMd(
-                                      RefereeColors.onSurface,
-                                    ),
-                                  ),
-                                ],
+                            Text(
+                              horse.breed,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodyMd(
+                                RefereeColors.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -135,8 +123,9 @@ class OwnerHorseGridCard extends StatelessWidget {
                           ),
                           Text(
                             horse.performance.winRateLabel,
-                            style: AppTypography.headlineSm(winRateColor)
-                                .copyWith(fontSize: 22),
+                            style: AppTypography.headlineSm(
+                              winRateColor,
+                            ).copyWith(fontSize: 22),
                           ),
                         ],
                       ),
@@ -145,16 +134,46 @@ class OwnerHorseGridCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   Divider(color: Colors.white.withValues(alpha: 0.05)),
                   const SizedBox(height: 12),
+                  _HorseDetailRow(
+                    icon: Icons.badge_outlined,
+                    label: 'Trạng thái',
+                    value: horse.statusLabel,
+                    valueColor: _statusColor(horse.statusCode),
+                  ),
+                  const SizedBox(height: 8),
+                  _HorseDetailRow(
+                    icon: Icons.pets_outlined,
+                    label: 'Thông tin',
+                    value:
+                        '${horse.ageLabel} • ${horse.genderLabel} • ${horse.colorLabel}',
+                  ),
+                  const SizedBox(height: 8),
+                  _HorseDetailRow(
+                    icon: Icons.monitor_weight_outlined,
+                    label: 'Thể trạng',
+                    value: horse.bodyMetricsLabel,
+                  ),
+                  if (horse.reviewReason?.trim().isNotEmpty == true) ...[
+                    const SizedBox(height: 8),
+                    _HorseDetailRow(
+                      icon: Icons.info_outline,
+                      label: 'Phản hồi',
+                      value: horse.reviewReason!.trim(),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Divider(color: Colors.white.withValues(alpha: 0.05)),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       _StatColumn(
                         label: 'Cuộc đua',
-                        value: horse.speedLabel,
+                        value: '${horse.performance.totalRaces}',
                       ),
                       const SizedBox(width: 16),
                       _StatColumn(
-                        label: 'Thông tin',
-                        value: horse.staminaLabel,
+                        label: 'Tỷ lệ thắng',
+                        value: horse.performance.winRateLabel,
                       ),
                       const SizedBox(width: 16),
                       _StatColumn(
@@ -171,6 +190,54 @@ class OwnerHorseGridCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _HorseDetailRow extends StatelessWidget {
+  const _HorseDetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: RefereeColors.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Text(
+          '$label: ',
+          style: AppTypography.bodySm(RefereeColors.onSurfaceVariant),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodySm(
+              valueColor ?? RefereeColors.onSurface,
+            ).copyWith(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+Color _statusColor(String status) {
+  return switch (status) {
+    'APPROVED' => RefereeColors.successEmerald,
+    'REJECTED' => RefereeColors.statusRed,
+    'SUSPENDED' => RefereeColors.statusRed,
+    _ => RefereeColors.championshipGold,
+  };
 }
 
 class _HorseImageHeader extends StatelessWidget {
@@ -230,7 +297,9 @@ class _HorseImageHeader extends StatelessWidget {
                     borderRadius: BorderRadius.circular(999),
                     border: isTopRank
                         ? null
-                        : Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        : Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
                   ),
                   child: Text(
                     horse.rankLabel!,

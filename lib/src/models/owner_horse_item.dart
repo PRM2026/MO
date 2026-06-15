@@ -39,7 +39,9 @@ class OwnerHorseItem {
     this.age,
     this.gender,
     this.color,
-    this.jockeyName,
+    this.heightCm,
+    this.weightKg,
+    this.reviewReason,
     this.performance = const OwnerHorsePerformance(),
     this.rankLabel,
   });
@@ -53,44 +55,40 @@ class OwnerHorseItem {
   final int? age;
   final String? gender;
   final String? color;
-  final String? jockeyName;
+  final double? heightCm;
+  final double? weightKg;
+  final String? reviewReason;
   final OwnerHorsePerformance performance;
   final String? rankLabel;
 
-  String get jockeyDisplay {
-    final name = jockeyName?.trim();
-    if (name != null && name.isNotEmpty) return name;
-    return 'Chưa có jockey';
+  String get ageLabel => age == null ? 'Chưa cập nhật' : '$age tuổi';
+
+  String get genderLabel {
+    final value = gender?.trim();
+    return value == null || value.isEmpty ? 'Chưa cập nhật' : value;
   }
 
-  String get speedLabel {
-    if (performance.totalRaces > 0) {
-      return '${performance.totalRaces} cuộc';
-    }
-    return '—';
+  String get colorLabel {
+    final value = color?.trim();
+    return value == null || value.isEmpty ? 'Chưa cập nhật' : value;
   }
 
-  String get staminaLabel {
-    if (gender != null && gender!.trim().isNotEmpty) {
-      return gender!.trim();
-    }
-    if (age != null && age! > 0) {
-      return '$age tuổi';
-    }
-    return '—';
+  String get bodyMetricsLabel {
+    final values = <String>[];
+    if (heightCm != null) values.add('${_formatDecimal(heightCm!)} cm');
+    if (weightKg != null) values.add('${_formatDecimal(weightKg!)} kg');
+    return values.isEmpty ? 'Chưa cập nhật' : values.join(' • ');
   }
 
-  bool get isLegend =>
-      performance.wins >= 10 || performance.winRate >= 80;
+  bool get isLegend => performance.wins >= 10 || performance.winRate >= 80;
 
-  bool get isProspect =>
-      statusCode == 'PENDING' ||
-      performance.totalRaces < 3;
+  bool get isProspect => statusCode == 'PENDING' || performance.totalRaces < 3;
 
   bool get isRacing => statusCode == 'APPROVED';
 
   factory OwnerHorseItem.fromJson(Map<String, dynamic> json) {
-    final status = (json['status'] as String?)?.trim().toUpperCase() ?? 'PENDING';
+    final status =
+        (json['status'] as String?)?.trim().toUpperCase() ?? 'PENDING';
     final performanceJson = json['performance'];
     OwnerHorsePerformance performance = const OwnerHorsePerformance();
     if (performanceJson is Map<String, dynamic>) {
@@ -111,11 +109,14 @@ class OwnerHorseItem {
       age: (json['age'] as num?)?.toInt(),
       gender: json['gender'] as String?,
       color: json['color'] as String?,
+      heightCm: (json['heightCm'] as num?)?.toDouble(),
+      weightKg: (json['weightKg'] as num?)?.toDouble(),
+      reviewReason: json['reviewReason'] as String?,
       performance: performance,
     );
   }
 
-  OwnerHorseItem copyWith({String? rankLabel, String? jockeyName}) {
+  OwnerHorseItem copyWith({String? rankLabel}) {
     return OwnerHorseItem(
       id: id,
       name: name,
@@ -126,7 +127,9 @@ class OwnerHorseItem {
       age: age,
       gender: gender,
       color: color,
-      jockeyName: jockeyName ?? this.jockeyName,
+      heightCm: heightCm,
+      weightKg: weightKg,
+      reviewReason: reviewReason,
       performance: performance,
       rankLabel: rankLabel ?? this.rankLabel,
     );
@@ -141,6 +144,12 @@ class OwnerHorseItem {
       rankLabel: rankLabel ?? this.rankLabel,
     );
   }
+}
+
+String _formatDecimal(double value) {
+  return value == value.roundToDouble()
+      ? value.toInt().toString()
+      : value.toStringAsFixed(1);
 }
 
 String _statusLabel(String status) {

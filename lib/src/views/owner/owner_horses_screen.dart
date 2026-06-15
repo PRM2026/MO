@@ -11,11 +11,7 @@ import '../../widgets/owner/owner_dashboard_widgets.dart';
 import '../../widgets/owner/owner_horse_widgets.dart';
 
 class OwnerHorsesScreen extends StatefulWidget {
-  const OwnerHorsesScreen({
-    super.key,
-    this.viewModel,
-    this.onProfileTap,
-  });
+  const OwnerHorsesScreen({super.key, this.viewModel, this.onProfileTap});
 
   final OwnerHorsesViewModel? viewModel;
   final VoidCallback? onProfileTap;
@@ -192,8 +188,8 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                             final crossAxisCount = width >= 960
                                                 ? 3
                                                 : width >= 640
-                                                    ? 2
-                                                    : 1;
+                                                ? 2
+                                                : 1;
 
                                             final itemCount = horses.length + 1;
 
@@ -203,14 +199,15 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                                   const NeverScrollableScrollPhysics(),
                                               gridDelegate:
                                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: crossAxisCount,
-                                                crossAxisSpacing: 16,
-                                                mainAxisSpacing: 16,
-                                                childAspectRatio:
-                                                    crossAxisCount == 1
-                                                        ? 0.72
-                                                        : 0.62,
-                                              ),
+                                                    crossAxisCount:
+                                                        crossAxisCount,
+                                                    crossAxisSpacing: 16,
+                                                    mainAxisSpacing: 16,
+                                                    childAspectRatio:
+                                                        crossAxisCount == 1
+                                                        ? 0.56
+                                                        : 0.52,
+                                                  ),
                                               itemCount: itemCount,
                                               itemBuilder: (context, index) {
                                                 if (index == horses.length) {
