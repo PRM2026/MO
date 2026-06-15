@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import '../config/api_config.dart';
 import '../models/api_response.dart';
+import '../models/owner_tournament_detail.dart';
 import '../models/tournament_list_item.dart';
 
 class TournamentApiException implements Exception {
@@ -56,5 +57,40 @@ class TournamentApiService {
           ? apiResponse.message
           : 'Không thể tải giải đấu.',
     );
+  }
+
+  Future<OwnerTournamentDetail> fetchTournamentDetail(String id) async {
+    final uri = Uri.parse('$_baseUrl/tournaments/$id');
+    final response = await _client.get(
+      uri,
+      headers: const {'Accept': 'application/json'},
+    );
+
+    final body = _decodeResponse(response);
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
+      body,
+      (data) => data as Map<String, dynamic>,
+    );
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300 &&
+        apiResponse.success &&
+        apiResponse.data != null) {
+      return OwnerTournamentDetail.fromJson(apiResponse.data!);
+    }
+
+    throw TournamentApiException(
+      apiResponse.message.isNotEmpty
+          ? apiResponse.message
+          : 'Không thể tải chi tiết giải đấu.',
+    );
+  }
+
+  Map<String, dynamic> _decodeResponse(http.Response response) {
+    try {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw TournamentApiException('Phản hồi từ máy chủ không hợp lệ.');
+    }
   }
 }
