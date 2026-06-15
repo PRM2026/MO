@@ -113,50 +113,26 @@ class OwnerTournamentGridCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      if (tournament.canOwnerJoin)
-                        FilledButton(
-                          onPressed: onPrimaryAction,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: RefereeColors.championshipGold,
-                            foregroundColor: RefereeColors.onTertiary,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                      OutlinedButton(
+                        onPressed: onPrimaryAction,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: RefereeColors.onSurface,
+                          side: BorderSide(color: RefereeColors.outlineVariant),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
                           ),
-                          child: Text(
-                            'Tham Gia',
-                            style: AppTypography.labelCaps(
-                              RefereeColors.onTertiary,
-                            ).copyWith(fontSize: 13),
-                          ),
-                        )
-                      else
-                        OutlinedButton(
-                          onPressed: onPrimaryAction,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: RefereeColors.onSurface,
-                            side: BorderSide(
-                              color: RefereeColors.outlineVariant,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'Chi Tiết',
-                            style: AppTypography.labelCaps(
-                              RefereeColors.onSurface,
-                            ).copyWith(fontSize: 13),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
+                        child: Text(
+                          'Chi Tiết',
+                          style: AppTypography.labelCaps(
+                            RefereeColors.onSurface,
+                          ).copyWith(fontSize: 13),
+                        ),
+                      ),
                     ],
                   ),
                 ],

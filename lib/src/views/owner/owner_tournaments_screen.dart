@@ -4,17 +4,14 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/tournament_list_item.dart';
-import '../../utils/app_toast.dart';
 import '../../viewmodels/owner_tournaments_viewmodel.dart';
 import '../../widgets/owner/owner_app_bar.dart';
 import '../../widgets/owner/owner_dashboard_widgets.dart';
 import '../../widgets/owner/owner_tournament_widgets.dart';
+import 'owner_tournament_detail_screen.dart';
 
 class OwnerTournamentsScreen extends StatefulWidget {
-  const OwnerTournamentsScreen({
-    super.key,
-    this.onProfileTap,
-  });
+  const OwnerTournamentsScreen({super.key, this.onProfileTap});
 
   final VoidCallback? onProfileTap;
 
@@ -37,12 +34,15 @@ class _OwnerTournamentsScreenState extends State<OwnerTournamentsScreen> {
     if (mounted) setState(() {});
   }
 
-  void _handleTournamentAction(TournamentListItem tournament) {
-    final action = tournament.canOwnerJoin ? 'Tham gia' : 'Chi tiết';
-    AppToast.showSuccess(
-      context,
-      action,
-      subtitle: '${tournament.title} — đang được phát triển.',
+  void _openTournamentDetail(TournamentListItem tournament) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => OwnerTournamentDetailScreen(
+          tournamentId: tournament.id,
+          tournamentName: tournament.title,
+          profileImageUrl: _viewModel.profileImageUrl,
+        ),
+      ),
     );
   }
 
@@ -106,7 +106,9 @@ class _OwnerTournamentsScreenState extends State<OwnerTournamentsScreen> {
                                   LayoutBuilder(
                                     builder: (context, constraints) {
                                       final width = constraints.maxWidth;
-                                      final crossAxisCount = width >= 640 ? 2 : 1;
+                                      final crossAxisCount = width >= 640
+                                          ? 2
+                                          : 1;
 
                                       return GridView.builder(
                                         shrinkWrap: true,
@@ -114,22 +116,23 @@ class _OwnerTournamentsScreenState extends State<OwnerTournamentsScreen> {
                                             const NeverScrollableScrollPhysics(),
                                         gridDelegate:
                                             SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: crossAxisCount,
-                                          crossAxisSpacing: 24,
-                                          mainAxisSpacing: 24,
-                                          childAspectRatio:
-                                              crossAxisCount == 1 ? 0.68 : 0.58,
-                                        ),
+                                              crossAxisCount: crossAxisCount,
+                                              crossAxisSpacing: 24,
+                                              mainAxisSpacing: 24,
+                                              childAspectRatio:
+                                                  crossAxisCount == 1
+                                                  ? 0.68
+                                                  : 0.58,
+                                            ),
                                         itemCount: tournaments.length,
                                         itemBuilder: (context, index) {
-                                          final tournament =
-                                              tournaments[index];
+                                          final tournament = tournaments[index];
                                           return OwnerTournamentGridCard(
                                             tournament: tournament,
                                             onPrimaryAction: () =>
-                                                _handleTournamentAction(
-                                              tournament,
-                                            ),
+                                                _openTournamentDetail(
+                                                  tournament,
+                                                ),
                                           );
                                         },
                                       );
