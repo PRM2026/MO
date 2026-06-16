@@ -47,9 +47,10 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      primary: false,
+      extendBody: false,
       backgroundColor: TournamentColors.surface,
-      appBar: const HomeAppBar(title: 'Giải đấu'),
+      appBar: const HomeAppBar(),
       body: RefreshIndicator(
         onRefresh: _viewModel.refreshTournaments,
         child: CustomScrollView(

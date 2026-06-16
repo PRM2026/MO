@@ -2,6 +2,7 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = 'Grand Championship';
+  static const String tournamentsTabLabel = 'Giải đấu';
   static const String userInitials = 'JD';
 
   static const String heroImageUrl =

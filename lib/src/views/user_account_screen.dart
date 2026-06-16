@@ -68,7 +68,8 @@ class UserAccountScreenState extends State<UserAccountScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      primary: false,
+      extendBody: false,
       backgroundColor: AppColors.surface,
       appBar: const HomeAppBar(title: 'Tài khoản'),
       body: Column(

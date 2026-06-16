@@ -34,7 +34,8 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      primary: false,
+      extendBody: false,
       backgroundColor: AboutColors.surface,
       appBar: const HomeAppBar(),
       body: CustomScrollView(

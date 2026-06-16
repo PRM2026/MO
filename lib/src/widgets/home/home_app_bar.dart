@@ -2,20 +2,17 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../../routes/app_routes.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_constants.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 
 import '../common/brand_logo.dart';
-import 'home_bottom_nav.dart';
-import '../../views/main_shell.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key, this.title});
 
-  /// Mặc định hiển thị tên app; tab con truyền title riêng (vd: Giải đấu).
+  /// Mặc định hiển thị [AppConstants.appName]; tab con có thể truyền title riêng.
   final String? title;
 
   @override
@@ -43,37 +40,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications_none,
-                color: AppColors.onSurfaceVariant.withValues(alpha: 0.9),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.lg),
-              child: GestureDetector(
-                onTap: () {
-                  final shell = MainShell.of(context);
-                  if (shell?.isLoggedIn == true) {
-                    MainShell.selectTab(context, HomeTab.account);
-                  } else {
-                    AppRoutes.openLogin(context);
-                  }
-                },
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: AppColors.primaryContainer,
-                  child: Text(
-                    AppConstants.userInitials,
-                    style: AppTypography.labelCaps(AppColors.onPrimaryContainer)
-                        .copyWith(fontSize: 11),
-                  ),
-                ),
-              ),
-            ),
-          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1),
             child: Divider(

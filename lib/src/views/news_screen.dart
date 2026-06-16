@@ -53,7 +53,8 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      primary: false,
+      extendBody: false,
       backgroundColor: AppColors.surface,
       appBar: const HomeAppBar(),
       body: RefreshIndicator(

@@ -60,7 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      primary: false,
+      extendBody: false,
       appBar: const HomeAppBar(),
       body: CustomScrollView(
         slivers: [

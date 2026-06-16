@@ -31,7 +31,12 @@ String resolveEffectiveAppRole({
 
 bool hasDedicatedPortal(String role) {
   return switch (role.toUpperCase()) {
-    'JOCKEY' || 'REFEREE' || 'OWNER' || 'HORSE_OWNER' => true,
+    'JOCKEY' ||
+    'REFEREE' ||
+    'OWNER' ||
+    'HORSE_OWNER' ||
+    'SPECTATOR' =>
+      true,
     _ => false,
   };
 }

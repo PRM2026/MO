@@ -10,6 +10,7 @@ import 'jockey/jockey_shell.dart';
 import 'news_screen.dart';
 import 'owner/owner_shell.dart';
 import 'referee/referee_shell.dart';
+import 'spectator/spectator_shell.dart';
 import 'tournaments_screen.dart';
 import 'user_account_screen.dart';
 
@@ -74,6 +75,7 @@ class MainShellState extends State<MainShell> {
             'JOCKEY' => const JockeyShell(),
             'REFEREE' => const RefereeShell(),
             'OWNER' => const OwnerShell(),
+            'SPECTATOR' => const SpectatorShell(),
             _ => const MainShell(),
           },
         ),
@@ -148,7 +150,7 @@ class MainShellState extends State<MainShell> {
     }
 
     return Scaffold(
-      extendBody: true,
+      extendBody: false,
       body: IndexedStack(
         index: _currentTab.index,
         children: [

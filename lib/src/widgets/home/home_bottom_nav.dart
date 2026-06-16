@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_constants.dart';
 
 enum HomeTab { home, tournaments, news, account, about }
 
@@ -21,7 +22,7 @@ class HomeBottomNav extends StatelessWidget {
   static const _guestItems = [
     (HomeTab.home, Icons.home_outlined, Icons.home, 'Trang chủ'),
     (HomeTab.tournaments, Icons.emoji_events_outlined, Icons.emoji_events,
-        'Giải đấu'),
+        AppConstants.tournamentsTabLabel),
     (HomeTab.news, Icons.newspaper_outlined, Icons.newspaper, 'Tin tức'),
     (HomeTab.about, Icons.info_outline, Icons.info, 'Giới thiệu'),
   ];
@@ -29,7 +30,7 @@ class HomeBottomNav extends StatelessWidget {
   static const _authItems = [
     (HomeTab.home, Icons.home_outlined, Icons.home, 'Trang chủ'),
     (HomeTab.tournaments, Icons.emoji_events_outlined, Icons.emoji_events,
-        'Giải đấu'),
+        AppConstants.tournamentsTabLabel),
     (HomeTab.news, Icons.newspaper_outlined, Icons.newspaper, 'Tin tức'),
     (HomeTab.account, Icons.person_outline, Icons.person, 'Tài khoản'),
     (HomeTab.about, Icons.info_outline, Icons.info, 'Giới thiệu'),

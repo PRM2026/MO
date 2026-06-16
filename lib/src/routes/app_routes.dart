@@ -14,6 +14,7 @@ import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
+import '../views/spectator/spectator_shell.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
 abstract final class AppRoutes {
@@ -81,6 +82,12 @@ abstract final class AppRoutes {
     );
   }
 
+  static Route<void> spectatorPortal() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const SpectatorShell(),
+    );
+  }
+
   static Route<void> main({HomeTab initialTab = HomeTab.home}) {
     return MaterialPageRoute<void>(
       builder: (_) => MainShell(initialTab: initialTab),
@@ -127,6 +134,8 @@ abstract final class AppRoutes {
         return refereePortal();
       case 'OWNER':
         return ownerPortal();
+      case 'SPECTATOR':
+        return spectatorPortal();
       default:
         return main(initialTab: HomeTab.home);
     }
