@@ -35,6 +35,15 @@ class ApiClient {
     return _decodeList(response, mapper);
   }
 
+  Future<ApiPage<T>> getPage<T>(
+    String path,
+    T Function(Map<String, dynamic>) mapper, {
+    bool authenticated = true,
+  }) async {
+    final response = await _send('GET', path, authenticated: authenticated);
+    return _decodePage(response, mapper);
+  }
+
   Future<T> postObject<T>(
     String path,
     Map<String, dynamic> body,
@@ -164,6 +173,29 @@ class ApiClient {
         .toList(growable: false);
   }
 
+  ApiPage<T> _decodePage<T>(
+    http.Response response,
+    T Function(Map<String, dynamic>) mapper,
+  ) {
+    final apiResponse = _decodeApiResponse<Map<String, dynamic>>(response, (
+      data,
+    ) {
+      if (data is Map<String, dynamic>) return data;
+      throw const ApiException('Phan hoi tu may chu khong hop le.');
+    });
+    final page = apiResponse.data;
+    if (page == null) {
+      throw ApiException(
+        apiResponse.message.isNotEmpty
+            ? apiResponse.message
+            : 'Phan hoi tu may chu khong co du lieu.',
+        statusCode: response.statusCode,
+      );
+    }
+
+    return ApiPage<T>.fromJson(page, mapper);
+  }
+
   void _decodeVoid(http.Response response) {
     _decodeApiResponse<Object?>(response, (data) => data, allowNullData: true);
   }
@@ -244,5 +276,44 @@ class ApiClient {
   String? _readErrorCode(Map<String, dynamic> decoded) {
     final code = decoded['code'];
     return code is String && code.isNotEmpty ? code : null;
+  }
+}
+
+class ApiPage<T> {
+  const ApiPage({
+    required this.content,
+    required this.totalElements,
+    required this.totalPages,
+    required this.number,
+    required this.size,
+  });
+
+  final List<T> content;
+  final int totalElements;
+  final int totalPages;
+  final int number;
+  final int size;
+
+  factory ApiPage.fromJson(
+    Map<String, dynamic> json,
+    T Function(Map<String, dynamic>) mapper,
+  ) {
+    final content = json['content'];
+    return ApiPage(
+      content: content is List
+          ? content.whereType<Map<String, dynamic>>().map(mapper).toList()
+          : const [],
+      totalElements: _readInt(json['totalElements']),
+      totalPages: _readInt(json['totalPages']),
+      number: _readInt(json['number']),
+      size: _readInt(json['size']),
+    );
+  }
+
+  static int _readInt(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 }

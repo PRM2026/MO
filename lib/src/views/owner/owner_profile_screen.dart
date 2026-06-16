@@ -71,9 +71,26 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
                   color: RefereeColors.championshipGold,
                 ),
               )
+            : data == null
+            ? RefreshIndicator(
+                color: RefereeColors.championshipGold,
+                onRefresh: _viewModel.refreshData,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  children: [
+                    _ProfileErrorState(
+                      message:
+                          _viewModel.errorMessage ??
+                          'Không thể tải hồ sơ chủ ngựa.',
+                      onRetry: _viewModel.refreshData,
+                    ),
+                  ],
+                ),
+              )
             : RefreshIndicator(
                 color: RefereeColors.championshipGold,
-                onRefresh: _viewModel.loadData,
+                onRefresh: _viewModel.refreshData,
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
@@ -88,7 +105,7 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            RefereeProfileHeader(profile: data!),
+                            RefereeProfileHeader(profile: data),
                             const SizedBox(height: AppSpacing.lg),
                             RefereeProfileSettingsCard(
                               settings: data.settings,
@@ -107,6 +124,33 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+class _ProfileErrorState extends StatelessWidget {
+  const _ProfileErrorState({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 96, horizontal: 24),
+      child: Column(
+        children: [
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: RefereeColors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextButton(onPressed: onRetry, child: const Text('Thử lại')),
+        ],
       ),
     );
   }

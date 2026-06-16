@@ -7,16 +7,18 @@ import '../repositories/auth_repository.dart';
 
 class OwnerProfileViewModel extends ChangeNotifier {
   OwnerProfileViewModel({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? AuthRepository();
+    : _authRepository = authRepository ?? AuthRepository();
 
   final AuthRepository _authRepository;
 
   bool isLoading = false;
   bool isLoggingOut = false;
+  String? errorMessage;
   RefereeProfileData? data;
 
   Future<void> loadData() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
@@ -40,25 +42,16 @@ class OwnerProfileViewModel extends ChangeNotifier {
         ],
       );
     } catch (error) {
+      data = null;
+      errorMessage = 'Không thể tải hồ sơ chủ ngựa.';
       if (kDebugMode) debugPrint('OwnerProfileViewModel: $error');
-      data = RefereeProfileData(
-        fullName: 'Chủ ngựa',
-        refereeId: 'OWN-000',
-        rankLabel: 'Chủ ngựa',
-        stats: const [],
-        settings: const [
-          RefereeProfileSettingItem(
-            title: 'Bảo mật & Mật khẩu',
-            icon: Icons.security_outlined,
-            iconColor: RefereeColors.secondary,
-          ),
-        ],
-      );
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
+
+  Future<void> refreshData() => loadData();
 
   Future<bool> logout() async {
     isLoggingOut = true;

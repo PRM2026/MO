@@ -1,112 +1,33 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 
-import '../config/api_config.dart';
-import '../models/api_response.dart';
 import '../models/owner_dashboard_data.dart';
 import '../models/tournament_list_item.dart';
 import '../utils/date_format.dart';
+import 'api_client.dart';
 import 'auth_storage.dart';
-import 'owner_horse_service.dart';
 
 class OwnerDashboardService {
   OwnerDashboardService({
     http.Client? client,
     String? baseUrl,
     AuthStorage? storage,
-  })  : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? ApiConfig.baseUrl,
-        _storage = storage ?? AuthStorage();
+    ApiClient? apiClient,
+  }) : _apiClient =
+           apiClient ??
+           ApiClient(client: client, baseUrl: baseUrl, storage: storage);
 
-  final http.Client _client;
-  final String _baseUrl;
-  final AuthStorage _storage;
+  final ApiClient _apiClient;
 
   Future<Map<String, dynamic>> getOwnerDashboard() async {
-    return _getObject('/owner/dashboard');
+    return _apiClient.getObject('/owner/dashboard', (json) => json);
   }
 
   Future<List<TournamentListItem>> getTournaments() async {
-    final uri = Uri.parse('$_baseUrl/tournaments');
-    final response = await _client.get(
-      uri,
-      headers: const {'Accept': 'application/json'},
+    return _apiClient.getList(
+      '/tournaments',
+      TournamentListItem.fromJson,
+      authenticated: false,
     );
-
-    Map<String, dynamic>? decoded;
-    try {
-      decoded = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw OwnerApiException('Phản hồi từ máy chủ không hợp lệ.');
-    }
-
-    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
-      decoded,
-      (data) => data as List<dynamic>,
-    );
-
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        apiResponse.success) {
-      return (apiResponse.data ?? const [])
-          .whereType<Map<String, dynamic>>()
-          .map(TournamentListItem.fromJson)
-          .toList();
-    }
-
-    throw OwnerApiException(
-      apiResponse.message.isNotEmpty
-          ? apiResponse.message
-          : 'Không thể tải giải đấu.',
-    );
-  }
-
-  Future<Map<String, dynamic>> _getObject(String path) async {
-    final token = await _requireToken();
-    final uri = Uri.parse('$_baseUrl$path');
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    Map<String, dynamic>? decoded;
-    try {
-      decoded = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw OwnerApiException('Phản hồi từ máy chủ không hợp lệ.');
-    }
-
-    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
-      decoded,
-      (data) => data as Map<String, dynamic>,
-    );
-
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        apiResponse.success &&
-        apiResponse.data != null) {
-      return apiResponse.data!;
-    }
-
-    throw OwnerApiException(
-      apiResponse.message.isNotEmpty
-          ? apiResponse.message
-          : 'Không thể tải dữ liệu tổng quan.',
-    );
-  }
-
-  Future<String> _requireToken() async {
-    final token = await _storage.getToken();
-    if (token == null || token.isEmpty) {
-      throw OwnerApiException(
-        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
-      );
-    }
-    return token;
   }
 }
 

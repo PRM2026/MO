@@ -150,7 +150,7 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                     )
                   : RefreshIndicator(
                       color: RefereeColors.championshipGold,
-                      onRefresh: _viewModel.loadHorses,
+                      onRefresh: _viewModel.refreshHorses,
                       child: CustomScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         slivers: [
@@ -176,10 +176,10 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                         onSelected: _viewModel.selectFilter,
                                       ),
                                       const SizedBox(height: AppSpacing.lg),
-                                      if (_viewModel.loadError != null)
+                                      if (_viewModel.errorMessage != null)
                                         _ErrorState(
-                                          message: _viewModel.loadError!,
-                                          onRetry: _viewModel.loadHorses,
+                                          message: _viewModel.errorMessage!,
+                                          onRetry: _viewModel.refreshHorses,
                                         )
                                       else
                                         LayoutBuilder(
@@ -224,7 +224,7 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                           },
                                         ),
                                       if (!_viewModel.isLoading &&
-                                          _viewModel.loadError == null &&
+                                          _viewModel.errorMessage == null &&
                                           horses.isEmpty)
                                         Padding(
                                           padding: const EdgeInsets.only(

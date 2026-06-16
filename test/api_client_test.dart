@@ -109,6 +109,47 @@ void main() {
     expect(name, 'Night Wind');
   });
 
+  test('getPage maps paginated ApiResponse data', () async {
+    final storage = await _storageWithToken('owner-token');
+    final client = ApiClient(
+      baseUrl: 'http://example.test',
+      storage: storage,
+      client: MockClient((request) async {
+        expect(request.url.toString(), 'http://example.test/notifications');
+
+        return http.Response.bytes(
+          utf8.encode('''
+          {
+            "success": true,
+            "message": "Success",
+            "data": {
+              "content": [
+                {"id": 1, "title": "Race ready"}
+              ],
+              "totalElements": 12,
+              "totalPages": 3,
+              "number": 1,
+              "size": 5
+            }
+          }
+          '''),
+          200,
+        );
+      }),
+    );
+
+    final page = await client.getPage(
+      '/notifications',
+      (json) => json['title'] as String,
+    );
+
+    expect(page.content, ['Race ready']);
+    expect(page.totalElements, 12);
+    expect(page.totalPages, 3);
+    expect(page.number, 1);
+    expect(page.size, 5);
+  });
+
   test('throws ApiException when authenticated request has no token', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();

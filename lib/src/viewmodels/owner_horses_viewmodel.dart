@@ -8,14 +8,14 @@ class OwnerHorsesViewModel extends ChangeNotifier {
   OwnerHorsesViewModel({
     OwnerHorseRepository? repository,
     AuthRepository? authRepository,
-  })  : _repository = repository ?? OwnerHorseRepository(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _repository = repository ?? OwnerHorseRepository(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final OwnerHorseRepository _repository;
   final AuthRepository _authRepository;
 
   bool isLoading = false;
-  String? loadError;
+  String? errorMessage;
   String? profileImageUrl;
   String searchQuery = '';
   OwnerHorseFilter selectedFilter = OwnerHorseFilter.all;
@@ -25,7 +25,8 @@ class OwnerHorsesViewModel extends ChangeNotifier {
     final query = searchQuery.trim().toLowerCase();
 
     return horses.where((horse) {
-      final matchesQuery = query.isEmpty ||
+      final matchesQuery =
+          query.isEmpty ||
           horse.name.toLowerCase().contains(query) ||
           horse.breed.toLowerCase().contains(query);
 
@@ -42,7 +43,7 @@ class OwnerHorsesViewModel extends ChangeNotifier {
 
   Future<void> loadHorses() async {
     isLoading = true;
-    loadError = null;
+    errorMessage = null;
     notifyListeners();
 
     try {
@@ -54,7 +55,7 @@ class OwnerHorsesViewModel extends ChangeNotifier {
       final loaded = await _repository.fetchHorses();
       horses = _assignRankLabels(loaded);
     } catch (error) {
-      loadError = 'Không tải được danh sách ngựa.';
+      errorMessage = 'Không tải được danh sách ngựa.';
       horses = const [];
       if (kDebugMode) debugPrint('OwnerHorsesViewModel: $error');
     } finally {
@@ -62,6 +63,8 @@ class OwnerHorsesViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> refreshHorses() => loadHorses();
 
   void updateSearch(String value) {
     searchQuery = value;

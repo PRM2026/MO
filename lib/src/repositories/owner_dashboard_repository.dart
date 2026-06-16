@@ -10,9 +10,9 @@ class OwnerDashboardRepository {
     OwnerDashboardService? dashboardService,
     OwnerHorseService? horseService,
     AuthRepository? authRepository,
-  })  : _dashboardService = dashboardService ?? OwnerDashboardService(),
-        _horseService = horseService ?? OwnerHorseService(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _dashboardService = dashboardService ?? OwnerDashboardService(),
+       _horseService = horseService ?? OwnerHorseService(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final OwnerDashboardService _dashboardService;
   final OwnerHorseService _horseService;
@@ -27,25 +27,21 @@ class OwnerDashboardRepository {
 
     final sample = OwnerDashboardData.sample(profileImageUrl: profileImageUrl);
 
-    try {
-      final dashboard = await _dashboardService.getOwnerDashboard();
-      final tournaments = await _dashboardService.getTournaments();
-      final horses = await _horseService.getOwnerHorses();
+    final dashboard = await _dashboardService.getOwnerDashboard();
+    final tournaments = await _dashboardService.getTournaments();
+    final horses = await _horseService.getOwnerHorses();
 
-      final hero = _resolveHero(tournaments, sample.hero);
-      final featured = _resolveFeaturedHorses(horses, sample.featuredHorses);
-      final races = racesFromDashboard(dashboard);
-      final upcoming = races.isNotEmpty ? races : sample.upcomingRaces;
+    final hero = _resolveHero(tournaments, sample.hero);
+    final featured = _resolveFeaturedHorses(horses, sample.featuredHorses);
+    final races = racesFromDashboard(dashboard);
+    final upcoming = races.isNotEmpty ? races : sample.upcomingRaces;
 
-      return OwnerDashboardData(
-        hero: hero,
-        featuredHorses: featured,
-        upcomingRaces: upcoming,
-        profileImageUrl: profileImageUrl ?? sample.profileImageUrl,
-      );
-    } catch (_) {
-      return sample;
-    }
+    return OwnerDashboardData(
+      hero: hero,
+      featuredHorses: featured,
+      upcomingRaces: upcoming,
+      profileImageUrl: profileImageUrl ?? sample.profileImageUrl,
+    );
   }
 
   OwnerHeroTournament _resolveHero(
@@ -54,7 +50,8 @@ class OwnerDashboardRepository {
   ) {
     if (tournaments.isEmpty) return fallback;
 
-    final sorted = [...tournaments]..sort((a, b) {
+    final sorted = [...tournaments]
+      ..sort((a, b) {
         final aDate = a.startAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         final bDate = b.startAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         return aDate.compareTo(bDate);
