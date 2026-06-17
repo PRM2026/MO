@@ -36,9 +36,7 @@ OwnerHeroTournament heroFromTournament(TournamentListItem tournament) {
     id: tournament.id,
     title: tournament.title,
     subtitle: '${tournament.homeDateLabel} • ${tournament.location}',
-    imageUrl: tournament.imageUrl.isNotEmpty
-        ? tournament.imageUrl
-        : OwnerDashboardData.sample().hero.imageUrl,
+    imageUrl: tournament.imageUrl,
     badgeLabel: tournament.homeStatusBadge,
   );
 }

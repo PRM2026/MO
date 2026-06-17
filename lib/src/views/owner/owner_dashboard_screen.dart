@@ -99,10 +99,13 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            OwnerHeroBanner(
-                              hero: data.hero,
-                              onViewTournament: widget.onViewTournament,
-                            ),
+                            if (data.hero == null)
+                              const OwnerDashboardEmptyHero()
+                            else
+                              OwnerHeroBanner(
+                                hero: data.hero!,
+                                onViewTournament: widget.onViewTournament,
+                              ),
                             const SizedBox(height: AppSpacing.lg),
                             OwnerFeaturedHorsesSection(
                               horses: data.featuredHorses,

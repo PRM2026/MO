@@ -60,14 +60,15 @@ class OwnerDashboardData {
     this.profileImageUrl,
   });
 
-  final OwnerHeroTournament hero;
+  final OwnerHeroTournament? hero;
   final List<OwnerFeaturedHorse> featuredHorses;
   final List<OwnerUpcomingRace> upcomingRaces;
   final String? profileImageUrl;
 
   static OwnerDashboardData sample({String? profileImageUrl}) {
     return OwnerDashboardData(
-      profileImageUrl: profileImageUrl ??
+      profileImageUrl:
+          profileImageUrl ??
           'https://lh3.googleusercontent.com/aida-public/AB6AXuCH6abuic9j19Rq_07gwoHUOLWJEMwUUs7sNlwg7pMpBPh6KYhCNcupeyL-PHK9KJ9tXMVJOwIyuVOyssWFb1-bwz25DBXdqAtSXgRgS6ZuD-15v9NH-priZ3pq6GB94AGXogR3qN_nV05jm-ou5ur1DtZAzjYBWOmuC5SpGXVH9d-fymgRueK9pXiRU0IomLTUcViTjHRQ0fVjloIG7I7E2ktEKBwinObQPGP-T-AE5Y20y2zgd0APPX71Y52pKjpZnO5AytjaCswu',
       hero: const OwnerHeroTournament(
         id: '1',
