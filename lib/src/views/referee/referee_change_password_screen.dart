@@ -88,8 +88,8 @@ class _RefereeChangePasswordScreenState
       appBar: RefereeAppBar(
         showBack: true,
         titleOverride: 'ĐỔI MẬT KHẨU',
-        showNotificationAction: false,
         profileImageUrl: widget.profileImageUrl,
+        profileInteractive: false,
       ),
       body: RefereeChangePasswordGlowBackground(
         child: SingleChildScrollView(

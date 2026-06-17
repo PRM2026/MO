@@ -73,7 +73,7 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
         showBack: true,
         showBrandTitle: false,
         profileImageUrl: data?.avatarUrl,
-        showNotificationAction: false,
+        profileInteractive: false,
       ),
       body: JockeySpeedlineBackground(
         child: _viewModel.isLoading && data == null
@@ -110,7 +110,11 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.stretch,
                                     children: [
-                                      RefereeProfileHeader(profile: data),
+                                      RefereeProfileHeader(
+                                        profile: data,
+                                        fallbackIcon:
+                                            Icons.sports_martial_arts_outlined,
+                                      ),
                                       const SizedBox(height: AppSpacing.lg),
                                       RefereeProfileStatsGrid(
                                         stats: data.stats,

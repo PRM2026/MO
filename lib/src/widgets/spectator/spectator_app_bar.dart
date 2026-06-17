@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../news/news_network_image.dart';
+import '../common/profile_avatar.dart';
 
 class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SpectatorAppBar({
@@ -13,6 +13,7 @@ class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.displayName = 'Khán giả',
     this.showProfileAvatar = true,
     this.titleOverride,
+    this.profileInteractive = true,
   });
 
   final String? profileImageUrl;
@@ -20,13 +21,15 @@ class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String displayName;
   final bool showProfileAvatar;
   final String? titleOverride;
+  final bool profileInteractive;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
 
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = profileImageUrl;
+    final compact = titleOverride != null;
+    final avatarSize = compact ? 32.0 : 40.0;
 
     return AppBar(
       backgroundColor: (titleOverride != null
@@ -61,36 +64,13 @@ class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         if (showProfileAvatar)
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.screenPadding),
-            child: GestureDetector(
-              onTap: onProfileTap,
-              child: Container(
-                width: titleOverride != null ? 32 : 40,
-                height: titleOverride != null ? 32 : 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: RefereeColors.championshipGold.withValues(
-                      alpha: titleOverride != null ? 0.3 : 1,
-                    ),
-                    width: titleOverride != null ? 1 : 2,
-                  ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: avatarUrl != null && avatarUrl.isNotEmpty
-                    ? NewsNetworkImage(imageUrl: avatarUrl)
-                    : ColoredBox(
-                        color: RefereeColors.secondaryContainer,
-                        child: Icon(
-                          Icons.person,
-                          color: RefereeColors.championshipGold.withValues(
-                            alpha: 0.8,
-                          ),
-                        ),
-                      ),
-              ),
-            ),
+          ProfileAvatarButton(
+            imageUrl: profileImageUrl,
+            size: avatarSize,
+            fallbackIcon: Icons.person_rounded,
+            interactive: profileInteractive,
+            onTap: profileInteractive ? onProfileTap : null,
+            padding: EdgeInsets.only(right: AppSpacing.screenPadding),
           ),
       ],
       bottom: PreferredSize(

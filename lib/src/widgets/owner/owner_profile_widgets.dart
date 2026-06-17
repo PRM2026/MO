@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/owner_profile_data.dart';
-import '../news/news_network_image.dart';
+import '../common/profile_avatar.dart';
 import '../referee/referee_glass_card.dart';
 
 class OwnerProfileHeader extends StatelessWidget {
@@ -18,9 +18,11 @@ class OwnerProfileHeader extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isWide = constraints.maxWidth >= 640;
-          final avatar = _OwnerProfileAvatar(
-            imageUrl: profile.avatarUrl,
+          final avatar = ProfileAvatar(
             size: isWide ? 128 : 96,
+            imageUrl: profile.avatarUrl,
+            fallbackIcon: Icons.home_work_outlined,
+            ringWidth: 3,
           );
           final info = Column(
             crossAxisAlignment: isWide
@@ -165,42 +167,6 @@ class OwnerProfileLogoutButton extends StatelessWidget {
                   ).copyWith(fontSize: 18),
                 ),
               ],
-            ),
-    );
-  }
-}
-
-class _OwnerProfileAvatar extends StatelessWidget {
-  const _OwnerProfileAvatar({required this.imageUrl, required this.size});
-
-  final String? imageUrl;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: RefereeColors.championshipGold, width: 4),
-        boxShadow: [
-          BoxShadow(
-            color: RefereeColors.championshipGold.withValues(alpha: 0.24),
-            blurRadius: 20,
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: imageUrl != null && imageUrl!.isNotEmpty
-          ? NewsNetworkImage(imageUrl: imageUrl!)
-          : ColoredBox(
-              color: RefereeColors.surfaceContainer,
-              child: Icon(
-                Icons.person,
-                size: size * 0.45,
-                color: RefereeColors.onSurfaceVariant,
-              ),
             ),
     );
   }
