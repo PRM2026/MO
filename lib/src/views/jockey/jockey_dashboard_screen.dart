@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../constants/app_spacing.dart';
 import '../../constants/referee_colors.dart';
+import '../../models/jockey_dashboard_data.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/app_toast.dart';
 import '../../viewmodels/jockey_dashboard_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
 import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyDashboardScreen extends StatefulWidget {
-  const JockeyDashboardScreen({super.key, this.viewModel});
+  const JockeyDashboardScreen({
+    super.key,
+    this.viewModel,
+    this.onQuickLinkSelected,
+  });
 
   final JockeyDashboardViewModel? viewModel;
+  final ValueChanged<JockeyDashboardQuickLink>? onQuickLinkSelected;
 
   @override
   State<JockeyDashboardScreen> createState() => _JockeyDashboardScreenState();
@@ -31,6 +39,21 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
 
   void _onChanged() {
     if (mounted) setState(() {});
+  }
+
+  void _handleQuickLink(JockeyDashboardQuickLink link) {
+    final handler = widget.onQuickLinkSelected;
+    if (handler != null) {
+      handler(link);
+      return;
+    }
+
+    if (link.label.trim().toLowerCase() == 'profile') {
+      AppRoutes.openJockeyProfile(context);
+      return;
+    }
+
+    AppToast.showSuccess(context, 'Chua ho tro trong phase nay');
   }
 
   @override
@@ -94,38 +117,35 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
                                           final isWide =
                                               constraints.maxWidth >= 960;
 
-                                          if (isWide) {
-                                            return Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  flex: 8,
-                                                  child:
-                                                      JockeyRecentResultsSection(
-                                                        results:
-                                                            data.recentResults,
-                                                      ),
-                                                ),
-                                                const SizedBox(
-                                                  width: AppSpacing.lg,
-                                                ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: JockeyMotivationCard(
-                                                    quote: data.motivationQuote,
-                                                    imageUrl:
-                                                        data.motivationImageUrl,
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-
-                                          return Column(
+                                          final primary = Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
                                             children: [
+                                              JockeyUpcomingRacesSection(
+                                                races: data.upcomingRaces,
+                                              ),
+                                              const SizedBox(
+                                                height: AppSpacing.lg,
+                                              ),
                                               JockeyRecentResultsSection(
                                                 results: data.recentResults,
+                                              ),
+                                              const SizedBox(
+                                                height: AppSpacing.lg,
+                                              ),
+                                              JockeyDashboardAlertsSection(
+                                                alerts: data.alerts,
+                                              ),
+                                            ],
+                                          );
+
+                                          final secondary = Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              JockeyQuickLinksSection(
+                                                links: data.quickLinks,
+                                                onLinkTap: _handleQuickLink,
                                               ),
                                               const SizedBox(
                                                 height: AppSpacing.lg,
@@ -135,6 +155,38 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
                                                 imageUrl:
                                                     data.motivationImageUrl,
                                               ),
+                                            ],
+                                          );
+
+                                          if (isWide) {
+                                            return Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 8,
+                                                  child: primary,
+                                                ),
+                                                const SizedBox(
+                                                  width: AppSpacing.lg,
+                                                ),
+                                                Expanded(
+                                                  flex: 4,
+                                                  child: secondary,
+                                                ),
+                                              ],
+                                            );
+                                          }
+
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              primary,
+                                              const SizedBox(
+                                                height: AppSpacing.lg,
+                                              ),
+                                              secondary,
                                             ],
                                           );
                                         },
