@@ -1,19 +1,16 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 
-import '../config/api_config.dart';
-import '../models/api_response.dart';
 import '../models/jockey_invitation_response.dart';
+import 'api_client.dart';
+import 'api_exception.dart';
 import 'auth_storage.dart';
 
-class JockeyInvitationApiException implements Exception {
-  JockeyInvitationApiException(this.message);
-
-  final String message;
-
-  @override
-  String toString() => message;
+class JockeyInvitationApiException extends ApiException {
+  const JockeyInvitationApiException(
+    super.message, {
+    super.statusCode,
+    super.code,
+  });
 }
 
 class JockeyInvitationService {
@@ -21,165 +18,72 @@ class JockeyInvitationService {
     http.Client? client,
     String? baseUrl,
     AuthStorage? storage,
-  })  : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? ApiConfig.baseUrl,
-        _storage = storage ?? AuthStorage();
+    ApiClient? apiClient,
+  }) : _apiClient =
+           apiClient ??
+           ApiClient(client: client, baseUrl: baseUrl, storage: storage);
 
-  final http.Client _client;
-  final String _baseUrl;
-  final AuthStorage _storage;
+  final ApiClient _apiClient;
 
   Future<List<JockeyInvitationResponse>> getJockeyInvitations() async {
-    final list = await _getList('/jockey/invitations');
-    return list.map(JockeyInvitationResponse.fromJson).toList();
+    return _run(
+      () => _apiClient.getList(
+        '/jockey/invitations',
+        JockeyInvitationResponse.fromJson,
+      ),
+    );
   }
 
   Future<JockeyInvitationResponse> getJockeyInvitation(int id) async {
-    final data = await _get('/jockey/invitations/$id');
-    return JockeyInvitationResponse.fromJson(data);
+    return _run(
+      () => _apiClient.getObject(
+        '/jockey/invitations/$id',
+        JockeyInvitationResponse.fromJson,
+      ),
+    );
   }
 
   Future<JockeyInvitationResponse> acceptInvitation(
     int id, {
     String? note,
   }) async {
-    final data = await _putJson(
-      '/jockey/invitations/$id/accept',
-      note != null && note.trim().isNotEmpty ? {'note': note.trim()} : {},
+    return _run(
+      () => _apiClient.putObject(
+        '/jockey/invitations/$id/accept',
+        _decisionBody(note),
+        JockeyInvitationResponse.fromJson,
+      ),
     );
-    return JockeyInvitationResponse.fromJson(data);
   }
 
   Future<JockeyInvitationResponse> rejectInvitation(
     int id, {
     String? note,
   }) async {
-    final data = await _putJson(
-      '/jockey/invitations/$id/reject',
-      note != null && note.trim().isNotEmpty ? {'note': note.trim()} : {},
+    return _run(
+      () => _apiClient.putObject(
+        '/jockey/invitations/$id/reject',
+        _decisionBody(note),
+        JockeyInvitationResponse.fromJson,
+      ),
     );
-    return JockeyInvitationResponse.fromJson(data);
   }
 
-  Future<List<Map<String, dynamic>>> _getList(String path) async {
-    final token = await _requireToken();
-    final uri = Uri.parse('$_baseUrl$path');
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+  Map<String, dynamic> _decisionBody(String? note) {
+    final trimmed = note?.trim();
+    if (trimmed == null || trimmed.isEmpty) return {};
+    return {'note': trimmed};
+  }
 
-    Map<String, dynamic>? decoded;
+  Future<T> _run<T>(Future<T> Function() action) async {
     try {
-      decoded = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw JockeyInvitationApiException('Phản hồi từ máy chủ không hợp lệ.');
-    }
-
-    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
-      decoded,
-      (data) => data as List<dynamic>,
-    );
-
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        apiResponse.success) {
-      return (apiResponse.data ?? const [])
-          .whereType<Map<String, dynamic>>()
-          .toList();
-    }
-
-    throw JockeyInvitationApiException(
-      _resolveErrorMessage(decoded, apiResponse.message),
-    );
-  }
-
-  Future<Map<String, dynamic>> _get(String path) async {
-    final token = await _requireToken();
-    final uri = Uri.parse('$_baseUrl$path');
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return _decodeObject(response);
-  }
-
-  Future<Map<String, dynamic>> _putJson(
-    String path,
-    Map<String, dynamic> body,
-  ) async {
-    final token = await _requireToken();
-    final uri = Uri.parse('$_baseUrl$path');
-    final response = await _client.put(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(body),
-    );
-    return _decodeObject(response);
-  }
-
-  Map<String, dynamic> _decodeObject(http.Response response) {
-    Map<String, dynamic>? decoded;
-    try {
-      decoded = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (_) {
-      throw JockeyInvitationApiException('Phản hồi từ máy chủ không hợp lệ.');
-    }
-
-    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
-      decoded,
-      (data) => data as Map<String, dynamic>,
-    );
-
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        apiResponse.success &&
-        apiResponse.data != null) {
-      return apiResponse.data!;
-    }
-
-    throw JockeyInvitationApiException(
-      _resolveErrorMessage(decoded, apiResponse.message),
-    );
-  }
-
-  Future<String> _requireToken() async {
-    final token = await _storage.getToken();
-    if (token == null || token.isEmpty) {
+      return await action();
+    } on ApiException catch (error) {
       throw JockeyInvitationApiException(
-        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        error.message,
+        statusCode: error.statusCode,
+        code: error.code,
       );
     }
-    return token;
-  }
-
-  String _resolveErrorMessage(
-    Map<String, dynamic> decoded,
-    String fallbackMessage,
-  ) {
-    final message = fallbackMessage.trim();
-    if (message.isNotEmpty && message != 'Validation failed') {
-      return message;
-    }
-
-    final data = decoded['data'];
-    if (data is Map<String, dynamic> && data.isNotEmpty) {
-      final firstError = data.values.first;
-      if (firstError is String && firstError.isNotEmpty) {
-        return firstError;
-      }
-    }
-
-    return 'Không thể xử lý lời mời thi đấu. Vui lòng thử lại.';
   }
 }
