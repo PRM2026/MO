@@ -5,7 +5,7 @@ import '../repositories/referee_assigned_races_repository.dart';
 
 class RefereeAssignedRacesViewModel extends ChangeNotifier {
   RefereeAssignedRacesViewModel({RefereeAssignedRacesRepository? repository})
-      : _repository = repository ?? const RefereeAssignedRacesRepository();
+      : _repository = repository ?? RefereeAssignedRacesRepository();
 
   final RefereeAssignedRacesRepository _repository;
 
@@ -25,7 +25,9 @@ class RefereeAssignedRacesViewModel extends ChangeNotifier {
       if (query.isEmpty) return true;
       return race.title.toLowerCase().contains(query) ||
           race.raceCode.toLowerCase().contains(query) ||
-          race.meta.location.toLowerCase().contains(query);
+          race.meta.location.toLowerCase().contains(query) ||
+          race.meta.distance.toLowerCase().contains(query) ||
+          race.statusLabel.toLowerCase().contains(query);
     }).toList();
   }
 
