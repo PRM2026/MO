@@ -1,3 +1,5 @@
+import 'referee_race_prize_response.dart';
+
 class RefereeRaceResponse {
   const RefereeRaceResponse({
     this.id,
@@ -13,6 +15,8 @@ class RefereeRaceResponse {
     this.scheduledEndAt,
     this.maxParticipants,
     this.participantCount,
+    this.resultFinalizedAt,
+    this.prizes = const [],
   });
 
   final int? id;
@@ -28,8 +32,11 @@ class RefereeRaceResponse {
   final DateTime? scheduledEndAt;
   final int? maxParticipants;
   final int? participantCount;
+  final DateTime? resultFinalizedAt;
+  final List<RefereeRacePrizeResponse> prizes;
 
   factory RefereeRaceResponse.fromJson(Map<String, dynamic> json) {
+    final rawPrizes = json['prizes'];
     return RefereeRaceResponse(
       id: _readInt(json['id']),
       tournamentId: _readInt(json['tournamentId']),
@@ -44,6 +51,13 @@ class RefereeRaceResponse {
       scheduledEndAt: _readDate(json['scheduledEndAt']),
       maxParticipants: _readInt(json['maxParticipants']),
       participantCount: _readInt(json['participantCount']),
+      resultFinalizedAt: _readDate(json['resultFinalizedAt']),
+      prizes: rawPrizes is List
+          ? rawPrizes
+              .whereType<Map<String, dynamic>>()
+              .map(RefereeRacePrizeResponse.fromJson)
+              .toList(growable: false)
+          : const [],
     );
   }
 }

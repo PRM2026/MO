@@ -1,4 +1,20 @@
-import 'package:flutter/material.dart';
+import '../models/referee_race_participant_response.dart';
+import '../models/referee_race_response.dart';
+import '../models/referee_race_result_response.dart';
+import '../utils/currency_format.dart';
+import '../utils/race_time_format.dart' as race_format;
+
+class RefereeRaceOption {
+  const RefereeRaceOption({
+    required this.id,
+    required this.label,
+    required this.status,
+  });
+
+  final int id;
+  final String label;
+  final String status;
+}
 
 class RaceFinisherRow {
   const RaceFinisherRow({
@@ -7,29 +23,19 @@ class RaceFinisherRow {
     required this.jockeyName,
     required this.finishTime,
     required this.gapLabel,
-    this.horseImageUrl,
     this.gapIsPositive = false,
     this.highlightRank = false,
+    this.statusLabel,
   });
 
-  final int rank;
+  final int? rank;
   final String horseName;
   final String jockeyName;
   final String finishTime;
   final String gapLabel;
-  final String? horseImageUrl;
   final bool gapIsPositive;
   final bool highlightRank;
-}
-
-class AppliedViolationSummary {
-  const AppliedViolationSummary({
-    required this.title,
-    required this.penaltyDescription,
-  });
-
-  final String title;
-  final String penaltyDescription;
+  final String? statusLabel;
 }
 
 class PrizeBreakdownRow {
@@ -44,112 +50,229 @@ class PrizeBreakdownRow {
   final bool highlight;
 }
 
-class ActivityLogEntry {
-  const ActivityLogEntry({
-    required this.timeLabel,
-    required this.message,
-    this.isActive = false,
-  });
-
-  final String timeLabel;
-  final String message;
-  final bool isActive;
-}
-
 class RaceResultConfirmationData {
   const RaceResultConfirmationData({
+    required this.races,
+    required this.selectedRaceId,
+    required this.raceName,
     required this.raceCode,
+    required this.raceStatus,
+    required this.raceStatusLabel,
+    required this.isFinalized,
+    required this.canConfirm,
     required this.finishers,
-    required this.appliedViolations,
     required this.totalPrizePool,
     required this.prizeBreakdown,
-    required this.activityLog,
     this.profileImageUrl,
+    this.infoMessage,
+    this.resultFinalizedAt,
   });
 
+  final List<RefereeRaceOption> races;
+  final int? selectedRaceId;
+  final String raceName;
   final String raceCode;
+  final String raceStatus;
+  final String raceStatusLabel;
+  final bool isFinalized;
+  final bool canConfirm;
   final List<RaceFinisherRow> finishers;
-  final List<AppliedViolationSummary> appliedViolations;
   final String totalPrizePool;
   final List<PrizeBreakdownRow> prizeBreakdown;
-  final List<ActivityLogEntry> activityLog;
   final String? profileImageUrl;
+  final String? infoMessage;
+  final DateTime? resultFinalizedAt;
 
-  static RaceResultConfirmationData sample() {
+  factory RaceResultConfirmationData.empty({String? profileImageUrl}) {
     return RaceResultConfirmationData(
-      raceCode: '#829',
-      profileImageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBsy6SGCQtMzTEGmY4mCNdZ-XxNbyQ9pN5UXqXB9-k9-uKywou8Jg5mqeNkgLB25WpxilX9If4jeTPeFR0UIYr2bgc7JTX0A472Zq5INlE63Auv0J5c-Fk9QVBiNm5VeuGIctw-P9nQy4qbpsBRuPgJaIVbCbHaKkv5RiDY5PF0xsUhmp8N-3wL-C1_dPd3LX5gasRSJRcHESjm2mBjsOOX9dWo0VSsu__jvRyo2EGicWO0RwK257S8wBQE2EcV9iQEAMDCT-1lQEQ',
-      totalPrizePool: '150.000.000',
-      finishers: const [
-        RaceFinisherRow(
-          rank: 1,
-          horseName: 'Thần Mã 07',
-          jockeyName: 'Nguyễn Văn A',
-          finishTime: '02:14.42',
-          gapLabel: '-',
-          highlightRank: true,
-          horseImageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCDDd0OfEcLyheoJ6DonGCfFkfOIrX681EMEUjNTr1FTj413md2sv3YE7k8ZyT3gJDhEqS8Bz6kSxyeXxKdMMSxBD-w1RX9UNyozkqSlu9s9N-b-DexK6r9DkcYgky9GGelkZWfM5Kl2xZf_9qaPoJOASdueqi0s6f-CVR3afBYkOzvRfvJkymjW8JN56j9Cuq_KLpGGNFu07bpFTlAEvFIZH9NwfZ5CgtivTOFCEHHB3Ovd6gRgjw44c9bIsqhAMMTVxWaJYNShiY',
-        ),
-        RaceFinisherRow(
-          rank: 2,
-          horseName: 'Bạch Long',
-          jockeyName: 'Lê Hoàng Nam',
-          finishTime: '02:15.10',
-          gapLabel: '+0.68s',
-          gapIsPositive: true,
-          horseImageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCwl1MC8kdfurLWXGP_snLumlFo1cZWvtYCAGqlYXFsyPE29ex7sCe0ksNV_MzN_dxLC4Wd4393KHwhXf3Mtp3_jKIVkhy27SLMKEnFTNgqIqEt5PjtyDmOc4dmqcdvQi5ZyZq3-LUx_IWTnIR-xCY0RqHWngPWRib7pUGT8QjOwjOTsuQv5n0nsCo8oiloRhTBy7qutFVqWk7-XcCqotI0Gqmv0BFUGHMu9KqFuPMyFS-FnvQ_lcfEjuQulLQ9II9wlO000HSSnuc',
-        ),
-        RaceFinisherRow(
-          rank: 3,
-          horseName: 'Hắc Kỵ',
-          jockeyName: 'Trần Minh',
-          finishTime: '02:15.85',
-          gapLabel: '+1.43s',
-          gapIsPositive: true,
-          horseImageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCFYOrhwf7c3zcD0WXINBRHJSV89pisTDCEVUXgtt2eq-IvunRLf3wtOvT07FE1vbuPaLKtJWM3cEZV_JJo2K2koF3SDIs0hIVq4b80y1d2uDuRfpKhL5qsLeGMoJsbKhcKbH9n-JO4Nt9HIYAXccxjqw4jz8LXZg782GlhynjjtgbaZfrqrASJZVohLmS3_An1H5cLTgsB9EakaujVS3yKqb_WsCTpC2kJSNfT-IULK_5XKYM3ei0Jhw1d1N1PRMXcJshOL_lVpBo',
-        ),
-      ],
-      appliedViolations: const [
-        AppliedViolationSummary(
-          title: 'Cản trở đường chạy (Ngựa #05)',
-          penaltyDescription: 'Áp dụng: Cộng 2 giây vào kết quả cuối',
-        ),
-      ],
-      prizeBreakdown: const [
-        PrizeBreakdownRow(
-          label: 'Hạng 1 (60%):',
-          amount: '90.000.000 VND',
-          highlight: true,
-        ),
-        PrizeBreakdownRow(
-          label: 'Hạng 2 (25%):',
-          amount: '37.500.000 VND',
-        ),
-        PrizeBreakdownRow(
-          label: 'Hạng 3 (10%):',
-          amount: '15.000.000 VND',
-        ),
-      ],
-      activityLog: const [
-        ActivityLogEntry(
-          timeLabel: '14:45:02',
-          message:
-              'Dữ liệu hoàn thành từ Photo-Finish được tải lên.',
-          isActive: true,
-        ),
-        ActivityLogEntry(
-          timeLabel: '14:42:15',
-          message: 'Điều hành viên áp dụng hình phạt cho Ngựa #05.',
-        ),
-        ActivityLogEntry(
-          timeLabel: '14:38:50',
-          message: 'Trọng tài biên xác nhận tín hiệu về đích an toàn.',
-        ),
-      ],
+      races: const [],
+      selectedRaceId: null,
+      raceName: '—',
+      raceCode: '—',
+      raceStatus: '',
+      raceStatusLabel: '—',
+      isFinalized: false,
+      canConfirm: false,
+      finishers: const [],
+      totalPrizePool: '0',
+      prizeBreakdown: const [],
+      profileImageUrl: profileImageUrl,
+      infoMessage: 'Chưa có cuộc đua nào để xem kết quả.',
     );
+  }
+
+  static RaceResultConfirmationData fromApi({
+    required List<RefereeRaceResponse> allRaces,
+    required RefereeRaceResponse selectedRace,
+    required List<RefereeRaceResultResponse> results,
+    required List<RefereeRaceParticipantResponse> participants,
+    String? profileImageUrl,
+  }) {
+    final relevant = allRaces
+        .where(
+          (race) =>
+              race.status == 'ONGOING' || race.status == 'RESULT_CONFIRMED',
+        )
+        .toList(growable: false);
+
+    final raceOptions = relevant
+        .map(
+          (race) => RefereeRaceOption(
+            id: race.id ?? 0,
+            label: '${race.name ?? 'Cuộc đua #${race.id}'} '
+                '(${race_format.raceStatusLabel(race.status)})',
+            status: race.status ?? '',
+          ),
+        )
+        .toList(growable: false);
+
+    final isFinalized = selectedRace.status == 'RESULT_CONFIRMED';
+    final finishers = results.isNotEmpty
+        ? _finishersFromResults(results)
+        : _finishersFromParticipants(participants);
+
+    final prizeData = _buildPrizeData(selectedRace, results);
+
+    return RaceResultConfirmationData(
+      profileImageUrl: profileImageUrl,
+      races: raceOptions,
+      selectedRaceId: selectedRace.id,
+      raceName: selectedRace.name ?? 'Cuộc đua #${selectedRace.id}',
+      raceCode: '#${selectedRace.id ?? '—'}',
+      raceStatus: selectedRace.status ?? '',
+      raceStatusLabel: race_format.raceStatusLabel(selectedRace.status),
+      isFinalized: isFinalized,
+      canConfirm: false,
+      finishers: finishers,
+      totalPrizePool: prizeData.$1,
+      prizeBreakdown: prizeData.$2,
+      resultFinalizedAt: selectedRace.resultFinalizedAt,
+      infoMessage: _infoMessage(
+        isFinalized: isFinalized,
+        hasResults: results.isNotEmpty,
+        hasParticipants: participants.isNotEmpty,
+      ),
+    );
+  }
+
+  static String? _infoMessage({
+    required bool isFinalized,
+    required bool hasResults,
+    required bool hasParticipants,
+  }) {
+    if (isFinalized && hasResults) return null;
+    if (isFinalized && !hasResults) {
+      return 'Cuộc đua đã chốt kết quả nhưng chưa có dữ liệu chi tiết.';
+    }
+    if (!hasParticipants) {
+      return 'Cuộc đua chưa có người tham gia.';
+    }
+    if (!hasResults) {
+      return 'Cuộc đua đang diễn ra — kết quả chưa được chốt.';
+    }
+    return null;
+  }
+
+  static List<RaceFinisherRow> _finishersFromResults(
+    List<RefereeRaceResultResponse> results,
+  ) {
+    final sorted = [...results]
+      ..sort((a, b) {
+        final rankA = a.rank ?? 999;
+        final rankB = b.rank ?? 999;
+        return rankA.compareTo(rankB);
+      });
+
+    final leaderMillis = sorted
+        .where((item) => item.status == 'FINISHED' && item.finishTimeMillis != null)
+        .map((item) => item.finishTimeMillis)
+        .fold<int?>(null, (prev, curr) => prev ?? curr);
+
+    return sorted
+        .map(
+          (item) => RaceFinisherRow(
+            rank: item.rank,
+            horseName: item.horseName ?? '—',
+            jockeyName: item.jockeyUsername ?? '—',
+            finishTime: item.status == 'FINISHED'
+                ? race_format.formatRaceFinishTime(item.finishTimeMillis)
+                : race_format.participantStatusLabel(item.status),
+            gapLabel: item.status == 'FINISHED'
+                ? race_format.formatRaceGap(item.finishTimeMillis, leaderMillis)
+                : '—',
+            gapIsPositive: item.finishTimeMillis != null &&
+                leaderMillis != null &&
+                item.finishTimeMillis! > leaderMillis,
+            highlightRank: item.rank == 1 && item.status == 'FINISHED',
+            statusLabel: race_format.participantStatusLabel(item.status),
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  static List<RaceFinisherRow> _finishersFromParticipants(
+    List<RefereeRaceParticipantResponse> participants,
+  ) {
+    return participants
+        .map(
+          (item) => RaceFinisherRow(
+            rank: null,
+            horseName: item.horseName ?? '—',
+            jockeyName: item.jockeyUsername ?? '—',
+            finishTime: '—',
+            gapLabel: '—',
+            statusLabel: race_format.participantStatusLabel(item.status),
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  static (String, List<PrizeBreakdownRow>) _buildPrizeData(
+    RefereeRaceResponse race,
+    List<RefereeRaceResultResponse> results,
+  ) {
+    final prizes = [...race.prizes]
+      ..sort((a, b) => (a.rank ?? 0).compareTo(b.rank ?? 0));
+
+    if (prizes.isNotEmpty) {
+      final total = prizes.fold<num>(
+        0,
+        (sum, prize) => sum + (prize.amount ?? 0),
+      );
+      return (
+        formatVnd(total).replaceAll(' đ', ''),
+        prizes
+            .map(
+              (prize) => PrizeBreakdownRow(
+                label: 'Hạng ${prize.rank}:',
+                amount: formatVnd(prize.amount),
+                highlight: prize.rank == 1,
+              ),
+            )
+            .toList(growable: false),
+      );
+    }
+
+    if (results.isNotEmpty) {
+      final total = results.fold<num>(
+        0,
+        (sum, item) => sum + (item.prizeAmount ?? 0),
+      );
+      return (
+        formatVnd(total).replaceAll(' đ', ''),
+        results
+            .where((item) => item.rank != null && item.prizeAmount != null)
+            .map(
+              (item) => PrizeBreakdownRow(
+                label: 'Hạng ${item.rank}:',
+                amount: formatVnd(item.prizeAmount),
+                highlight: item.rank == 1,
+              ),
+            )
+            .toList(growable: false),
+      );
+    }
+
+    return ('0', const []);
   }
 }
