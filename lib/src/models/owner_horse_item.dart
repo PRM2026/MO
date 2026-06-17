@@ -209,6 +209,131 @@ class OwnerHorseItem {
   }
 }
 
+class OwnerHorseDetail {
+  const OwnerHorseDetail({
+    required this.id,
+    required this.name,
+    required this.breed,
+    required this.imageUrl,
+    required this.documentUrl,
+    required this.statusCode,
+    required this.statusLabel,
+    required this.raceHistory,
+    this.ownerId,
+    this.ownerUsername,
+    this.age,
+    this.gender,
+    this.color,
+    this.heightCm,
+    this.weightKg,
+    this.reviewReason,
+    this.performance = const OwnerHorsePerformance(),
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  final String id;
+  final int? ownerId;
+  final String? ownerUsername;
+  final String name;
+  final String breed;
+  final int? age;
+  final String? gender;
+  final String? color;
+  final double? heightCm;
+  final double? weightKg;
+  final String imageUrl;
+  final String documentUrl;
+  final String statusCode;
+  final String statusLabel;
+  final String? reviewReason;
+  final OwnerHorsePerformance performance;
+  final List<OwnerHorseRaceHistoryItem> raceHistory;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  factory OwnerHorseDetail.fromJson(Map<String, dynamic> json) {
+    final status =
+        (json['status'] as String?)?.trim().toUpperCase() ?? 'PENDING';
+    final performanceJson = json['performance'];
+    final raceHistoryJson = json['raceHistory'];
+    final name = _readFirstString(json, const ['name', 'horseName']);
+    final breed = _readFirstString(json, const ['breed']);
+
+    return OwnerHorseDetail(
+      id: '${json['id'] ?? ''}',
+      ownerId: (json['ownerId'] as num?)?.toInt(),
+      ownerUsername: _readNullableString(json['ownerUsername']),
+      name: name.isNotEmpty ? name : 'Ngựa chưa đặt tên',
+      breed: breed.isNotEmpty ? breed : '—',
+      age: (json['age'] as num?)?.toInt(),
+      gender: _readNullableString(json['gender']),
+      color: _readNullableString(json['color']),
+      heightCm: (json['heightCm'] as num?)?.toDouble(),
+      weightKg: (json['weightKg'] as num?)?.toDouble(),
+      imageUrl: ImageUrlResolver.resolve(json['imageUrl'] as String?),
+      documentUrl: ImageUrlResolver.resolve(json['documentUrl'] as String?),
+      statusCode: status,
+      statusLabel: _statusLabel(status),
+      reviewReason: _readNullableString(json['reviewReason']),
+      performance: performanceJson is Map<String, dynamic>
+          ? OwnerHorsePerformance.fromJson(performanceJson)
+          : const OwnerHorsePerformance(),
+      raceHistory: raceHistoryJson is List
+          ? raceHistoryJson
+                .whereType<Map<String, dynamic>>()
+                .map(OwnerHorseRaceHistoryItem.fromJson)
+                .toList(growable: false)
+          : const [],
+      createdAt: _parseDate(json['createdAt']),
+      updatedAt: _parseDate(json['updatedAt']),
+    );
+  }
+}
+
+class OwnerHorseFormData {
+  const OwnerHorseFormData({
+    this.name,
+    this.breed,
+    this.age,
+    this.gender,
+    this.color,
+    this.heightCm,
+    this.weightKg,
+    this.imagePath,
+    this.documentPath,
+  });
+
+  final String? name;
+  final String? breed;
+  final int? age;
+  final String? gender;
+  final String? color;
+  final double? heightCm;
+  final double? weightKg;
+  final String? imagePath;
+  final String? documentPath;
+
+  Map<String, String> toFields({required bool includeEmptyName}) {
+    final fields = <String, String>{};
+    _putString(fields, 'name', name, includeEmpty: includeEmptyName);
+    _putString(fields, 'breed', breed);
+    _putNumber(fields, 'age', age);
+    _putString(fields, 'gender', gender);
+    _putString(fields, 'color', color);
+    _putNumber(fields, 'heightCm', heightCm);
+    _putNumber(fields, 'weightKg', weightKg);
+    return fields;
+  }
+
+  Map<String, String> toFilePaths() {
+    final files = <String, String>{};
+    _putString(files, 'image', imagePath);
+    _putString(files, 'document', documentPath);
+    return files;
+  }
+}
+
 String _formatDecimal(double value) {
   return value == value.roundToDouble()
       ? value.toInt().toString()
@@ -232,6 +357,25 @@ String? _readNullableString(Object? value) {
   if (value == null) return null;
   if (value is String) return value.trim();
   return value.toString();
+}
+
+void _putString(
+  Map<String, String> fields,
+  String key,
+  String? value, {
+  bool includeEmpty = false,
+}) {
+  final trimmed = value?.trim();
+  if (trimmed == null) return;
+  if (trimmed.isEmpty && !includeEmpty) return;
+  fields[key] = trimmed;
+}
+
+void _putNumber(Map<String, String> fields, String key, num? value) {
+  if (value == null) return;
+  fields[key] = value == value.roundToDouble()
+      ? value.toInt().toString()
+      : value.toString();
 }
 
 String _statusLabel(String status) {
