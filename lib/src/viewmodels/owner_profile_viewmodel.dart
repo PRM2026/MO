@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
-import '../constants/referee_colors.dart';
-import '../models/referee_profile_data.dart';
+import '../models/owner_profile_data.dart';
 import '../repositories/auth_repository.dart';
 
 class OwnerProfileViewModel extends ChangeNotifier {
@@ -14,7 +12,7 @@ class OwnerProfileViewModel extends ChangeNotifier {
   bool isLoading = false;
   bool isLoggingOut = false;
   String? errorMessage;
-  RefereeProfileData? data;
+  OwnerProfileData? data;
 
   Future<void> loadData() async {
     isLoading = true;
@@ -23,24 +21,7 @@ class OwnerProfileViewModel extends ChangeNotifier {
 
     try {
       final user = await _authRepository.refreshCurrentUser();
-      final fullName = user.fullName?.trim().isNotEmpty == true
-          ? user.fullName!.trim()
-          : (user.username ?? 'Chủ ngựa');
-
-      data = RefereeProfileData(
-        fullName: fullName,
-        refereeId: 'OWN-${user.id ?? 0}',
-        rankLabel: 'Chủ ngựa',
-        avatarUrl: user.avatarUrl,
-        stats: const [],
-        settings: const [
-          RefereeProfileSettingItem(
-            title: 'Bảo mật & Mật khẩu',
-            icon: Icons.security_outlined,
-            iconColor: RefereeColors.secondary,
-          ),
-        ],
-      );
+      data = OwnerProfileData.fromUserProfile(user);
     } catch (error) {
       data = null;
       errorMessage = 'Không thể tải hồ sơ chủ ngựa.';

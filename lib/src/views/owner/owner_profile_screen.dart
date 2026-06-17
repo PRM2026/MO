@@ -7,7 +7,7 @@ import '../../utils/app_toast.dart';
 import '../../viewmodels/owner_profile_viewmodel.dart';
 import '../../widgets/owner/owner_app_bar.dart';
 import '../../widgets/owner/owner_dashboard_widgets.dart';
-import '../../widgets/referee/referee_profile_widgets.dart';
+import '../../widgets/owner/owner_profile_widgets.dart';
 
 class OwnerProfileScreen extends StatefulWidget {
   const OwnerProfileScreen({super.key, this.viewModel});
@@ -44,6 +44,14 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
   }
 
   void _handleSettingTap(String title) {
+    if (title == 'Bảo mật & Mật khẩu') {
+      AppRoutes.openOwnerChangePassword(
+        context,
+        profileImageUrl: _viewModel.data?.avatarUrl,
+      );
+      return;
+    }
+
     AppToast.showSuccess(context, 'Đang mở $title');
   }
 
@@ -105,15 +113,15 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            RefereeProfileHeader(profile: data),
+                            OwnerProfileHeader(profile: data),
                             const SizedBox(height: AppSpacing.lg),
-                            RefereeProfileSettingsCard(
+                            OwnerProfileSettingsCard(
                               settings: data.settings,
                               onItemTap: (item) =>
                                   _handleSettingTap(item.title),
                             ),
                             const SizedBox(height: AppSpacing.lg),
-                            RefereeProfileLogoutButton(
+                            OwnerProfileLogoutButton(
                               isLoading: _viewModel.isLoggingOut,
                               onPressed: _handleLogout,
                             ),

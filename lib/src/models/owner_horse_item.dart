@@ -28,12 +28,62 @@ class OwnerHorsePerformance {
   }
 }
 
+class OwnerHorseRaceHistoryItem {
+  const OwnerHorseRaceHistoryItem({
+    required this.id,
+    required this.raceName,
+    required this.tournamentName,
+    this.racedAt,
+    this.status,
+    this.rank,
+    this.result,
+  });
+
+  final String id;
+  final String raceName;
+  final String tournamentName;
+  final DateTime? racedAt;
+  final String? status;
+  final int? rank;
+  final String? result;
+
+  factory OwnerHorseRaceHistoryItem.fromJson(Map<String, dynamic> json) {
+    final raceName = _readFirstString(json, const [
+      'raceName',
+      'name',
+      'title',
+    ]);
+    final tournamentName = _readFirstString(json, const [
+      'tournamentName',
+      'tournament',
+    ]);
+
+    return OwnerHorseRaceHistoryItem(
+      id: '${json['id'] ?? json['raceId'] ?? ''}',
+      raceName: raceName.isEmpty ? 'Cuộc đua' : raceName,
+      tournamentName: tournamentName,
+      racedAt: _parseDate(
+        json['racedAt'] ??
+            json['raceDate'] ??
+            json['scheduledStartAt'] ??
+            json['completedAt'],
+      ),
+      status: _readNullableString(json['status']),
+      rank:
+          (json['rank'] as num?)?.toInt() ??
+          (json['position'] as num?)?.toInt(),
+      result: _readNullableString(json['result']),
+    );
+  }
+}
+
 class OwnerHorseItem {
   const OwnerHorseItem({
     required this.id,
     required this.name,
     required this.breed,
     required this.imageUrl,
+    required this.documentUrl,
     required this.statusCode,
     required this.statusLabel,
     this.age,
@@ -43,6 +93,7 @@ class OwnerHorseItem {
     this.weightKg,
     this.reviewReason,
     this.performance = const OwnerHorsePerformance(),
+    this.raceHistory = const [],
     this.rankLabel,
   });
 
@@ -50,6 +101,7 @@ class OwnerHorseItem {
   final String name;
   final String breed;
   final String imageUrl;
+  final String documentUrl;
   final String statusCode;
   final String statusLabel;
   final int? age;
@@ -59,6 +111,7 @@ class OwnerHorseItem {
   final double? weightKg;
   final String? reviewReason;
   final OwnerHorsePerformance performance;
+  final List<OwnerHorseRaceHistoryItem> raceHistory;
   final String? rankLabel;
 
   String get ageLabel => age == null ? 'Chưa cập nhật' : '$age tuổi';
@@ -94,6 +147,7 @@ class OwnerHorseItem {
     if (performanceJson is Map<String, dynamic>) {
       performance = OwnerHorsePerformance.fromJson(performanceJson);
     }
+    final raceHistoryJson = json['raceHistory'];
 
     return OwnerHorseItem(
       id: '${json['id'] ?? ''}',
@@ -104,6 +158,7 @@ class OwnerHorseItem {
           ? json['breed']!.trim()
           : '—',
       imageUrl: ImageUrlResolver.resolve(json['imageUrl'] as String?),
+      documentUrl: ImageUrlResolver.resolve(json['documentUrl'] as String?),
       statusCode: status,
       statusLabel: _statusLabel(status),
       age: (json['age'] as num?)?.toInt(),
@@ -113,6 +168,12 @@ class OwnerHorseItem {
       weightKg: (json['weightKg'] as num?)?.toDouble(),
       reviewReason: json['reviewReason'] as String?,
       performance: performance,
+      raceHistory: raceHistoryJson is List
+          ? raceHistoryJson
+                .whereType<Map<String, dynamic>>()
+                .map(OwnerHorseRaceHistoryItem.fromJson)
+                .toList(growable: false)
+          : const [],
     );
   }
 
@@ -122,6 +183,7 @@ class OwnerHorseItem {
       name: name,
       breed: breed,
       imageUrl: imageUrl,
+      documentUrl: documentUrl,
       statusCode: statusCode,
       statusLabel: statusLabel,
       age: age,
@@ -131,6 +193,7 @@ class OwnerHorseItem {
       weightKg: weightKg,
       reviewReason: reviewReason,
       performance: performance,
+      raceHistory: raceHistory,
       rankLabel: rankLabel ?? this.rankLabel,
     );
   }
@@ -150,6 +213,25 @@ String _formatDecimal(double value) {
   return value == value.roundToDouble()
       ? value.toInt().toString()
       : value.toStringAsFixed(1);
+}
+
+DateTime? _parseDate(Object? value) {
+  if (value is! String || value.trim().isEmpty) return null;
+  return DateTime.tryParse(value)?.toLocal();
+}
+
+String _readFirstString(Map<String, dynamic> json, List<String> keys) {
+  for (final key in keys) {
+    final value = _readNullableString(json[key]);
+    if (value != null && value.isNotEmpty) return value;
+  }
+  return '';
+}
+
+String? _readNullableString(Object? value) {
+  if (value == null) return null;
+  if (value is String) return value.trim();
+  return value.toString();
 }
 
 String _statusLabel(String status) {

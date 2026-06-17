@@ -9,6 +9,7 @@ import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_shell.dart';
+import '../views/owner/owner_change_password_screen.dart';
 import '../views/owner/owner_shell.dart';
 import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
@@ -59,6 +60,13 @@ abstract final class AppRoutes {
   static Route<void> ownerPortal() {
     return MaterialPageRoute<void>(
       builder: (_) => const OwnerShell(),
+    );
+  }
+
+  static Route<void> ownerChangePassword({String? profileImageUrl}) {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          OwnerChangePasswordScreen(profileImageUrl: profileImageUrl),
     );
   }
 
@@ -198,6 +206,15 @@ abstract final class AppRoutes {
   }) {
     Navigator.of(context).push(
       jockeyChangePassword(profileImageUrl: profileImageUrl),
+    );
+  }
+
+  static void openOwnerChangePassword(
+    BuildContext context, {
+    String? profileImageUrl,
+  }) {
+    Navigator.of(context).push(
+      ownerChangePassword(profileImageUrl: profileImageUrl),
     );
   }
 
