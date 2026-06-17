@@ -45,12 +45,24 @@ void main() {
                 "heightCm": 165.5,
                 "weightKg": 480,
                 "imageUrl": "/uploads/horses/7.jpg",
+                "documentUrl": "/uploads/horses/7.pdf",
                 "status": "APPROVED",
                 "performance": {
                   "totalRaces": 5,
                   "wins": 2,
                   "winRate": 40
-                }
+                },
+                "raceHistory": [
+                  {
+                    "id": 15,
+                    "raceName": "Spring Sprint",
+                    "tournamentName": "Spring Cup",
+                    "scheduledStartAt": "2026-07-15T09:00:00",
+                    "rank": 2,
+                    "status": "COMPLETED",
+                    "result": "Finished"
+                  }
+                ]
               }
             ]
           }
@@ -71,13 +83,44 @@ void main() {
       expect(horses.single.id, '7');
       expect(horses.single.name, 'Bão Đêm');
       expect(horses.single.statusCode, 'APPROVED');
+      expect(horses.single.documentUrl, endsWith('/uploads/horses/7.pdf'));
       expect(horses.single.heightCm, 165.5);
       expect(horses.single.weightKg, 480);
       expect(horses.single.performance.totalRaces, 5);
       expect(horses.single.performance.wins, 2);
       expect(horses.single.performance.winRate, 40);
+      expect(horses.single.raceHistory, hasLength(1));
+      expect(horses.single.raceHistory.single.raceName, 'Spring Sprint');
+      expect(horses.single.raceHistory.single.tournamentName, 'Spring Cup');
+      expect(horses.single.raceHistory.single.rank, 2);
     },
   );
+
+  test('keeps an empty owner horses API result empty', () async {
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final storage = AuthStorage(preferences: preferences);
+    await storage.saveSession(
+      const AuthSession(
+        token: 'owner-token',
+        tokenType: 'Bearer',
+        role: 'OWNER',
+      ),
+    );
+
+    final service = OwnerHorseService(
+      client: MockClient(
+        (_) async => http.Response(
+          '{"success":true,"message":"Success","data":[]}',
+          200,
+        ),
+      ),
+      baseUrl: 'http://example.test',
+      storage: storage,
+    );
+
+    expect(await service.getOwnerHorses(), isEmpty);
+  });
 
   test('requires a saved login token', () async {
     SharedPreferences.setMockInitialValues({});
