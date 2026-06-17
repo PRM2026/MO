@@ -140,7 +140,7 @@ class RefereeViolationListPanel extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'TRỰC TIẾP',
+                    'THỬ NGHIỆM',
                     style: AppTypography.labelCaps(RefereeColors.statusRed)
                         .copyWith(fontSize: 10),
                   ),
@@ -149,11 +149,28 @@ class RefereeViolationListPanel extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
-          for (var i = 0; i < records.length; i++) ...[
-            RefereeViolationListTile(record: records[i]),
-            if (i < records.length - 1)
-              Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
-          ],
+          if (records.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+              child: Center(
+                child: Text(
+                  'Chưa có vi phạm nào được ghi nhận',
+                  style: AppTypography.labelCaps(
+                    RefereeColors.onSurfaceVariant,
+                  ).copyWith(fontWeight: FontWeight.w400),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          else
+            for (var i = 0; i < records.length; i++) ...[
+              RefereeViolationListTile(record: records[i]),
+              if (i < records.length - 1)
+                Divider(
+                  height: 1,
+                  color: Colors.white.withValues(alpha: 0.05),
+                ),
+            ],
           Container(
             color: Colors.white.withValues(alpha: 0.05),
             padding: const EdgeInsets.all(16),
@@ -202,44 +219,56 @@ class RefereeViolationListTile extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: typeColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      record.severityHigh
+                          ? Icons.warning_rounded
+                          : Icons.report_outlined,
+                      color: typeColor,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Row(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            record.laneLabel,
-                            style: AppTypography.labelCaps(
-                              RefereeColors.tertiary,
-                            ).copyWith(fontWeight: FontWeight.w700),
-                          ),
+                        Text(
+                          record.horseLabel,
+                          style: AppTypography.labelCaps(
+                            RefereeColors.onSurface,
+                          ).copyWith(fontSize: 14, letterSpacing: 0.2),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                record.horseLabel,
-                                style: AppTypography.labelCaps(
-                                  RefereeColors.onSurface,
-                                ).copyWith(fontSize: 14, letterSpacing: 0.2),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: typeColor,
+                                shape: BoxShape.circle,
                               ),
-                              Text(
-                                'Nài ngựa: ${record.jockeyLabel}',
-                                style: AppTypography.labelCaps(
-                                  RefereeColors.onSurfaceVariant,
-                                ).copyWith(fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                record.violationType,
+                                style: AppTypography.bodyMd(typeColor).copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -247,32 +276,11 @@ class RefereeViolationListTile extends StatelessWidget {
                   Icon(
                     Icons.visibility_outlined,
                     color: RefereeColors.onSurfaceVariant,
-                    size: 22,
+                    size: 20,
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: typeColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      record.violationType,
-                      style: AppTypography.bodyMd(typeColor)
-                          .copyWith(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
                 '"${record.note}"',
                 style: AppTypography.labelCaps(
@@ -294,8 +302,10 @@ class RefereeViolationListTile extends StatelessWidget {
                     ).copyWith(fontFeatures: const []),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: statusBg,
                       borderRadius: BorderRadius.circular(4),

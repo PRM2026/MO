@@ -13,11 +13,9 @@ class RefereeViolationsViewModel extends ChangeNotifier {
   bool isSubmitting = false;
   ViolationsPageData? data;
 
-  String selectedLane = 'Làn 01';
-  String selectedHorse = 'H042 - Crimson Blaze';
-  String selectedJockey = 'J-Văn Nam';
-  String selectedViolationType = 'Lấn làn (Track Interference)';
-  String penalty = '';
+  String selectedHorse = '';
+  String selectedViolationType = '';
+  String evidenceUrl = '';
   String notes = '';
 
   Future<void> loadPage() async {
@@ -40,27 +38,15 @@ class RefereeViolationsViewModel extends ChangeNotifier {
   void _applyDefaults() {
     final options = data?.options;
     if (options == null) return;
-    selectedLane = options.lanes.first;
-    selectedHorse = options.horses.first;
-    selectedJockey = options.jockeys.first;
-    selectedViolationType = options.violationTypes.first;
-  }
-
-  void updateLane(String? value) {
-    if (value == null) return;
-    selectedLane = value;
-    notifyListeners();
+    if (options.horses.isNotEmpty) selectedHorse = options.horses.first;
+    if (options.violationTypes.isNotEmpty) {
+      selectedViolationType = options.violationTypes.first;
+    }
   }
 
   void updateHorse(String? value) {
     if (value == null) return;
     selectedHorse = value;
-    notifyListeners();
-  }
-
-  void updateJockey(String? value) {
-    if (value == null) return;
-    selectedJockey = value;
     notifyListeners();
   }
 
@@ -70,8 +56,8 @@ class RefereeViolationsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updatePenalty(String value) {
-    penalty = value;
+  void updateEvidenceUrl(String value) {
+    evidenceUrl = value;
     notifyListeners();
   }
 
@@ -80,15 +66,17 @@ class RefereeViolationsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // NOTE: Backend endpoint for referee violations does not yet exist.
+  // This is a local mock until the BE implements /referee/races/{id}/violations.
   Future<bool> submitViolation() async {
     isSubmitting = true;
     notifyListeners();
 
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 400));
 
     isSubmitting = false;
     notes = '';
-    penalty = '';
+    evidenceUrl = '';
     notifyListeners();
     return true;
   }
