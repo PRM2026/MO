@@ -5,7 +5,7 @@ import '../repositories/referee_repository.dart';
 
 class RefereeDashboardViewModel extends ChangeNotifier {
   RefereeDashboardViewModel({RefereeRepository? repository})
-      : _repository = repository ?? const RefereeRepository();
+      : _repository = repository ?? RefereeRepository();
 
   final RefereeRepository _repository;
 

@@ -11,3 +11,17 @@ String formatVnd(num? value) {
   }
   return '${negative ? '-' : ''}${buffer.toString()} đ';
 }
+
+String formatVndCompact(num? value) {
+  final amount = (value ?? 0).toDouble().abs();
+  if (amount >= 1000000000) {
+    return '${(amount / 1000000000).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}B';
+  }
+  if (amount >= 1000000) {
+    return '${(amount / 1000000).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}M';
+  }
+  if (amount >= 1000) {
+    return '${(amount / 1000).toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')}K';
+  }
+  return amount.round().toString();
+}

@@ -50,17 +50,6 @@ class _RefereeDashboardScreenState extends State<RefereeDashboardScreen> {
     return Scaffold(
       backgroundColor: RefereeColors.background,
       appBar: RefereeAppBar(profileImageUrl: data?.profileImageUrl),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 72),
-        child: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: RefereeColors.tertiary,
-          foregroundColor: RefereeColors.onTertiary,
-          elevation: 6,
-          child: const Icon(Icons.add, size: 28),
-        ),
-      ),
       body: _viewModel.isLoading && data == null
           ? const Center(
               child: CircularProgressIndicator(color: RefereeColors.tertiary),
@@ -80,17 +69,33 @@ class _RefereeDashboardScreenState extends State<RefereeDashboardScreen> {
                     ),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        _WelcomeSection(name: data!.refereeName),
-                        const SizedBox(height: AppSpacing.section),
-                        _StatsGrid(stats: data.stats),
-                        const SizedBox(height: AppSpacing.section),
-                        RefereeAlertBanner(
-                          title: data.alertTitle,
-                          message: data.alertMessage,
-                          onAction: () {},
+                        _WelcomeSection(
+                          name: data!.refereeName,
+                          message: data.welcomeMessage,
                         ),
                         const SizedBox(height: AppSpacing.section),
-                        _RecentRacesSection(races: data.races),
+                        _StatsGrid(stats: data.stats),
+                        if (data.showAlert) ...[
+                          const SizedBox(height: AppSpacing.section),
+                          RefereeAlertBanner(
+                            title: data.alertTitle,
+                            message: data.alertMessage,
+                            onAction: () {},
+                          ),
+                        ],
+                        if (data.races.isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.section),
+                          _RecentRacesSection(races: data.races),
+                        ] else
+                          Padding(
+                            padding: const EdgeInsets.only(top: AppSpacing.section),
+                            child: Text(
+                              'Chưa có cuộc đua sắp tới được giao.',
+                              style: AppTypography.bodyMd(
+                                RefereeColors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
                       ]),
                     ),
                   ),
@@ -102,9 +107,10 @@ class _RefereeDashboardScreenState extends State<RefereeDashboardScreen> {
 }
 
 class _WelcomeSection extends StatelessWidget {
-  const _WelcomeSection({required this.name});
+  const _WelcomeSection({required this.name, required this.message});
 
   final String name;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +138,7 @@ class _WelcomeSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Hệ thống đã sẵn sàng cho các lượt đua hôm nay. Vui lòng kiểm tra các cảnh báo điều hành.',
+          message,
           style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant)
               .copyWith(fontSize: 18, height: 28 / 18),
         ),
