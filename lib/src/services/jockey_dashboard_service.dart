@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../models/jockey_dashboard_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -15,8 +16,11 @@ class JockeyDashboardService {
 
   final ApiClient _apiClient;
 
-  Future<Map<String, dynamic>> getDashboard() {
-    return _apiClient.getObject('/jockey/dashboard', (json) => json);
+  Future<JockeyDashboardResponse> getDashboard() {
+    return _apiClient.getObject(
+      '/jockey/dashboard',
+      JockeyDashboardResponse.fromJson,
+    );
   }
 
   Future<Map<String, dynamic>> getPerformance() {

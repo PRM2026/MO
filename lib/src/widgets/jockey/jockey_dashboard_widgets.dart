@@ -15,11 +15,7 @@ class JockeySpeedlineBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _SpeedlinePainter(),
-          ),
-        ),
+        Positioned.fill(child: CustomPaint(painter: _SpeedlinePainter())),
         child,
       ],
     );
@@ -59,13 +55,15 @@ class JockeyWelcomeHeader extends StatelessWidget {
       children: [
         Text(
           greeting,
-          style: AppTypography.labelCaps(RefereeColors.championshipGold)
-              .copyWith(letterSpacing: 0.8),
+          style: AppTypography.labelCaps(
+            RefereeColors.championshipGold,
+          ).copyWith(letterSpacing: 0.8),
         ),
         Text(
           jockeyName,
-          style: AppTypography.displayLg(RefereeColors.onSurface)
-              .copyWith(fontSize: 28),
+          style: AppTypography.displayLg(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 28),
         ),
       ],
     );
@@ -158,15 +156,14 @@ class _StatContent extends StatelessWidget {
             children: [
               Text(
                 stat.value,
-                style: AppTypography.displayLg(valueColor)
-                    .copyWith(fontSize: 28),
+                style: AppTypography.displayLg(
+                  valueColor,
+                ).copyWith(fontSize: 28),
               ),
               const SizedBox(width: 4),
               Text(
                 stat.trend!,
-                style: AppTypography.bodySm(
-                  RefereeColors.successEmerald,
-                ),
+                style: AppTypography.bodySm(RefereeColors.successEmerald),
               ),
             ],
           )
@@ -176,22 +173,20 @@ class _StatContent extends StatelessWidget {
             children: [
               Text(
                 stat.value,
-                style: AppTypography.displayLg(valueColor)
-                    .copyWith(fontSize: 28),
+                style: AppTypography.displayLg(
+                  valueColor,
+                ).copyWith(fontSize: 28),
               ),
               Text(
                 stat.subLabel!,
-                style: AppTypography.labelCaps(
-                  RefereeColors.onSurfaceVariant,
-                ),
+                style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant),
               ),
             ],
           )
         else
           Text(
             stat.value,
-            style: AppTypography.displayLg(valueColor)
-                .copyWith(fontSize: 28),
+            style: AppTypography.displayLg(valueColor).copyWith(fontSize: 28),
           ),
       ],
     );
@@ -210,8 +205,9 @@ class JockeyRecentResultsSection extends StatelessWidget {
       children: [
         Text(
           'Kết quả gần đây',
-          style: AppTypography.headlineSm(RefereeColors.onSurface)
-              .copyWith(fontSize: 22),
+          style: AppTypography.headlineSm(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 22),
         ),
         const SizedBox(height: 16),
         for (final result in results) ...[
@@ -221,6 +217,212 @@ class JockeyRecentResultsSection extends StatelessWidget {
       ],
     );
   }
+}
+
+class JockeyUpcomingRacesSection extends StatelessWidget {
+  const JockeyUpcomingRacesSection({super.key, required this.races});
+
+  final List<JockeyDashboardUpcomingRace> races;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Cuoc dua sap toi',
+          style: AppTypography.headlineSm(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 22),
+        ),
+        const SizedBox(height: 16),
+        if (races.isEmpty)
+          const _EmptyDashboardMessage(message: 'Chua co cuoc dua sap toi.')
+        else
+          for (final race in races) ...[
+            RefereeGlassCard(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.flag_outlined,
+                    color: RefereeColors.championshipGold,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          race.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.labelCaps(
+                            RefereeColors.onSurface,
+                          ).copyWith(fontSize: 14, letterSpacing: 0.2),
+                        ),
+                        Text(
+                          race.timeLabel,
+                          style: AppTypography.bodySm(
+                            RefereeColors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (race.status.isNotEmpty) _StatusPill(label: race.status),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+      ],
+    );
+  }
+}
+
+class JockeyDashboardAlertsSection extends StatelessWidget {
+  const JockeyDashboardAlertsSection({super.key, required this.alerts});
+
+  final List<JockeyDashboardAlert> alerts;
+
+  @override
+  Widget build(BuildContext context) {
+    if (alerts.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Can chu y',
+          style: AppTypography.headlineSm(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 22),
+        ),
+        const SizedBox(height: 16),
+        for (final alert in alerts) ...[
+          RefereeGlassCard(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.notifications_active_outlined,
+                  color: RefereeColors.championshipGold,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    alert.title,
+                    style: AppTypography.bodyMd(RefereeColors.onSurface),
+                  ),
+                ),
+                if (alert.status.isNotEmpty) _StatusPill(label: alert.status),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+      ],
+    );
+  }
+}
+
+class JockeyQuickLinksSection extends StatelessWidget {
+  const JockeyQuickLinksSection({
+    super.key,
+    required this.links,
+    required this.onLinkTap,
+  });
+
+  final List<JockeyDashboardQuickLink> links;
+  final ValueChanged<JockeyDashboardQuickLink> onLinkTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Truy cap nhanh',
+          style: AppTypography.headlineSm(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 22),
+        ),
+        const SizedBox(height: 16),
+        if (links.isEmpty)
+          const _EmptyDashboardMessage(message: 'Chua co lien ket nhanh.')
+        else
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              for (final link in links)
+                OutlinedButton.icon(
+                  onPressed: () => onLinkTap(link),
+                  icon: Icon(_quickLinkIcon(link.label), size: 18),
+                  label: Text(link.label),
+                ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _EmptyDashboardMessage extends StatelessWidget {
+  const _EmptyDashboardMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefereeGlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+      ),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: RefereeColors.championshipGold.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: RefereeColors.championshipGold.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.labelCaps(
+          RefereeColors.championshipGold,
+        ).copyWith(fontSize: 10),
+      ),
+    );
+  }
+}
+
+IconData _quickLinkIcon(String label) {
+  return switch (label.trim().toLowerCase()) {
+    'profile' => Icons.person_outline,
+    'invitations' => Icons.mail_outline,
+    'my races' => Icons.calendar_today_outlined,
+    'performance' => Icons.military_tech_outlined,
+    'wallet' => Icons.account_balance_wallet_outlined,
+    'notifications' => Icons.notifications_none,
+    _ => Icons.open_in_new,
+  };
 }
 
 class _ResultTile extends StatelessWidget {
@@ -260,8 +462,9 @@ class _ResultTile extends StatelessWidget {
               children: [
                 Text(
                   result.eventName,
-                  style: AppTypography.labelCaps(RefereeColors.onSurface)
-                      .copyWith(fontSize: 14, letterSpacing: 0.2),
+                  style: AppTypography.labelCaps(
+                    RefereeColors.onSurface,
+                  ).copyWith(fontSize: 14, letterSpacing: 0.2),
                 ),
                 Text(
                   result.detail,
@@ -315,11 +518,13 @@ class JockeyMotivationCard extends StatelessWidget {
                 alignment: Alignment.bottomLeft,
                 child: Text(
                   quote,
-                  style: AppTypography.bodyMd(Colors.white.withValues(alpha: 0.8))
-                      .copyWith(
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style:
+                      AppTypography.bodyMd(
+                        Colors.white.withValues(alpha: 0.8),
+                      ).copyWith(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
             ),

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../constants/referee_colors.dart';
+import '../utils/date_format.dart';
+import 'jockey_dashboard_response.dart';
 
-enum JockeyHorseStatus {
-  ready,
-  training,
-  resting,
-}
+enum JockeyHorseStatus { ready, training, resting }
 
 class JockeyDashboardStat {
   const JockeyDashboardStat({
@@ -58,6 +56,32 @@ class JockeyRecentResult {
   final bool isWinner;
 }
 
+class JockeyDashboardUpcomingRace {
+  const JockeyDashboardUpcomingRace({
+    required this.title,
+    required this.status,
+    required this.timeLabel,
+  });
+
+  final String title;
+  final String status;
+  final String timeLabel;
+}
+
+class JockeyDashboardAlert {
+  const JockeyDashboardAlert({required this.title, required this.status});
+
+  final String title;
+  final String status;
+}
+
+class JockeyDashboardQuickLink {
+  const JockeyDashboardQuickLink({required this.label, required this.route});
+
+  final String label;
+  final String route;
+}
+
 class JockeyDashboardData {
   const JockeyDashboardData({
     required this.greeting,
@@ -67,6 +91,10 @@ class JockeyDashboardData {
     required this.recentResults,
     required this.motivationQuote,
     required this.motivationImageUrl,
+    this.alerts = const [],
+    this.upcomingRaces = const [],
+    this.quickLinks = const [],
+    this.pendingInvitationCount = 0,
     this.profileImageUrl,
   });
 
@@ -77,7 +105,95 @@ class JockeyDashboardData {
   final List<JockeyRecentResult> recentResults;
   final String motivationQuote;
   final String motivationImageUrl;
+  final List<JockeyDashboardAlert> alerts;
+  final List<JockeyDashboardUpcomingRace> upcomingRaces;
+  final List<JockeyDashboardQuickLink> quickLinks;
+  final int pendingInvitationCount;
   final String? profileImageUrl;
+
+  factory JockeyDashboardData.fromApi({
+    required JockeyDashboardResponse dashboard,
+    required int pendingInvitationCount,
+    String? profileImageUrl,
+  }) {
+    final account = dashboard.account;
+    final summary = dashboard.businessSummary;
+    final displayName = _firstNonEmpty([
+      _readString(account['fullName']),
+      _readString(account['username']),
+      'Jockey',
+    ]);
+
+    return JockeyDashboardData(
+      greeting: _greetingForNow(),
+      jockeyName: displayName == 'Jockey' ? displayName : 'Jockey $displayName',
+      stats: [
+        JockeyDashboardStat(
+          label: 'Tong cuoc dua',
+          value: _readInt(summary['raceCount']).toString(),
+          accentBorder: true,
+          highlight: true,
+        ),
+        JockeyDashboardStat(
+          label: 'Da hoan thanh',
+          value: _readInt(summary['completedRaceCount']).toString(),
+        ),
+        JockeyDashboardStat(
+          label: 'Hang nhat',
+          value: _readInt(summary['firstPlaces']).toString(),
+          highlight: true,
+        ),
+        JockeyDashboardStat(
+          label: 'Loi moi cho',
+          value: pendingInvitationCount.toString(),
+          subLabel: 'Pending',
+        ),
+      ],
+      horses: const [],
+      recentResults: dashboard.upcoming
+          .take(3)
+          .map(
+            (item) => JockeyRecentResult(
+              rank: 0,
+              eventName: _dashboardItemTitle(item, 'Cuoc dua sap toi'),
+              detail: _itemDetail(item),
+              isWinner: false,
+            ),
+          )
+          .toList(growable: false),
+      motivationQuote: '"Tap trung vao tung chang dua, ket qua se theo sau."',
+      motivationImageUrl:
+          'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=900&q=80',
+      alerts: dashboard.alerts
+          .map(
+            (item) => JockeyDashboardAlert(
+              title: _dashboardItemTitle(item, 'Can chu y'),
+              status: _readString(item.status) ?? '',
+            ),
+          )
+          .toList(growable: false),
+      upcomingRaces: dashboard.upcoming
+          .map(
+            (item) => JockeyDashboardUpcomingRace(
+              title: _dashboardItemTitle(item, 'Cuoc dua sap toi'),
+              status: _readString(item.status) ?? '',
+              timeLabel: formatDisplayDateTime(item.at?.toIso8601String()),
+            ),
+          )
+          .toList(growable: false),
+      quickLinks: dashboard.quickLinks
+          .where((link) => link.enabled && link.label.trim().isNotEmpty)
+          .map(
+            (link) => JockeyDashboardQuickLink(
+              label: link.label.trim(),
+              route: link.route,
+            ),
+          )
+          .toList(growable: false),
+      pendingInvitationCount: pendingInvitationCount,
+      profileImageUrl: profileImageUrl,
+    );
+  }
 
   static JockeyDashboardData sample({String? fullName}) {
     final name = fullName?.trim().isNotEmpty == true
@@ -97,14 +213,8 @@ class JockeyDashboardData {
           highlight: true,
           accentBorder: true,
         ),
-        JockeyDashboardStat(
-          label: 'Tỉ lệ thắng',
-          value: '92%',
-        ),
-        JockeyDashboardStat(
-          label: 'Giải sắp tới',
-          value: '3',
-        ),
+        JockeyDashboardStat(label: 'Tỉ lệ thắng', value: '92%'),
+        JockeyDashboardStat(label: 'Giải sắp tới', value: '3'),
         JockeyDashboardStat(
           label: 'Thu nhập',
           value: '150M',
@@ -179,4 +289,46 @@ class JockeyDashboardData {
       JockeyHorseStatus.resting => RefereeColors.onSurface,
     };
   }
+}
+
+String _greetingForNow() {
+  final hour = DateTime.now().hour;
+  if (hour < 12) return 'CHAO BUOI SANG';
+  if (hour < 18) return 'CHAO BUOI CHIEU';
+  return 'CHAO BUOI TOI';
+}
+
+String _dashboardItemTitle(JockeyDashboardItemResponse item, String fallback) {
+  final title = item.title?.trim();
+  if (title != null && title.isNotEmpty) return title;
+  return fallback;
+}
+
+String _itemDetail(JockeyDashboardItemResponse item) {
+  final parts = [
+    if (item.status?.trim().isNotEmpty == true) item.status!.trim(),
+    formatDisplayDateTime(item.at?.toIso8601String()),
+  ].where((part) => part.isNotEmpty && part != 'â€”').toList();
+  return parts.isEmpty ? 'Chua co thoi gian' : parts.join(' - ');
+}
+
+String _firstNonEmpty(List<String?> values) {
+  for (final value in values) {
+    final trimmed = value?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+  }
+  return 'Jockey';
+}
+
+String? _readString(Object? value) {
+  if (value == null) return null;
+  if (value is String) return value;
+  return value.toString();
+}
+
+int _readInt(Object? value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
 }
