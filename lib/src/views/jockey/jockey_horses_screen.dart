@@ -7,6 +7,7 @@ import '../../viewmodels/jockey_horses_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
 import '../../widgets/jockey/jockey_horse_widgets.dart';
+import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyHorsesScreen extends StatefulWidget {
   const JockeyHorsesScreen({super.key, this.viewModel});
@@ -76,55 +77,69 @@ class _JockeyHorsesScreenState extends State<JockeyHorsesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  'Ngựa Của Tôi',
+                                  'Ngua duoc phan cong',
                                   style: AppTypography.displayLg(
                                     RefereeColors.onSurface,
                                   ).copyWith(fontSize: 28),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Danh sách chiến mã được phân công hiện tại.',
+                                  'Danh sach chien ma duoc phan cong hien tai.',
                                   style: AppTypography.bodyMd(
                                     RefereeColors.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: AppSpacing.lg),
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final width = constraints.maxWidth;
-                                    final crossAxisCount = width >= 960
-                                        ? 3
-                                        : width >= 640
-                                            ? 2
-                                            : 1;
+                                if (data == null)
+                                  JockeyStateMessage(
+                                    message:
+                                        _viewModel.errorMessage ??
+                                        'Chua co du lieu ngua duoc phan cong.',
+                                    onRetry: _viewModel.loadHorses,
+                                  )
+                                else if (data.horses.isEmpty)
+                                  const JockeyStateMessage(
+                                    message: 'Chua co ngua nao duoc phan cong.',
+                                  )
+                                else
+                                  LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final width = constraints.maxWidth;
+                                      final crossAxisCount = width >= 960
+                                          ? 3
+                                          : width >= 640
+                                          ? 2
+                                          : 1;
 
-                                    return GridView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: crossAxisCount,
-                                        crossAxisSpacing: 24,
-                                        mainAxisSpacing: 24,
-                                        childAspectRatio: crossAxisCount == 1
-                                            ? 0.82
-                                            : 0.72,
-                                      ),
-                                      itemCount: data!.horses.length,
-                                      itemBuilder: (context, index) {
-                                        final horse = data.horses[index];
-                                        return JockeyHorseGridCard(
-                                          horse: horse,
-                                          onTap: () => showJockeyHorseDetailSheet(
-                                            context,
-                                            horse,
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
+                                      return GridView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: crossAxisCount,
+                                              crossAxisSpacing: 24,
+                                              mainAxisSpacing: 24,
+                                              childAspectRatio:
+                                                  crossAxisCount == 1
+                                                  ? 0.82
+                                                  : 0.72,
+                                            ),
+                                        itemCount: data.horses.length,
+                                        itemBuilder: (context, index) {
+                                          final horse = data.horses[index];
+                                          return JockeyHorseGridCard(
+                                            horse: horse,
+                                            onTap: () =>
+                                                showJockeyHorseDetailSheet(
+                                                  context,
+                                                  horse,
+                                                ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                               ],
                             ),
                           ),

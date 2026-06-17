@@ -5,11 +5,12 @@ import '../repositories/jockey_schedule_repository.dart';
 
 class JockeyScheduleViewModel extends ChangeNotifier {
   JockeyScheduleViewModel({JockeyScheduleRepository? repository})
-      : _repository = repository ?? const JockeyScheduleRepository();
+    : _repository = repository ?? const JockeyScheduleRepository();
 
   final JockeyScheduleRepository _repository;
 
   bool isLoading = false;
+  String? errorMessage;
   JockeyScheduleViewMode viewMode = JockeyScheduleViewMode.calendar;
   JockeyScheduleData? data;
   String? selectedDateKey;
@@ -24,6 +25,7 @@ class JockeyScheduleViewModel extends ChangeNotifier {
 
   Future<void> loadSchedule() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
@@ -34,8 +36,9 @@ class JockeyScheduleViewModel extends ChangeNotifier {
           .firstOrNull;
     } catch (error) {
       if (kDebugMode) debugPrint('JockeyScheduleViewModel: $error');
-      data = JockeyScheduleData.sample();
-      selectedDateKey = '2024-12-15';
+      data = null;
+      selectedDateKey = null;
+      errorMessage = 'Khong the tai lich thi dau.';
     } finally {
       isLoading = false;
       notifyListeners();

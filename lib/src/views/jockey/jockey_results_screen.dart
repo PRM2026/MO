@@ -7,6 +7,7 @@ import '../../viewmodels/jockey_results_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
 import '../../widgets/jockey/jockey_results_widgets.dart';
+import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyResultsScreen extends StatefulWidget {
   const JockeyResultsScreen({super.key, this.viewModel});
@@ -72,82 +73,104 @@ class _JockeyResultsScreenState extends State<JockeyResultsScreen> {
                         child: Center(
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 1280),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'PORTAL QUẢN LÝ CAO CẤP',
-                                      style: AppTypography.labelCaps(
-                                        RefereeColors.tertiary,
-                                      ).copyWith(letterSpacing: 1.2),
-                                    ),
-                                    Text(
-                                      'Phân tích kết quả đua',
-                                      style: AppTypography.displayLg(
-                                        RefereeColors.onSurface,
-                                      ).copyWith(fontSize: 28),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.xl),
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final isWide = constraints.maxWidth >= 960;
-
-                                    final statsSection = Column(
-                                      children: [
-                                        JockeyResultsStatsGrid(
-                                          stats: data!.stats,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        JockeyPerformanceChartCard(
-                                          heights: data.chartHeights,
-                                          trendLabel: data.chartTrendLabel,
-                                        ),
-                                      ],
-                                    );
-
-                                    if (isWide) {
-                                      return Row(
+                            child: data == null
+                                ? JockeyStateMessage(
+                                    message:
+                                        _viewModel.errorMessage ??
+                                        'Chua co du lieu ket qua.',
+                                    onRetry: _viewModel.loadResults,
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Expanded(
-                                            flex: 8,
-                                            child: statsSection,
+                                          Text(
+                                            'PORTAL QUAN LY CAO CAP',
+                                            style: AppTypography.labelCaps(
+                                              RefereeColors.tertiary,
+                                            ).copyWith(letterSpacing: 1.2),
                                           ),
-                                          const SizedBox(width: AppSpacing.lg),
-                                          Expanded(
-                                            flex: 4,
-                                            child: JockeyFeaturedHorsePanel(
-                                              horse: data.featuredHorse,
-                                            ),
+                                          Text(
+                                            'Phan tich ket qua dua',
+                                            style: AppTypography.displayLg(
+                                              RefereeColors.onSurface,
+                                            ).copyWith(fontSize: 28),
                                           ),
                                         ],
-                                      );
-                                    }
+                                      ),
+                                      const SizedBox(height: AppSpacing.xl),
+                                      LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          final isWide =
+                                              constraints.maxWidth >= 960;
 
-                                    return Column(
-                                      children: [
-                                        statsSection,
-                                        const SizedBox(height: AppSpacing.lg),
-                                        JockeyFeaturedHorsePanel(
-                                          horse: data.featuredHorse,
+                                          final statsSection = Column(
+                                            children: [
+                                              JockeyResultsStatsGrid(
+                                                stats: data.stats,
+                                              ),
+                                              const SizedBox(height: 16),
+                                              JockeyPerformanceChartCard(
+                                                heights: data.chartHeights,
+                                                trendLabel:
+                                                    data.chartTrendLabel,
+                                              ),
+                                            ],
+                                          );
+
+                                          if (isWide) {
+                                            return Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 8,
+                                                  child: statsSection,
+                                                ),
+                                                const SizedBox(
+                                                  width: AppSpacing.lg,
+                                                ),
+                                                Expanded(
+                                                  flex: 4,
+                                                  child:
+                                                      JockeyFeaturedHorsePanel(
+                                                        horse:
+                                                            data.featuredHorse,
+                                                      ),
+                                                ),
+                                              ],
+                                            );
+                                          }
+
+                                          return Column(
+                                            children: [
+                                              statsSection,
+                                              const SizedBox(
+                                                height: AppSpacing.lg,
+                                              ),
+                                              JockeyFeaturedHorsePanel(
+                                                horse: data.featuredHorse,
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                      const SizedBox(height: AppSpacing.xl),
+                                      if (data.results.isEmpty)
+                                        const JockeyStateMessage(
+                                          message: 'Chua co ket qua nao.',
+                                        )
+                                      else
+                                        JockeyResultsHistorySection(
+                                          results: data.results,
+                                          totalResults: data.totalResults,
                                         ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: AppSpacing.xl),
-                                JockeyResultsHistorySection(
-                                  results: data!.results,
-                                  totalResults: data.totalResults,
-                                ),
-                              ],
-                            ),
+                                    ],
+                                  ),
                           ),
                         ),
                       ),

@@ -8,25 +8,28 @@ class JockeyProfileViewModel extends ChangeNotifier {
   JockeyProfileViewModel({
     JockeyProfileRepository? repository,
     AuthRepository? authRepository,
-  })  : _repository = repository ?? JockeyProfileRepository(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _repository = repository ?? JockeyProfileRepository(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final JockeyProfileRepository _repository;
   final AuthRepository _authRepository;
 
   bool isLoading = false;
   bool isLoggingOut = false;
+  String? errorMessage;
   RefereeProfileData? data;
 
   Future<void> loadData() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
       data = await _repository.fetchProfile();
     } catch (error) {
       if (kDebugMode) debugPrint('JockeyProfileViewModel: $error');
-      data = JockeyProfileRepository.sample(fullName: 'Minh Tuấn');
+      data = null;
+      errorMessage = 'Khong the tai ho so jockey.';
     } finally {
       isLoading = false;
       notifyListeners();

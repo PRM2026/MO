@@ -9,6 +9,7 @@ import '../../viewmodels/jockey_schedule_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
 import '../../widgets/jockey/jockey_schedule_widgets.dart';
+import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyScheduleScreen extends StatefulWidget {
   const JockeyScheduleScreen({super.key, this.viewModel});
@@ -43,11 +44,7 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
   }
 
   void _handleDirections(JockeyRaceScheduleItem race) {
-    AppToast.showSuccess(
-      context,
-      'Đang mở chỉ đường',
-      subtitle: race.venue,
-    );
+    AppToast.showSuccess(context, 'Đang mở chỉ đường', subtitle: race.venue);
   }
 
   @override
@@ -110,21 +107,31 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
                                     ),
                                   ],
                                 ),
-                                if (_viewModel.viewMode ==
-                                    JockeyScheduleViewMode.calendar) ...[
-                                  const SizedBox(height: AppSpacing.lg),
-                                  JockeyScheduleDateSelector(
-                                    dates: data!.dates,
-                                    selectedDateKey: _viewModel.selectedDateKey,
-                                    onDateSelected: _viewModel.selectDate,
+                                if (data == null)
+                                  JockeyStateMessage(
+                                    message:
+                                        _viewModel.errorMessage ??
+                                        'Chua co lich thi dau.',
+                                    onRetry: _viewModel.loadSchedule,
+                                  )
+                                else ...[
+                                  if (_viewModel.viewMode ==
+                                      JockeyScheduleViewMode.calendar) ...[
+                                    const SizedBox(height: AppSpacing.lg),
+                                    JockeyScheduleDateSelector(
+                                      dates: data.dates,
+                                      selectedDateKey:
+                                          _viewModel.selectedDateKey,
+                                      onDateSelected: _viewModel.selectDate,
+                                    ),
+                                  ],
+                                  const SizedBox(height: AppSpacing.xl),
+                                  JockeyScheduleTimeline(
+                                    races: _viewModel.visibleRaces,
+                                    onConfirm: _handleConfirm,
+                                    onDirections: _handleDirections,
                                   ),
                                 ],
-                                const SizedBox(height: AppSpacing.xl),
-                                JockeyScheduleTimeline(
-                                  races: _viewModel.visibleRaces,
-                                  onConfirm: _handleConfirm,
-                                  onDirections: _handleDirections,
-                                ),
                               ],
                             ),
                           ),

@@ -5,6 +5,7 @@ import '../../constants/referee_colors.dart';
 import '../../viewmodels/jockey_dashboard_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
+import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyDashboardScreen extends StatefulWidget {
   const JockeyDashboardScreen({super.key, this.viewModel});
@@ -70,59 +71,76 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
                         child: Center(
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 1280),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                JockeyWelcomeHeader(
-                                  greeting: data!.greeting,
-                                  jockeyName: data.jockeyName,
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                JockeyStatsGrid(stats: data.stats),
-                                const SizedBox(height: AppSpacing.lg),
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final isWide = constraints.maxWidth >= 960;
+                            child: data == null
+                                ? JockeyStateMessage(
+                                    message:
+                                        _viewModel.errorMessage ??
+                                        'Chua co du lieu tong quan jockey.',
+                                    onRetry: _viewModel.loadDashboard,
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      JockeyWelcomeHeader(
+                                        greeting: data.greeting,
+                                        jockeyName: data.jockeyName,
+                                      ),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      JockeyStatsGrid(stats: data.stats),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          final isWide =
+                                              constraints.maxWidth >= 960;
 
-                                    if (isWide) {
-                                      return Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            flex: 8,
-                                            child: JockeyRecentResultsSection(
-                                              results: data.recentResults,
-                                            ),
-                                          ),
-                                          const SizedBox(width: AppSpacing.lg),
-                                          Expanded(
-                                            flex: 4,
-                                            child: JockeyMotivationCard(
-                                              quote: data.motivationQuote,
-                                              imageUrl: data.motivationImageUrl,
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }
+                                          if (isWide) {
+                                            return Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 8,
+                                                  child:
+                                                      JockeyRecentResultsSection(
+                                                        results:
+                                                            data.recentResults,
+                                                      ),
+                                                ),
+                                                const SizedBox(
+                                                  width: AppSpacing.lg,
+                                                ),
+                                                Expanded(
+                                                  flex: 4,
+                                                  child: JockeyMotivationCard(
+                                                    quote: data.motivationQuote,
+                                                    imageUrl:
+                                                        data.motivationImageUrl,
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }
 
-                                    return Column(
-                                      children: [
-                                        JockeyRecentResultsSection(
-                                          results: data.recentResults,
-                                        ),
-                                        const SizedBox(height: AppSpacing.lg),
-                                        JockeyMotivationCard(
-                                          quote: data.motivationQuote,
-                                          imageUrl: data.motivationImageUrl,
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
+                                          return Column(
+                                            children: [
+                                              JockeyRecentResultsSection(
+                                                results: data.recentResults,
+                                              ),
+                                              const SizedBox(
+                                                height: AppSpacing.lg,
+                                              ),
+                                              JockeyMotivationCard(
+                                                quote: data.motivationQuote,
+                                                imageUrl:
+                                                    data.motivationImageUrl,
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
                       ),

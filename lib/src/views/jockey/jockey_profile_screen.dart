@@ -7,6 +7,7 @@ import '../../utils/app_toast.dart';
 import '../../viewmodels/jockey_profile_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
+import '../../widgets/jockey/jockey_state_widgets.dart';
 import '../../widgets/referee/referee_profile_widgets.dart';
 
 class JockeyProfileScreen extends StatefulWidget {
@@ -39,19 +40,20 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
     final success = await _viewModel.logout();
     if (!mounted || !success) return;
 
-    AppToast.showSuccess(context, 'Đã đăng xuất');
+    AppToast.showSuccess(context, 'Da dang xuat');
     AppRoutes.openAfterLogout(context);
   }
 
   void _handleSettingTap(String title) {
-    if (title == 'Bảo mật & Mật khẩu') {
+    if (title == 'Báº£o máº­t & Máº­t kháº©u' ||
+        title == 'Bao mat & Mat khau') {
       AppRoutes.openJockeyChangePassword(
         context,
         profileImageUrl: _viewModel.data?.avatarUrl,
       );
       return;
     }
-    AppToast.showSuccess(context, 'Đang mở $title');
+    AppToast.showSuccess(context, 'Dang mo $title');
   }
 
   @override
@@ -97,25 +99,35 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
                         child: Center(
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 1280),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                RefereeProfileHeader(profile: data!),
-                                const SizedBox(height: AppSpacing.lg),
-                                RefereeProfileStatsGrid(stats: data.stats),
-                                const SizedBox(height: AppSpacing.lg),
-                                RefereeProfileSettingsCard(
-                                  settings: data.settings,
-                                  onItemTap: (item) =>
-                                      _handleSettingTap(item.title),
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                RefereeProfileLogoutButton(
-                                  isLoading: _viewModel.isLoggingOut,
-                                  onPressed: _handleLogout,
-                                ),
-                              ],
-                            ),
+                            child: data == null
+                                ? JockeyStateMessage(
+                                    message:
+                                        _viewModel.errorMessage ??
+                                        'Chua co du lieu ho so jockey.',
+                                    onRetry: _viewModel.loadData,
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      RefereeProfileHeader(profile: data),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      RefereeProfileStatsGrid(
+                                        stats: data.stats,
+                                      ),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      RefereeProfileSettingsCard(
+                                        settings: data.settings,
+                                        onItemTap: (item) =>
+                                            _handleSettingTap(item.title),
+                                      ),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      RefereeProfileLogoutButton(
+                                        isLoading: _viewModel.isLoggingOut,
+                                        onPressed: _handleLogout,
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
                       ),
