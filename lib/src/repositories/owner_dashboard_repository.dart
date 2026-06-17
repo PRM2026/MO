@@ -25,30 +25,20 @@ class OwnerDashboardRepository {
       profileImageUrl = user.avatarUrl;
     } catch (_) {}
 
-    final sample = OwnerDashboardData.sample(profileImageUrl: profileImageUrl);
-
     final dashboard = await _dashboardService.getOwnerDashboard();
     final tournaments = await _dashboardService.getTournaments();
     final horses = await _horseService.getOwnerHorses();
 
-    final hero = _resolveHero(tournaments, sample.hero);
-    final featured = _resolveFeaturedHorses(horses, sample.featuredHorses);
-    final races = racesFromDashboard(dashboard);
-    final upcoming = races.isNotEmpty ? races : sample.upcomingRaces;
-
     return OwnerDashboardData(
-      hero: hero,
-      featuredHorses: featured,
-      upcomingRaces: upcoming,
-      profileImageUrl: profileImageUrl ?? sample.profileImageUrl,
+      hero: _resolveHero(tournaments),
+      featuredHorses: _resolveFeaturedHorses(horses),
+      upcomingRaces: racesFromDashboard(dashboard),
+      profileImageUrl: profileImageUrl,
     );
   }
 
-  OwnerHeroTournament _resolveHero(
-    List<TournamentListItem> tournaments,
-    OwnerHeroTournament fallback,
-  ) {
-    if (tournaments.isEmpty) return fallback;
+  OwnerHeroTournament? _resolveHero(List<TournamentListItem> tournaments) {
+    if (tournaments.isEmpty) return null;
 
     final sorted = [...tournaments]
       ..sort((a, b) {
@@ -68,12 +58,7 @@ class OwnerDashboardRepository {
     return heroFromTournament(pick);
   }
 
-  List<OwnerFeaturedHorse> _resolveFeaturedHorses(
-    List<OwnerHorseItem> horses,
-    List<OwnerFeaturedHorse> fallback,
-  ) {
-    if (horses.isEmpty) return fallback;
-
+  List<OwnerFeaturedHorse> _resolveFeaturedHorses(List<OwnerHorseItem> horses) {
     return horses
         .take(6)
         .map((horse) => horse.toFeatured())

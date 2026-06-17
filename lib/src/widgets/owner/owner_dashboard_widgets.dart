@@ -8,11 +8,7 @@ import '../news/news_network_image.dart';
 import '../referee/referee_glass_card.dart';
 
 class OwnerHeroBanner extends StatelessWidget {
-  const OwnerHeroBanner({
-    super.key,
-    required this.hero,
-    this.onViewTournament,
-  });
+  const OwnerHeroBanner({super.key, required this.hero, this.onViewTournament});
 
   final OwnerHeroTournament hero;
   final VoidCallback? onViewTournament;
@@ -75,8 +71,9 @@ class OwnerHeroBanner extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       hero.title,
-                      style: AppTypography.headlineSm(Colors.white)
-                          .copyWith(fontSize: 28),
+                      style: AppTypography.headlineSm(
+                        Colors.white,
+                      ).copyWith(fontSize: 28),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -117,6 +114,49 @@ class OwnerHeroBanner extends StatelessWidget {
   }
 }
 
+class OwnerDashboardEmptyHero extends StatelessWidget {
+  const OwnerDashboardEmptyHero({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return RefereeGlassCard(
+      padding: EdgeInsets.zero,
+      child: AspectRatio(
+        aspectRatio: 16 / 10,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.emoji_events_outlined,
+                  size: 44,
+                  color: RefereeColors.championshipGold.withValues(alpha: 0.8),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Chưa có giải đấu nổi bật.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.headlineSm(
+                    RefereeColors.onSurface,
+                  ).copyWith(fontSize: 20),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Dữ liệu sẽ hiển thị khi máy chủ trả về giải đấu phù hợp.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class OwnerFeaturedHorsesSection extends StatelessWidget {
   const OwnerFeaturedHorsesSection({
     super.key,
@@ -137,8 +177,9 @@ class OwnerFeaturedHorsesSection extends StatelessWidget {
             Expanded(
               child: Text(
                 'Ngựa nổi bật',
-                style: AppTypography.headlineSm(RefereeColors.onSurface)
-                    .copyWith(fontSize: 22),
+                style: AppTypography.headlineSm(
+                  RefereeColors.onSurface,
+                ).copyWith(fontSize: 22),
               ),
             ),
             TextButton(
@@ -151,16 +192,19 @@ class OwnerFeaturedHorsesSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        SizedBox(
-          height: 220,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: horses.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 16),
-            itemBuilder: (context, index) =>
-                _FeaturedHorseCard(horse: horses[index]),
+        if (horses.isEmpty)
+          const _DashboardEmptyMessage(message: 'Chưa có ngựa nổi bật.')
+        else
+          SizedBox(
+            height: 220,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: horses.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 16),
+              itemBuilder: (context, index) =>
+                  _FeaturedHorseCard(horse: horses[index]),
+            ),
           ),
-        ),
       ],
     );
   }
@@ -222,8 +266,9 @@ class _FeaturedHorseCard extends StatelessWidget {
               horse.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.labelCaps(RefereeColors.onSurface)
-                  .copyWith(fontSize: 14, letterSpacing: 0.2),
+              style: AppTypography.labelCaps(
+                RefereeColors.onSurface,
+              ).copyWith(fontSize: 14, letterSpacing: 0.2),
             ),
             Text(
               horse.subtitle,
@@ -252,15 +297,37 @@ class OwnerUpcomingRacesSection extends StatelessWidget {
       children: [
         Text(
           'Lịch đua sắp tới',
-          style: AppTypography.headlineSm(RefereeColors.onSurface)
-              .copyWith(fontSize: 22),
+          style: AppTypography.headlineSm(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 22),
         ),
         const SizedBox(height: 16),
-        for (final race in races) ...[
-          _UpcomingRaceTile(race: race),
-          const SizedBox(height: 12),
-        ],
+        if (races.isEmpty)
+          const _DashboardEmptyMessage(message: 'Chưa có lịch đua sắp tới.')
+        else
+          for (final race in races) ...[
+            _UpcomingRaceTile(race: race),
+            const SizedBox(height: 12),
+          ],
       ],
+    );
+  }
+}
+
+class _DashboardEmptyMessage extends StatelessWidget {
+  const _DashboardEmptyMessage({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefereeGlassCard(
+      padding: const EdgeInsets.all(20),
+      child: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+      ),
     );
   }
 }
@@ -280,20 +347,24 @@ class _UpcomingRaceTile extends StatelessWidget {
 
   Color get _badgeBackground {
     return switch (race.tone) {
-      OwnerRaceStatusTone.emerald =>
-        RefereeColors.successEmerald.withValues(alpha: 0.1),
-      OwnerRaceStatusTone.gold =>
-        RefereeColors.championshipGold.withValues(alpha: 0.1),
+      OwnerRaceStatusTone.emerald => RefereeColors.successEmerald.withValues(
+        alpha: 0.1,
+      ),
+      OwnerRaceStatusTone.gold => RefereeColors.championshipGold.withValues(
+        alpha: 0.1,
+      ),
       OwnerRaceStatusTone.muted => Colors.white.withValues(alpha: 0.05),
     };
   }
 
   Color get _badgeBorder {
     return switch (race.tone) {
-      OwnerRaceStatusTone.emerald =>
-        RefereeColors.successEmerald.withValues(alpha: 0.2),
-      OwnerRaceStatusTone.gold =>
-        RefereeColors.championshipGold.withValues(alpha: 0.2),
+      OwnerRaceStatusTone.emerald => RefereeColors.successEmerald.withValues(
+        alpha: 0.2,
+      ),
+      OwnerRaceStatusTone.gold => RefereeColors.championshipGold.withValues(
+        alpha: 0.2,
+      ),
       OwnerRaceStatusTone.muted => Colors.white.withValues(alpha: 0.1),
     };
   }
@@ -354,8 +425,9 @@ class _UpcomingRaceTile extends StatelessWidget {
               children: [
                 Text(
                   race.title,
-                  style: AppTypography.labelCaps(RefereeColors.onSurface)
-                      .copyWith(fontSize: 14, letterSpacing: 0.2),
+                  style: AppTypography.labelCaps(
+                    RefereeColors.onSurface,
+                  ).copyWith(fontSize: 14, letterSpacing: 0.2),
                 ),
                 Text(
                   race.detail,
