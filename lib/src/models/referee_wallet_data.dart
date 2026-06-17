@@ -1,153 +1,121 @@
-import 'package:flutter/material.dart';
+import '../utils/currency_format.dart';
+import '../utils/date_format.dart';
+import '../utils/wallet_labels.dart';
 
-import '../constants/referee_colors.dart';
-
-enum DisbursementStatus {
-  readyToPay,
-  pendingApproval,
-}
-
-enum WalletTransactionDirection {
-  outflow,
-  inflow,
-}
-
-class RefereeWalletTournamentContext {
-  const RefereeWalletTournamentContext({
-    required this.tournamentName,
-    required this.phaseLabel,
+class WalletBalanceOverview {
+  const WalletBalanceOverview({
+    required this.availableBalance,
+    required this.holdBalance,
+    required this.totalBalance,
+    required this.currency,
+    required this.statusLabel,
   });
 
-  final String tournamentName;
-  final String phaseLabel;
-}
-
-class RefereeWalletBudgetOverview {
-  const RefereeWalletBudgetOverview({
-    required this.totalBudget,
-    required this.prizeFundAmount,
-    required this.feesFundAmount,
-    required this.prizeFundRatio,
-    required this.feesFundRatio,
-  });
-
-  final String totalBudget;
-  final String prizeFundAmount;
-  final String feesFundAmount;
-  final double prizeFundRatio;
-  final double feesFundRatio;
-}
-
-class PendingDisbursementItem {
-  const PendingDisbursementItem({
-    required this.title,
-    required this.subtitle,
-    required this.amount,
-    required this.status,
-    required this.accentColor,
-    required this.icon,
-  });
-
-  final String title;
-  final String subtitle;
-  final String amount;
-  final DisbursementStatus status;
-  final Color accentColor;
-  final IconData icon;
+  final String availableBalance;
+  final String holdBalance;
+  final String totalBalance;
+  final String currency;
+  final String statusLabel;
 }
 
 class WalletTransactionItem {
   const WalletTransactionItem({
+    required this.id,
     required this.title,
     required this.meta,
     required this.amountLabel,
-    required this.direction,
+    required this.isCredit,
+    required this.statusLabel,
+    this.note,
   });
 
+  final String id;
   final String title;
   final String meta;
   final String amountLabel;
-  final WalletTransactionDirection direction;
+  final bool isCredit;
+  final String statusLabel;
+  final String? note;
 }
 
 class RefereeWalletData {
   const RefereeWalletData({
-    required this.tournament,
-    required this.budget,
-    required this.pendingDisbursements,
+    required this.balance,
     required this.transactions,
     this.profileImageUrl,
   });
 
-  final RefereeWalletTournamentContext tournament;
-  final RefereeWalletBudgetOverview budget;
-  final List<PendingDisbursementItem> pendingDisbursements;
+  final WalletBalanceOverview balance;
   final List<WalletTransactionItem> transactions;
   final String? profileImageUrl;
 
-  int get pendingCount => pendingDisbursements.length;
-
-  static RefereeWalletData sample() {
+  factory RefereeWalletData.empty({String? profileImageUrl}) {
     return RefereeWalletData(
-      profileImageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBN3Taa3zquOwWlrwV7hhHeS3hpMVMB9DNrgxPAS0LD6coLLdwIlru-IpCSktWyV-jrhQtVJqbJhkRhnVrdkCzuf8665o6BW90WzkXtiqOH_wCz4bB4DQcFFRLAAq93GpR0SvzzJa9rGN-rTpw6EDJhhoHggzG7dnDs-0h23p_P-q2lJh_O3vcFN8A3Tpq_JW4ZtU9XZW0OONcJrOAqjw0ZljXU6aZwkNoOi9loDK5zaa7qp4GGLsOtuRt1Fd3l6nv6T_6YTZsv-Vnr',
-      tournament: const RefereeWalletTournamentContext(
-        tournamentName: 'Vietnam Derby Cup 2024',
-        phaseLabel: 'Giai đoạn: Chung kết',
+      profileImageUrl: profileImageUrl,
+      balance: const WalletBalanceOverview(
+        availableBalance: '0',
+        holdBalance: '0',
+        totalBalance: '0',
+        currency: 'VND',
+        statusLabel: '—',
       ),
-      budget: const RefereeWalletBudgetOverview(
-        totalBudget: '500.000.000',
-        prizeFundAmount: '350.000.000 VND',
-        feesFundAmount: '150.000.000 VND',
-        prizeFundRatio: 0.7,
-        feesFundRatio: 0.3,
-      ),
-      pendingDisbursements: const [
-        PendingDisbursementItem(
-          title: 'Thưởng Hạng 1 - Thần Mã 07',
-          subtitle: 'Kết quả xác nhận lúc 14:20',
-          amount: '90.000.000',
-          status: DisbursementStatus.readyToPay,
-          accentColor: RefereeColors.successEmerald,
-          icon: Icons.card_giftcard_outlined,
-        ),
-        PendingDisbursementItem(
-          title: 'Thưởng Hạng 2 - Bạch Long',
-          subtitle: 'Kết quả xác nhận lúc 14:21',
-          amount: '37.500.000',
-          status: DisbursementStatus.pendingApproval,
-          accentColor: RefereeColors.statusRed,
-          icon: Icons.card_giftcard_outlined,
-        ),
-        PendingDisbursementItem(
-          title: 'Thù lao Trọng tài chính',
-          subtitle: 'Dịch vụ điều hành chặng 4',
-          amount: '10.000.000',
-          status: DisbursementStatus.readyToPay,
-          accentColor: RefereeColors.secondary,
-          icon: Icons.badge_outlined,
-        ),
-      ],
-      transactions: const [
-        WalletTransactionItem(
-          title: 'Chi trả Thưởng Chặng 3',
-          meta: 'Hôm qua, 18:45 • ID: #TXN0984',
-          amountLabel: '-125.000.000 VND',
-          direction: WalletTransactionDirection.outflow,
-        ),
-        WalletTransactionItem(
-          title: 'Phí xét nghiệm Horse-Doping',
-          meta: '12/10/2024, 09:15 • ID: #TXN0982',
-          amountLabel: '-15.000.000 VND',
-          direction: WalletTransactionDirection.outflow,
-        ),
-        WalletTransactionItem(
-          title: 'Bổ sung quỹ từ Ban tổ chức',
-          meta: '10/10/2024, 14:00 • ID: #TXN0975',
-          amountLabel: '+200.000.000 VND',
-          direction: WalletTransactionDirection.inflow,
-        ),
-      ],
+      transactions: const [],
     );
   }
+
+  factory RefereeWalletData.fromApi({
+    required Map<String, dynamic> wallet,
+    required List<Map<String, dynamic>> transactions,
+    String? profileImageUrl,
+  }) {
+    final available = _readNum(wallet['availableBalance']);
+    final hold = _readNum(wallet['holdBalance']);
+    final total = wallet['totalBalance'] != null
+        ? _readNum(wallet['totalBalance'])
+        : available + hold;
+
+    return RefereeWalletData(
+      profileImageUrl: profileImageUrl,
+      balance: WalletBalanceOverview(
+        availableBalance: formatVnd(available).replaceAll(' đ', ''),
+        holdBalance: formatVnd(hold).replaceAll(' đ', ''),
+        totalBalance: formatVnd(total).replaceAll(' đ', ''),
+        currency: wallet['currency']?.toString() ?? 'VND',
+        statusLabel: walletStatusLabel(wallet['status']?.toString()),
+      ),
+      transactions: transactions.map(_mapTransaction).toList(growable: false),
+    );
+  }
+
+  static WalletTransactionItem _mapTransaction(Map<String, dynamic> tx) {
+    final direction = tx['direction']?.toString();
+    final amount = _readNum(tx['amount']);
+    final isCredit = isWalletCreditDirection(direction);
+    final signedPrefix = isCredit ? '+' : '-';
+    final id = tx['id']?.toString() ?? '—';
+    final createdAt = formatDisplayDateTime(tx['createdAt']?.toString());
+    final note = tx['note']?.toString();
+    final referenceType = tx['referenceType']?.toString();
+    final description = (note != null && note.trim().isNotEmpty)
+        ? note.trim()
+        : (referenceType ?? walletTransactionTypeLabel(tx['type']?.toString()));
+
+    return WalletTransactionItem(
+      id: id,
+      title: walletTransactionTypeLabel(tx['type']?.toString()),
+      meta: '$createdAt • ${walletTransactionDirectionLabel(direction)} • #$id',
+      amountLabel: '$signedPrefix${formatVnd(amount)}',
+      isCredit: isCredit,
+      statusLabel: walletTransactionStatusLabel(tx['status']?.toString()),
+      note: description != walletTransactionTypeLabel(tx['type']?.toString())
+          ? description
+          : null,
+    );
+  }
+}
+
+num _readNum(Object? value) {
+  if (value is num) return value;
+  if (value is String) return num.tryParse(value) ?? 0;
+  return 0;
 }

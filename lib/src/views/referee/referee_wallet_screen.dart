@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../constants/app_spacing.dart';
 import '../../constants/referee_colors.dart';
-import '../../utils/app_toast.dart';
 import '../../viewmodels/referee_wallet_viewmodel.dart';
 import '../../widgets/referee/referee_app_bar.dart';
 import '../../widgets/referee/referee_wallet_widgets.dart';
@@ -31,25 +30,6 @@ class _RefereeWalletScreenState extends State<RefereeWalletScreen> {
 
   void _onChanged() {
     if (mounted) setState(() {});
-  }
-
-  Future<void> _handleApproveAll() async {
-    final success = await _viewModel.approveAllDisbursements();
-    if (!mounted || !success) return;
-
-    AppToast.showSuccess(
-      context,
-      'Đã phê duyệt chi trả',
-      subtitle: 'Các khoản sẵn sàng chi trả đã được gửi xử lý.',
-    );
-  }
-
-  void _handleExportReport() {
-    AppToast.showSuccess(
-      context,
-      'Đang xuất báo cáo tài chính',
-      subtitle: 'Báo cáo sẽ được tải xuống trong giây lát.',
-    );
   }
 
   @override
@@ -90,23 +70,14 @@ class _RefereeWalletScreenState extends State<RefereeWalletScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              RefereeTournamentContextCard(
-                                tournament: data!.tournament,
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              RefereeBudgetOverviewSection(
-                                budget: data.budget,
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              RefereePendingDisbursementsSection(
-                                items: data.pendingDisbursements,
-                                pendingCount: data.pendingCount,
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              RefereeWalletQuickActions(
-                                isApproving: _viewModel.isApproving,
-                                onApproveAll: _handleApproveAll,
-                                onExportReport: _handleExportReport,
+                              if (_viewModel.errorMessage != null) ...[
+                                RefereeWalletInfoBanner(
+                                  message: _viewModel.errorMessage!,
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                              ],
+                              RefereeWalletBalanceCard(
+                                balance: data!.balance,
                               ),
                               const SizedBox(height: AppSpacing.lg),
                               RefereeTransactionHistorySection(
