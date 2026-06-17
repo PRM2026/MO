@@ -156,7 +156,7 @@ class OwnerHorseItem {
           : 'Ngựa chưa đặt tên',
       breed: (json['breed'] as String?)?.trim().isNotEmpty == true
           ? json['breed']!.trim()
-          : '-',
+          : '—',
       imageUrl: ImageUrlResolver.resolve(json['imageUrl'] as String?),
       documentUrl: ImageUrlResolver.resolve(json['documentUrl'] as String?),
       statusCode: status,
@@ -265,7 +265,7 @@ class OwnerHorseDetail {
       ownerId: (json['ownerId'] as num?)?.toInt(),
       ownerUsername: _readNullableString(json['ownerUsername']),
       name: name.isNotEmpty ? name : 'Ngựa chưa đặt tên',
-      breed: breed.isNotEmpty ? breed : '-',
+      breed: breed.isNotEmpty ? breed : '—',
       age: (json['age'] as num?)?.toInt(),
       gender: _readNullableString(json['gender']),
       color: _readNullableString(json['color']),

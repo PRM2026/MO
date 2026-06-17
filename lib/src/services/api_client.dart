@@ -62,6 +62,15 @@ class ApiClient {
     return _decodeObject(response, mapper);
   }
 
+  Future<T?> putOptionalObject<T>(
+    String path,
+    Map<String, dynamic>? body,
+    T Function(Map<String, dynamic>) mapper,
+  ) async {
+    final response = await _send('PUT', path, body: body);
+    return _decodeOptionalObject(response, mapper);
+  }
+
   Future<void> delete(String path) async {
     final response = await _send('DELETE', path);
     _decodeVoid(response);
@@ -171,6 +180,24 @@ class ApiClient {
         .whereType<Map<String, dynamic>>()
         .map(mapper)
         .toList(growable: false);
+  }
+
+  T? _decodeOptionalObject<T>(
+    http.Response response,
+    T Function(Map<String, dynamic>) mapper,
+  ) {
+    final apiResponse = _decodeApiResponse<Object?>(
+      response,
+      (data) => data,
+      allowNullData: true,
+    );
+    final data = apiResponse.data;
+    if (data == null) return null;
+    if (data is Map<String, dynamic>) return mapper(data);
+    throw ApiException(
+      'Phan hoi tu may chu khong hop le.',
+      statusCode: response.statusCode,
+    );
   }
 
   ApiPage<T> _decodePage<T>(
