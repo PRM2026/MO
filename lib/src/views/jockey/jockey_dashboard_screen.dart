@@ -127,6 +127,12 @@ class _JockeyDashboardScreenState extends State<JockeyDashboardScreen> {
                                               const SizedBox(
                                                 height: AppSpacing.lg,
                                               ),
+                                              JockeyRecentResultsSection(
+                                                results: data.recentResults,
+                                              ),
+                                              const SizedBox(
+                                                height: AppSpacing.lg,
+                                              ),
                                               JockeyDashboardAlertsSection(
                                                 alerts: data.alerts,
                                               ),

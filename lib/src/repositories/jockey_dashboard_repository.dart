@@ -19,6 +19,7 @@ class JockeyDashboardRepository {
 
   Future<JockeyDashboardData> fetchDashboard() async {
     final dashboard = await _dashboardService.getDashboard();
+    final performance = await _dashboardService.getPerformance();
 
     final profileImageUrl = await _loadProfileImageUrl();
     final pendingInvitationCount =
@@ -26,6 +27,7 @@ class JockeyDashboardRepository {
 
     return JockeyDashboardData.fromApi(
       dashboard: dashboard,
+      performance: performance,
       pendingInvitationCount: pendingInvitationCount,
       profileImageUrl: profileImageUrl,
     );

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../constants/referee_colors.dart';
+import '../utils/currency_format.dart';
 import '../utils/date_format.dart';
 import 'jockey_dashboard_response.dart';
+import 'jockey_performance_response.dart';
 
 enum JockeyHorseStatus { ready, training, resting }
 
@@ -113,11 +115,11 @@ class JockeyDashboardData {
 
   factory JockeyDashboardData.fromApi({
     required JockeyDashboardResponse dashboard,
+    required JockeyPerformanceResponse performance,
     required int pendingInvitationCount,
     String? profileImageUrl,
   }) {
     final account = dashboard.account;
-    final summary = dashboard.businessSummary;
     final displayName = _firstNonEmpty([
       _readString(account['fullName']),
       _readString(account['username']),
@@ -130,17 +132,28 @@ class JockeyDashboardData {
       stats: [
         JockeyDashboardStat(
           label: 'Tong cuoc dua',
-          value: _readInt(summary['raceCount']).toString(),
+          value: performance.raceCount.toString(),
           accentBorder: true,
           highlight: true,
         ),
         JockeyDashboardStat(
           label: 'Da hoan thanh',
-          value: _readInt(summary['completedRaceCount']).toString(),
+          value: performance.completedRaceCount.toString(),
         ),
         JockeyDashboardStat(
-          label: 'Hang nhat',
-          value: _readInt(summary['firstPlaces']).toString(),
+          label: 'Hang 1/2/3',
+          value:
+              '${performance.firstPlaces}/${performance.secondPlaces}/${performance.thirdPlaces}',
+          highlight: true,
+        ),
+        JockeyDashboardStat(
+          label: 'Thu lao',
+          value: formatVnd(performance.totalJockeyPayout),
+          highlight: true,
+        ),
+        JockeyDashboardStat(
+          label: 'Tien thuong',
+          value: formatVnd(performance.totalPrizePayout),
           highlight: true,
         ),
         JockeyDashboardStat(
@@ -150,16 +163,9 @@ class JockeyDashboardData {
         ),
       ],
       horses: const [],
-      recentResults: dashboard.upcoming
+      recentResults: performance.recentRaces
           .take(3)
-          .map(
-            (item) => JockeyRecentResult(
-              rank: 0,
-              eventName: _dashboardItemTitle(item, 'Cuoc dua sap toi'),
-              detail: _itemDetail(item),
-              isWinner: false,
-            ),
-          )
+          .map(_recentRaceFromPerformance)
           .toList(growable: false),
       motivationQuote: '"Tap trung vao tung chang dua, ket qua se theo sau."',
       motivationImageUrl:
@@ -291,6 +297,27 @@ class JockeyDashboardData {
   }
 }
 
+JockeyRecentResult _recentRaceFromPerformance(
+  JockeyPerformanceRaceResponse race,
+) {
+  final detailParts = [
+    if (race.distance?.trim().isNotEmpty == true) race.distance!.trim(),
+    if (race.venueName?.trim().isNotEmpty == true) race.venueName!.trim(),
+    if (race.provinceName?.trim().isNotEmpty == true) race.provinceName!.trim(),
+    if (race.status?.trim().isNotEmpty == true) race.status!.trim(),
+    formatDisplayDateTime(race.scheduledStartAt?.toIso8601String()),
+  ].where((part) => part.isNotEmpty && part != 'Ã¢â‚¬â€').toList();
+
+  return JockeyRecentResult(
+    rank: 0,
+    eventName: _firstNonEmpty([race.name, 'Cuoc dua gan day']),
+    detail: detailParts.isEmpty
+        ? 'Chua co thong tin chi tiet'
+        : detailParts.join(' - '),
+    isWinner: false,
+  );
+}
+
 String _greetingForNow() {
   final hour = DateTime.now().hour;
   if (hour < 12) return 'CHAO BUOI SANG';
@@ -302,14 +329,6 @@ String _dashboardItemTitle(JockeyDashboardItemResponse item, String fallback) {
   final title = item.title?.trim();
   if (title != null && title.isNotEmpty) return title;
   return fallback;
-}
-
-String _itemDetail(JockeyDashboardItemResponse item) {
-  final parts = [
-    if (item.status?.trim().isNotEmpty == true) item.status!.trim(),
-    formatDisplayDateTime(item.at?.toIso8601String()),
-  ].where((part) => part.isNotEmpty && part != 'â€”').toList();
-  return parts.isEmpty ? 'Chua co thoi gian' : parts.join(' - ');
 }
 
 String _firstNonEmpty(List<String?> values) {
@@ -324,11 +343,4 @@ String? _readString(Object? value) {
   if (value == null) return null;
   if (value is String) return value;
   return value.toString();
-}
-
-int _readInt(Object? value) {
-  if (value is int) return value;
-  if (value is num) return value.toInt();
-  if (value is String) return int.tryParse(value) ?? 0;
-  return 0;
 }

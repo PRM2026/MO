@@ -210,10 +210,13 @@ class JockeyRecentResultsSection extends StatelessWidget {
           ).copyWith(fontSize: 22),
         ),
         const SizedBox(height: 16),
-        for (final result in results) ...[
-          _ResultTile(result: result),
-          const SizedBox(height: 12),
-        ],
+        if (results.isEmpty)
+          const _EmptyDashboardMessage(message: 'Chua co cuoc dua gan day.')
+        else
+          for (final result in results) ...[
+            _ResultTile(result: result),
+            const SizedBox(height: 12),
+          ],
       ],
     );
   }
@@ -446,14 +449,21 @@ class _ResultTile extends StatelessWidget {
                   : Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
-              '${result.rank}',
-              style: AppTypography.headlineSm(
-                result.isWinner
-                    ? RefereeColors.championshipGold
-                    : RefereeColors.onSurfaceVariant,
-              ),
-            ),
+            child: result.rank > 0
+                ? Text(
+                    '${result.rank}',
+                    style: AppTypography.headlineSm(
+                      result.isWinner
+                          ? RefereeColors.championshipGold
+                          : RefereeColors.onSurfaceVariant,
+                    ),
+                  )
+                : Icon(
+                    Icons.flag_outlined,
+                    color: result.isWinner
+                        ? RefereeColors.championshipGold
+                        : RefereeColors.onSurfaceVariant,
+                  ),
           ),
           const SizedBox(width: 16),
           Expanded(

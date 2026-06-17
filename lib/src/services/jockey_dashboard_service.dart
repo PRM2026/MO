@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 
 import '../models/jockey_dashboard_response.dart';
+import '../models/jockey_performance_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -23,7 +24,10 @@ class JockeyDashboardService {
     );
   }
 
-  Future<Map<String, dynamic>> getPerformance() {
-    return _apiClient.getObject('/jockey/performance', (json) => json);
+  Future<JockeyPerformanceResponse> getPerformance() {
+    return _apiClient.getObject(
+      '/jockey/performance',
+      JockeyPerformanceResponse.fromJson,
+    );
   }
 }
