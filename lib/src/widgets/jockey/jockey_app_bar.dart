@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../routes/app_routes.dart';
+import '../../repositories/jockey_notification_repository.dart';
 import '../../constants/app_constants.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
@@ -18,6 +19,9 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showNotificationAction = true,
     this.onProfileTap,
     this.profileInteractive = true,
+    this.notificationUnreadCount,
+    this.onNotificationTap,
+    this.notificationRepository,
   });
 
   final String? profileImageUrl;
@@ -27,6 +31,9 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showNotificationAction;
   final VoidCallback? onProfileTap;
   final bool profileInteractive;
+  final int? notificationUnreadCount;
+  final Future<void> Function()? onNotificationTap;
+  final JockeyNotificationRepository? notificationRepository;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -76,6 +83,12 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       actions: [
+        if (showNotificationAction)
+          JockeyNotificationAction(
+            unreadCount: notificationUnreadCount,
+            onTap: onNotificationTap,
+            repository: notificationRepository,
+          ),
         ProfileAvatarButton(
           imageUrl: profileImageUrl,
           fallbackIcon: Icons.sports_martial_arts_outlined,
@@ -89,6 +102,115 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+      ),
+    );
+  }
+}
+
+class JockeyNotificationAction extends StatefulWidget {
+  const JockeyNotificationAction({
+    super.key,
+    this.unreadCount,
+    this.onTap,
+    this.repository,
+  });
+
+  final int? unreadCount;
+  final Future<void> Function()? onTap;
+  final JockeyNotificationRepository? repository;
+
+  @override
+  State<JockeyNotificationAction> createState() =>
+      _JockeyNotificationActionState();
+}
+
+class _JockeyNotificationActionState extends State<JockeyNotificationAction> {
+  late final JockeyNotificationRepository _repository;
+  int _unreadCount = 0;
+
+  int get _visibleCount => widget.unreadCount ?? _unreadCount;
+
+  @override
+  void initState() {
+    super.initState();
+    _repository = widget.repository ?? JockeyNotificationRepository();
+    if (widget.unreadCount == null) {
+      _loadCount();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant JockeyNotificationAction oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.unreadCount != widget.unreadCount &&
+        widget.unreadCount == null) {
+      _loadCount();
+    }
+  }
+
+  Future<void> _loadCount() async {
+    try {
+      final response = await _repository.fetchUnreadCount();
+      if (!mounted) return;
+      setState(() => _unreadCount = response.count);
+    } catch (_) {
+      // The bell remains usable even when its badge cannot be refreshed.
+    }
+  }
+
+  Future<void> _handleTap() async {
+    final callback = widget.onTap;
+    if (callback != null) {
+      await callback();
+    } else {
+      await AppRoutes.openJockeyNotifications(context);
+    }
+    if (mounted && widget.unreadCount == null) {
+      await _loadCount();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final count = _visibleCount;
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          IconButton(
+            key: const Key('jockey-notification-bell'),
+            tooltip: 'Thông báo',
+            onPressed: _handleTap,
+            icon: const Icon(
+              Icons.notifications_none_outlined,
+              color: RefereeColors.onSurface,
+            ),
+          ),
+          if (count > 0)
+            Positioned(
+              key: const Key('jockey-notification-badge'),
+              right: 2,
+              top: 5,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  color: RefereeColors.statusRed,
+                  borderRadius: BorderRadius.all(Radius.circular(999)),
+                ),
+                child: Text(
+                  count > 99 ? '99+' : '$count',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -10,6 +10,7 @@ import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
 import '../views/jockey/jockey_invitations_screen.dart';
 import '../views/jockey/jockey_deposit_screen.dart';
+import '../views/jockey/jockey_notifications_screen.dart';
 import '../views/jockey/jockey_profile_edit_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_race_detail_screen.dart';
@@ -64,6 +65,12 @@ abstract final class AppRoutes {
 
   static Route<void> jockeyWallet() {
     return MaterialPageRoute<void>(builder: (_) => const JockeyWalletScreen());
+  }
+
+  static Route<void> jockeyNotifications() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const JockeyNotificationsScreen(),
+    );
   }
 
   static Route<bool> jockeyDeposit() {
@@ -230,6 +237,10 @@ abstract final class AppRoutes {
 
   static void openJockeyWallet(BuildContext context) {
     Navigator.of(context).push(jockeyWallet());
+  }
+
+  static Future<void> openJockeyNotifications(BuildContext context) {
+    return Navigator.of(context).push(jockeyNotifications());
   }
 
   static Future<bool?> openJockeyDeposit(BuildContext context) {
