@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../constants/referee_colors.dart';
+import 'jockey_race_response.dart';
 
 enum JockeyScheduleViewMode { calendar, list }
-
-enum JockeyRaceScheduleStatus { pending, confirmed }
 
 class JockeyScheduleDateItem {
   const JockeyScheduleDateItem({
@@ -23,116 +22,156 @@ class JockeyScheduleDateItem {
 class JockeyRaceScheduleItem {
   const JockeyRaceScheduleItem({
     required this.id,
+    this.tournamentId,
     required this.dateKey,
     required this.timeLabel,
     required this.eventName,
-    required this.horseName,
+    required this.distanceLabel,
     required this.venue,
-    required this.laneLabel,
-    required this.status,
-    required this.imageUrl,
-    this.isDimmed = false,
+    required this.refereeLabel,
+    required this.participantLabel,
+    required this.statusCode,
+    required this.statusLabel,
+    this.scheduledStartAt,
+    this.scheduledEndAt,
   });
 
   final String id;
+  final String? tournamentId;
   final String dateKey;
   final String timeLabel;
   final String eventName;
-  final String horseName;
+  final String distanceLabel;
   final String venue;
-  final String laneLabel;
-  final JockeyRaceScheduleStatus status;
-  final String imageUrl;
-  final bool isDimmed;
+  final String refereeLabel;
+  final String participantLabel;
+  final String statusCode;
+  final String statusLabel;
+  final DateTime? scheduledStartAt;
+  final DateTime? scheduledEndAt;
 
-  bool get isPending => status == JockeyRaceScheduleStatus.pending;
-  bool get isConfirmed => status == JockeyRaceScheduleStatus.confirmed;
+  bool get isUnscheduled => dateKey == JockeyScheduleData.unscheduledDateKey;
 }
 
 class JockeyScheduleData {
-  const JockeyScheduleData({
-    required this.dates,
-    required this.races,
-    this.profileImageUrl,
-  });
+  const JockeyScheduleData({required this.dates, required this.races});
+
+  static const unscheduledDateKey = 'unscheduled';
 
   final List<JockeyScheduleDateItem> dates;
   final List<JockeyRaceScheduleItem> races;
-  final String? profileImageUrl;
 
-  static JockeyScheduleData sample() {
-    return JockeyScheduleData(
-      profileImageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDkLB5jkaxAnb-1BaACS74YAhxqjUIhk9JvA2sQevctS0Yad-wsNYMBrCu-huTsx4ib7XX7A22sirN6O1hgAtKMKcLQtBIyFwUwx81uO45g_G1-4z3gorcF2ciZQPZusU1Rp9bS5cp5FSmWs0Xj5YJdbdkawYe-9sFrL5IefyavnUbsKvR4zXf-sUMFTXERx7r7FqKJ9TiNszdLZLWNwHO-wqBS7ucJg5AfAc37mBdNcQY7qjrg0XWbz0CGPCSKO4A1OfXz85TiO8c',
-      dates: const [
+  List<JockeyRaceScheduleItem> get unscheduledRaces =>
+      races.where((race) => race.isUnscheduled).toList(growable: false);
+
+  static JockeyScheduleData fromResponses(List<JockeyRaceResponse> responses) {
+    final races = responses.map(_raceFromResponse).toList(growable: false);
+    final seenDateKeys = <String>{};
+    final dates = <JockeyScheduleDateItem>[];
+
+    for (final race in races) {
+      final start = race.scheduledStartAt;
+      if (start == null || !seenDateKeys.add(race.dateKey)) continue;
+      dates.add(
         JockeyScheduleDateItem(
-          monthLabel: 'Th12',
-          day: 15,
-          dateKey: '2024-12-15',
-          isSelected: true,
+          monthLabel: 'Th${start.toLocal().month}',
+          day: start.toLocal().day,
+          dateKey: race.dateKey,
+          isSelected: dates.isEmpty,
         ),
-        JockeyScheduleDateItem(
-          monthLabel: 'Th12',
-          day: 16,
-          dateKey: '2024-12-16',
-        ),
-        JockeyScheduleDateItem(
-          monthLabel: 'Th12',
-          day: 17,
-          dateKey: '2024-12-17',
-        ),
-        JockeyScheduleDateItem(
-          monthLabel: 'Th12',
-          day: 18,
-          dateKey: '2024-12-18',
-        ),
-        JockeyScheduleDateItem(
-          monthLabel: 'Th12',
-          day: 19,
-          dateKey: '2024-12-19',
-        ),
-      ],
-      races: const [
-        JockeyRaceScheduleItem(
-          id: 'race-001',
-          dateKey: '2024-12-15',
-          timeLabel: '15 Tháng 12, 14:30',
-          eventName: 'Grand Prix Saigon',
-          horseName: 'Silver Storm',
-          venue: 'Sân vận động Phú Thọ',
-          laneLabel: 'Lane 5',
-          status: JockeyRaceScheduleStatus.pending,
-          imageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuDuNcqIj-KZiwIUCTOn7an6QgK6pt98OvCkEI3CjQvzsOtQ1imc5HaAlCK2jQvzIZbJ_BdqdLKqkXEBs9xessJWumlpHjGNExOxa2yWQv62wi6BMAYZ90wYWczg1xXHTfOOeUQr8_Xs3qcp8flkvGqjrV_GSVOVohOPV0zE2MbepwnOx9k-V481fEtyLAYZm8utPIJsz_wNqap9RxX1Kmlhl7TlQdlkdeTfz1QZgpUwYzP6qGWDUelFaNqb2eXyRSCKj87O6xtBUuA',
-        ),
-        JockeyRaceScheduleItem(
-          id: 'race-002',
-          dateKey: '2024-12-20',
-          timeLabel: '20 Tháng 12, 10:15',
-          eventName: 'Vietnam Derby',
-          horseName: 'Midnight Sun',
-          venue: 'Sân vận động Sóc Sơn',
-          laneLabel: 'Lane 2',
-          status: JockeyRaceScheduleStatus.confirmed,
-          isDimmed: true,
-          imageUrl:
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuAMMcl_-WCqTyl7Pe33BxPf28Xehj2DipnoZlloCXf0zwcflkGDwqXgda-NN5HZRHFPqksg3_c20m9eMDLKaROgmeFSoqkkNm6ah-vEj3klS4HMST_1W6Eyi7_bnMCtVNxh4xecwONTTMEsiwykQEV21B6y-NG-Dwdtg2gxTihkJGGlia-Zqp02Vs7C3f70RtFPPS9DPky1kssEMkMy7L3BfBbrx5e1S924xEBbRixwq2f5Za1Yy-GudZjbDiICMML4K2z7EAA2AUA',
-        ),
-      ],
-    );
+      );
+    }
+
+    return JockeyScheduleData(dates: dates, races: races);
   }
 
-  static String statusLabel(JockeyRaceScheduleStatus status) {
-    return switch (status) {
-      JockeyRaceScheduleStatus.pending => 'Chưa xác nhận',
-      JockeyRaceScheduleStatus.confirmed => 'Đã xác nhận',
+  static String statusLabel(String statusCode) {
+    return switch (statusCode.trim().toUpperCase()) {
+      'SCHEDULED' => 'Đã lên lịch',
+      'PENDING' => 'Chờ xử lý',
+      'ONGOING' || 'LIVE' => 'Đang diễn ra',
+      'COMPLETED' || 'FINISHED' => 'Đã hoàn thành',
+      'CANCELLED' || 'CANCELED' => 'Đã hủy',
+      'POSTPONED' => 'Tạm hoãn',
+      'DRAFT' => 'Bản nháp',
+      '' => 'Chưa rõ trạng thái',
+      _ => statusCode,
     };
   }
 
-  static Color statusColor(JockeyRaceScheduleStatus status) {
-    return switch (status) {
-      JockeyRaceScheduleStatus.pending => RefereeColors.statusRed,
-      JockeyRaceScheduleStatus.confirmed => RefereeColors.successEmerald,
+  static Color statusColor(String statusCode) {
+    return switch (statusCode.trim().toUpperCase()) {
+      'COMPLETED' || 'FINISHED' => RefereeColors.successEmerald,
+      'ONGOING' || 'LIVE' => RefereeColors.championshipGold,
+      'CANCELLED' || 'CANCELED' => RefereeColors.statusRed,
+      'POSTPONED' => RefereeColors.tertiary,
+      'PENDING' => RefereeColors.secondary,
+      _ => RefereeColors.onSurfaceVariant,
     };
   }
+}
+
+JockeyRaceScheduleItem _raceFromResponse(JockeyRaceResponse response) {
+  final statusCode = response.status?.trim().toUpperCase() ?? '';
+
+  return JockeyRaceScheduleItem(
+    id: response.id,
+    tournamentId: response.tournamentId,
+    dateKey: _dateKey(response.scheduledStartAt),
+    timeLabel: _timeLabel(response.scheduledStartAt, response.scheduledEndAt),
+    eventName: _firstNonEmpty([response.name, 'Cuộc đua chưa đặt tên']),
+    distanceLabel: _firstNonEmpty([response.distance, 'Chưa có cự ly']),
+    venue: _venueLabel(response),
+    refereeLabel: _firstNonEmpty([response.refereeUsername, 'Chưa phân công']),
+    participantLabel: response.participantCount > 0
+        ? '${response.participantCount} người tham gia'
+        : 'Chưa có người tham gia',
+    statusCode: statusCode,
+    statusLabel: JockeyScheduleData.statusLabel(statusCode),
+    scheduledStartAt: response.scheduledStartAt,
+    scheduledEndAt: response.scheduledEndAt,
+  );
+}
+
+String _dateKey(DateTime? value) {
+  if (value == null) return JockeyScheduleData.unscheduledDateKey;
+  final local = value.toLocal();
+  final month = local.month.toString().padLeft(2, '0');
+  final day = local.day.toString().padLeft(2, '0');
+  return '${local.year}-$month-$day';
+}
+
+String _timeLabel(DateTime? start, DateTime? end) {
+  if (start == null) return 'Chưa lên lịch';
+  final startLabel = _clockLabel(start);
+  if (end == null) return startLabel;
+  return '$startLabel - ${_clockLabel(end)}';
+}
+
+String _clockLabel(DateTime value) {
+  final local = value.toLocal();
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
+
+String _venueLabel(JockeyRaceResponse response) {
+  final parts = [
+    response.venueName,
+    response.provinceName,
+  ].where((part) => part != null && part.trim().isNotEmpty).cast<String>();
+
+  final label = parts.join(' • ');
+  if (label.isNotEmpty) return label;
+  return response.venueAddress?.trim().isNotEmpty == true
+      ? response.venueAddress!.trim()
+      : 'Chưa có địa điểm';
+}
+
+String _firstNonEmpty(List<String?> values) {
+  for (final value in values) {
+    final trimmed = value?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+  }
+  return '';
 }

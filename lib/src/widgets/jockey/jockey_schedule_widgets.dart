@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/jockey_schedule_data.dart';
-import '../news/news_network_image.dart';
 import '../referee/referee_glass_card.dart';
 
 class JockeyScheduleViewToggle extends StatelessWidget {
@@ -58,9 +58,7 @@ class _ToggleChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected
-          ? RefereeColors.championshipGold
-          : Colors.transparent,
+      color: selected ? RefereeColors.championshipGold : Colors.transparent,
       borderRadius: BorderRadius.circular(6),
       child: InkWell(
         onTap: onTap,
@@ -95,6 +93,13 @@ class JockeyScheduleDateSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (dates.isEmpty) {
+      return Text(
+        'Chưa có cuộc đua đã lên lịch.',
+        style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+      );
+    }
+
     return SizedBox(
       height: 80,
       child: ListView.separated(
@@ -125,8 +130,9 @@ class JockeyScheduleDateSelector extends StatelessWidget {
                   boxShadow: selected
                       ? [
                           BoxShadow(
-                            color: RefereeColors.championshipGold
-                                .withValues(alpha: 0.15),
+                            color: RefereeColors.championshipGold.withValues(
+                              alpha: 0.15,
+                            ),
                             blurRadius: 20,
                           ),
                         ]
@@ -139,10 +145,12 @@ class JockeyScheduleDateSelector extends StatelessWidget {
                       date.monthLabel.toUpperCase(),
                       style: AppTypography.labelCaps(
                         selected
-                            ? RefereeColors.championshipGold
-                                .withValues(alpha: 0.7)
-                            : RefereeColors.onSurfaceVariant
-                                .withValues(alpha: 0.7),
+                            ? RefereeColors.championshipGold.withValues(
+                                alpha: 0.7,
+                              )
+                            : RefereeColors.onSurfaceVariant.withValues(
+                                alpha: 0.7,
+                              ),
                       ).copyWith(fontSize: 11),
                     ),
                     Text(
@@ -168,13 +176,13 @@ class JockeyScheduleTimeline extends StatelessWidget {
   const JockeyScheduleTimeline({
     super.key,
     required this.races,
-    required this.onConfirm,
     required this.onDirections,
+    this.showUnscheduledSections = false,
   });
 
   final List<JockeyRaceScheduleItem> races;
-  final ValueChanged<String> onConfirm;
   final ValueChanged<JockeyRaceScheduleItem> onDirections;
+  final bool showUnscheduledSections;
 
   @override
   Widget build(BuildContext context) {
@@ -183,49 +191,75 @@ class JockeyScheduleTimeline extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 48),
         child: Center(
           child: Text(
-            'Không có cuộc đua trong ngày này.',
+            showUnscheduledSections
+                ? 'Chưa có lịch thi đấu.'
+                : 'Không có cuộc đua trong ngày này.',
             style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
           ),
         ),
       );
     }
 
-    return Stack(
-      children: [
-        Positioned(
-          left: 9,
-          top: 8,
-          bottom: 8,
-          child: Container(
-            width: 2,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  RefereeColors.championshipGold.withValues(alpha: 0.3),
-                  RefereeColors.championshipGold.withValues(alpha: 0.3),
-                  Colors.transparent,
-                ],
-                stops: const [0, 0.15, 0.85, 1],
-              ),
+    final scheduled = races.where((race) => !race.isUnscheduled).toList();
+    final unscheduled = races.where((race) => race.isUnscheduled).toList();
+
+    if (showUnscheduledSections && unscheduled.isNotEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (scheduled.isNotEmpty)
+            _RaceListSection(
+              title: 'Đã lên lịch',
+              races: scheduled,
+              onDirections: onDirections,
             ),
+          if (scheduled.isNotEmpty) const SizedBox(height: AppSpacing.xl),
+          _RaceListSection(
+            title: 'Chưa lên lịch',
+            races: unscheduled,
+            onDirections: onDirections,
           ),
-        ),
-        Column(
-          children: [
-            for (var i = 0; i < races.length; i++) ...[
-              _TimelineRaceEntry(
-                race: races[i],
-                isLast: i == races.length - 1,
-                onConfirm: () => onConfirm(races[i].id),
-                onDirections: () => onDirections(races[i]),
-              ),
-              if (i < races.length - 1) const SizedBox(height: 48),
-            ],
-          ],
-        ),
+        ],
+      );
+    }
+
+    return _RaceListSection(races: races, onDirections: onDirections);
+  }
+}
+
+class _RaceListSection extends StatelessWidget {
+  const _RaceListSection({
+    required this.races,
+    required this.onDirections,
+    this.title,
+  });
+
+  final String? title;
+  final List<JockeyRaceScheduleItem> races;
+  final ValueChanged<JockeyRaceScheduleItem> onDirections;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (title != null) ...[
+          Text(
+            title!,
+            style: AppTypography.headlineSm(
+              RefereeColors.onSurface,
+            ).copyWith(fontSize: 20),
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
+        for (var i = 0; i < races.length; i++) ...[
+          _TimelineRaceEntry(
+            race: races[i],
+            isLast: i == races.length - 1,
+            onDirections: () => onDirections(races[i]),
+          ),
+          if (i < races.length - 1) const SizedBox(height: AppSpacing.xl),
+        ],
       ],
     );
   }
@@ -235,36 +269,31 @@ class _TimelineRaceEntry extends StatelessWidget {
   const _TimelineRaceEntry({
     required this.race,
     required this.isLast,
-    required this.onConfirm,
     required this.onDirections,
   });
 
   final JockeyRaceScheduleItem race;
   final bool isLast;
-  final VoidCallback onConfirm;
   final VoidCallback onDirections;
 
   @override
   Widget build(BuildContext context) {
-    final isActive = race.isPending;
-    final dotColor = isActive
-        ? RefereeColors.championshipGold
-        : RefereeColors.onSurfaceVariant.withValues(alpha: 0.4);
+    final dotColor = JockeyScheduleData.statusColor(race.statusCode);
 
     return Padding(
       padding: const EdgeInsets.only(left: 40),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                left: -38,
-                top: 16,
-                child: Container(
-                  width: 20,
-                  height: 20,
+          Positioned(
+            left: -31,
+            top: 18,
+            bottom: isLast ? null : -AppSpacing.xl,
+            child: Column(
+              children: [
+                Container(
+                  width: 18,
+                  height: 18,
                   decoration: BoxDecoration(
                     color: dotColor,
                     shape: BoxShape.circle,
@@ -274,38 +303,37 @@ class _TimelineRaceEntry extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    race.timeLabel.toUpperCase(),
-                    style: AppTypography.labelCaps(
-                      isActive
-                          ? RefereeColors.championshipGold
-                          : RefereeColors.onSurfaceVariant,
-                    ).copyWith(letterSpacing: 1),
-                  ),
-                  Text(
-                    race.eventName,
-                    style: AppTypography.headlineSm(
-                      RefereeColors.onSurface,
-                    ).copyWith(
-                      fontSize: 22,
-                      color: race.isDimmed
-                          ? RefereeColors.onSurface.withValues(alpha: 0.8)
-                          : RefereeColors.onSurface,
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      width: 2,
+                      color: RefereeColors.championshipGold.withValues(
+                        alpha: 0.25,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          JockeyScheduleRaceCard(
-            race: race,
-            onConfirm: onConfirm,
-            onDirections: onDirections,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                race.timeLabel.toUpperCase(),
+                style: AppTypography.labelCaps(
+                  dotColor,
+                ).copyWith(letterSpacing: 1),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                race.eventName,
+                style: AppTypography.headlineSm(
+                  RefereeColors.onSurface,
+                ).copyWith(fontSize: 22),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              JockeyScheduleRaceCard(race: race, onDirections: onDirections),
+            ],
           ),
         ],
       ),
@@ -317,216 +345,119 @@ class JockeyScheduleRaceCard extends StatelessWidget {
   const JockeyScheduleRaceCard({
     super.key,
     required this.race,
-    required this.onConfirm,
     required this.onDirections,
   });
 
   final JockeyRaceScheduleItem race;
-  final VoidCallback onConfirm;
   final VoidCallback onDirections;
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = JockeyScheduleData.statusColor(race.status);
-    final iconColor = race.isPending
-        ? RefereeColors.championshipGold
-        : RefereeColors.onSurfaceVariant.withValues(alpha: 0.6);
+    final statusColor = JockeyScheduleData.statusColor(race.statusCode);
 
-    return Opacity(
-      opacity: race.isDimmed ? 0.9 : 1,
-      child: RefereeGlassCard(
-        padding: EdgeInsets.zero,
-        highlighted: race.isPending,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: SizedBox(
-                height: 128,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ColorFiltered(
-                      colorFilter: race.isDimmed
-                          ? const ColorFilter.matrix(<double>[
-                              0.2126, 0.7152, 0.0722, 0, 0,
-                              0.2126, 0.7152, 0.0722, 0, 0,
-                              0.2126, 0.7152, 0.0722, 0, 0,
-                              0, 0, 0, 1, 0,
-                            ])
-                          : const ColorFilter.mode(
-                              Colors.transparent,
-                              BlendMode.multiply,
-                            ),
-                      child: Opacity(
-                        opacity: race.isDimmed ? 0.4 : 0.6,
-                        child: NewsNetworkImage(imageUrl: race.imageUrl),
-                      ),
-                    ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            RefereeColors.portalSurface,
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 16,
-                      bottom: 16,
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          _Badge(
-                            label: race.laneLabel,
-                            color: race.isPending
-                                ? RefereeColors.championshipGold
-                                : RefereeColors.onSurfaceVariant,
-                            filled: race.isPending,
-                          ),
-                          _Badge(
-                            label: JockeyScheduleData.statusLabel(race.status),
-                            color: statusColor,
-                            icon: race.isConfirmed
-                                ? Icons.check_circle_outline
-                                : null,
-                            filled: race.isPending,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    return RefereeGlassCard(
+      padding: const EdgeInsets.all(20),
+      highlighted: race.statusCode == 'ONGOING' || race.statusCode == 'LIVE',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _Badge(label: race.statusLabel, color: statusColor),
+              _Badge(
+                label: race.distanceLabel,
+                color: RefereeColors.championshipGold,
+                icon: Icons.straighten_outlined,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 640;
+              final infoBlocks = [
+                _InfoBlock(
+                  icon: Icons.schedule_outlined,
+                  label: 'Thời gian',
+                  value: race.timeLabel,
+                  iconColor: statusColor,
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
+                _InfoBlock(
+                  icon: Icons.location_on_outlined,
+                  label: 'Địa điểm',
+                  value: race.venue,
+                  iconColor: statusColor,
+                ),
+                _InfoBlock(
+                  icon: Icons.person_outline,
+                  label: 'Trọng tài',
+                  value: race.refereeLabel,
+                  iconColor: statusColor,
+                ),
+                _InfoBlock(
+                  icon: Icons.groups_outlined,
+                  label: 'Số người tham gia',
+                  value: race.participantLabel,
+                  iconColor: statusColor,
+                ),
+              ];
+
+              if (isWide) {
+                return Wrap(
+                  runSpacing: AppSpacing.md,
+                  children: [
+                    for (final block in infoBlocks)
+                      SizedBox(width: constraints.maxWidth / 2, child: block),
+                  ],
+                );
+              }
+
+              return Column(
                 children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final isWide = constraints.maxWidth >= 480;
-                      final horseInfo = _InfoBlock(
-                        icon: Icons.pets_outlined,
-                        label: 'Chiến mã',
-                        value: race.horseName,
-                        iconColor: iconColor,
-                      );
-                      final venueInfo = _InfoBlock(
-                        icon: Icons.location_on_outlined,
-                        label: 'Địa điểm',
-                        value: race.venue,
-                        iconColor: iconColor,
-                      );
-
-                      if (isWide) {
-                        return Row(
-                          children: [
-                            Expanded(child: horseInfo),
-                            Expanded(child: venueInfo),
-                          ],
-                        );
-                      }
-
-                      return Column(
-                        children: [
-                          horseInfo,
-                          const SizedBox(height: 12),
-                          venueInfo,
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  if (race.isPending)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: onConfirm,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: RefereeColors.championshipGold,
-                              foregroundColor: RefereeColors.portalSurface,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            icon: const Icon(Icons.check_circle_outline, size: 18),
-                            label: const Text('Xác nhận tham gia'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: onDirections,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: RefereeColors.onSurface,
-                              side: BorderSide(
-                                color: Colors.white.withValues(alpha: 0.1),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            icon: const Icon(Icons.directions_outlined, size: 18),
-                            label: const Text('Chỉ đường'),
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    OutlinedButton.icon(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: RefereeColors.onSurfaceVariant,
-                        side: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.1),
-                        ),
-                        minimumSize: const Size.fromHeight(48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: const Icon(Icons.info_outline, size: 18),
-                      label: const Text('Xem chi tiết cuộc đua'),
-                    ),
+                  for (var i = 0; i < infoBlocks.length; i++) ...[
+                    infoBlocks[i],
+                    if (i < infoBlocks.length - 1)
+                      const SizedBox(height: AppSpacing.md),
+                  ],
                 ],
+              );
+            },
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          OutlinedButton.icon(
+            onPressed: onDirections,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: RefereeColors.onSurface,
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-          ],
-        ),
+            icon: const Icon(Icons.directions_outlined, size: 18),
+            label: const Text('Chỉ đường'),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({
-    required this.label,
-    required this.color,
-    this.icon,
-    this.filled = false,
-  });
+  const _Badge({required this.label, required this.color, this.icon});
 
   final String label;
   final Color color;
   final IconData? icon;
-  final bool filled;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: filled ? 0.2 : 0.1),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
@@ -563,6 +494,7 @@ class _InfoBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: iconColor, size: 22),
         const SizedBox(width: 12),

@@ -5,7 +5,7 @@ import '../repositories/jockey_schedule_repository.dart';
 
 class JockeyScheduleViewModel extends ChangeNotifier {
   JockeyScheduleViewModel({JockeyScheduleRepository? repository})
-    : _repository = repository ?? const JockeyScheduleRepository();
+    : _repository = repository ?? JockeyScheduleRepository();
 
   final JockeyScheduleRepository _repository;
 
@@ -17,9 +17,10 @@ class JockeyScheduleViewModel extends ChangeNotifier {
 
   List<JockeyRaceScheduleItem> get visibleRaces {
     final races = data?.races ?? const [];
-    if (viewMode == JockeyScheduleViewMode.list || selectedDateKey == null) {
+    if (viewMode == JockeyScheduleViewMode.list) {
       return races;
     }
+    if (selectedDateKey == null) return const [];
     return races.where((race) => race.dateKey == selectedDateKey).toList();
   }
 
@@ -38,7 +39,7 @@ class JockeyScheduleViewModel extends ChangeNotifier {
       if (kDebugMode) debugPrint('JockeyScheduleViewModel: $error');
       data = null;
       selectedDateKey = null;
-      errorMessage = 'Khong the tai lich thi dau.';
+      errorMessage = 'Không thể tải lịch thi đấu.';
     } finally {
       isLoading = false;
       notifyListeners();
@@ -54,40 +55,5 @@ class JockeyScheduleViewModel extends ChangeNotifier {
   void selectDate(String dateKey) {
     selectedDateKey = dateKey;
     notifyListeners();
-  }
-
-  Future<bool> confirmRace(String raceId) async {
-    final races = data?.races;
-    if (races == null) return false;
-
-    final index = races.indexWhere((race) => race.id == raceId);
-    if (index == -1) return false;
-
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-
-    final current = races[index];
-    data = JockeyScheduleData(
-      dates: data!.dates,
-      profileImageUrl: data!.profileImageUrl,
-      races: [
-        for (var i = 0; i < races.length; i++)
-          if (i == index)
-            JockeyRaceScheduleItem(
-              id: current.id,
-              dateKey: current.dateKey,
-              timeLabel: current.timeLabel,
-              eventName: current.eventName,
-              horseName: current.horseName,
-              venue: current.venue,
-              laneLabel: current.laneLabel,
-              status: JockeyRaceScheduleStatus.confirmed,
-              imageUrl: current.imageUrl,
-            )
-          else
-            races[i],
-      ],
-    );
-    notifyListeners();
-    return true;
   }
 }

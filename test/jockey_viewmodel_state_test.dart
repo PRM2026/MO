@@ -42,7 +42,7 @@ void main() {
         expect(viewModel.data, isNull);
         expect(viewModel.selectedDateKey, isNull);
         expect(viewModel.visibleRaces, isEmpty);
-        expect(viewModel.errorMessage, 'Khong the tai lich thi dau.');
+        expect(viewModel.errorMessage, 'Không thể tải lịch thi đấu.');
       },
     );
 

@@ -32,7 +32,7 @@ class JockeyStateMessage extends StatelessWidget {
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
-              OutlinedButton(onPressed: onRetry, child: const Text('Thu lai')),
+              OutlinedButton(onPressed: onRetry, child: const Text('Thử lại')),
             ],
           ],
         ),
