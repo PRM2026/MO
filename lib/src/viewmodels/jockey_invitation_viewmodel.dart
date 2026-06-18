@@ -6,13 +6,34 @@ import '../services/jockey_invitation_service.dart';
 
 class JockeyInvitationsViewModel extends ChangeNotifier {
   JockeyInvitationsViewModel({JockeyInvitationRepository? repository})
-      : _repository = repository ?? JockeyInvitationRepository();
+    : _repository = repository ?? JockeyInvitationRepository();
 
   final JockeyInvitationRepository _repository;
 
   bool isLoading = false;
   String? loadError;
   List<JockeyInvitationListItem> invitations = const [];
+  JockeyInvitationFilter selectedFilter = JockeyInvitationFilter.all;
+
+  List<JockeyInvitationListItem> get visibleInvitations {
+    final status = selectedFilter.statusCode;
+    if (status == null) return invitations;
+    return invitations
+        .where((invitation) => invitation.statusCode == status)
+        .toList(growable: false);
+  }
+
+  String get emptyMessage {
+    return selectedFilter == JockeyInvitationFilter.all
+        ? 'Chưa có lời mời nào.'
+        : 'Không có lời mời ở trạng thái ${selectedFilter.label.toLowerCase()}.';
+  }
+
+  void selectFilter(JockeyInvitationFilter filter) {
+    if (selectedFilter == filter) return;
+    selectedFilter = filter;
+    notifyListeners();
+  }
 
   Future<void> loadInvitations() async {
     isLoading = true;
@@ -47,9 +68,12 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
 
   bool isLoading = false;
   bool isProcessing = false;
+  bool actionCompleted = false;
   String? loadError;
   String? actionError;
   JockeyInvitationDetail? data;
+
+  static const maxDecisionNoteLength = 1000;
 
   Future<void> loadDetail() async {
     isLoading = true;
@@ -59,9 +83,11 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
     try {
       data = await _repository.fetchInvitationDetail(invitationId);
     } on JockeyInvitationApiException catch (error) {
+      data = null;
       loadError = error.message;
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
     } catch (error) {
+      data = null;
       loadError = 'Không tải được chi tiết lời mời.';
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
     } finally {
@@ -70,28 +96,51 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> acceptInvitation({String? note}) async {
-    return _runAction(() => _repository.acceptInvitation(invitationId, note: note));
+  Future<bool> acceptInvitation({String? note}) {
+    return _runAction(
+      note: note,
+      action: (trimmedNote) =>
+          _repository.acceptInvitation(invitationId, note: trimmedNote),
+    );
   }
 
-  Future<bool> declineInvitation({String? note}) async {
-    return _runAction(() => _repository.rejectInvitation(invitationId, note: note));
+  Future<bool> rejectInvitation({String? note}) {
+    return _runAction(
+      note: note,
+      action: (trimmedNote) =>
+          _repository.rejectInvitation(invitationId, note: trimmedNote),
+    );
   }
 
-  Future<bool> _runAction(Future<void> Function() action) async {
+  Future<bool> _runAction({
+    required String? note,
+    required Future<void> Function(String? note) action,
+  }) async {
+    if (isProcessing) return false;
+
+    final trimmedNote = note?.trim();
+    if (trimmedNote != null && trimmedNote.length > maxDecisionNoteLength) {
+      actionError = 'Ghi chú tối đa 1000 ký tự.';
+      notifyListeners();
+      return false;
+    }
+
     isProcessing = true;
     actionError = null;
     notifyListeners();
 
     try {
-      await action();
+      await action(trimmedNote?.isEmpty == true ? null : trimmedNote);
+      actionCompleted = true;
+      await loadDetail();
+      actionError = null;
       return true;
     } on JockeyInvitationApiException catch (error) {
       actionError = error.message;
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
       return false;
     } catch (error) {
-      actionError = 'Không thể cập nhật lời mời. Vui lòng thử lại.';
+      actionError = 'Không thể cập nhật lời mời.';
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
       return false;
     } finally {

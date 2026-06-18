@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/referee_profile_data.dart';
+import '../models/jockey_profile_response.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/jockey_profile_repository.dart';
 
@@ -17,7 +17,7 @@ class JockeyProfileViewModel extends ChangeNotifier {
   bool isLoading = false;
   bool isLoggingOut = false;
   String? errorMessage;
-  RefereeProfileData? data;
+  JockeyProfileResponse? data;
 
   Future<void> loadData() async {
     isLoading = true;

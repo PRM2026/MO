@@ -37,12 +37,6 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
     if (mounted) setState(() {});
   }
 
-  Future<void> _handleConfirm(String raceId) async {
-    final success = await _viewModel.confirmRace(raceId);
-    if (!mounted || !success) return;
-    AppToast.showSuccess(context, 'Đã xác nhận tham gia cuộc đua');
-  }
-
   void _handleDirections(JockeyRaceScheduleItem race) {
     AppToast.showSuccess(context, 'Đang mở chỉ đường', subtitle: race.venue);
   }
@@ -60,7 +54,7 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
 
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: JockeyAppBar(profileImageUrl: data?.profileImageUrl),
+      appBar: const JockeyAppBar(),
       body: JockeySpeedlineBackground(
         child: _viewModel.isLoading && data == null
             ? const Center(
@@ -92,7 +86,7 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        'Lịch Thi Đấu',
+                                        'Lịch thi đấu',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: AppTypography.displayLg(
@@ -111,7 +105,7 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
                                   JockeyStateMessage(
                                     message:
                                         _viewModel.errorMessage ??
-                                        'Chua co lich thi dau.',
+                                        'Chưa có lịch thi đấu.',
                                     onRetry: _viewModel.loadSchedule,
                                   )
                                 else ...[
@@ -128,8 +122,10 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
                                   const SizedBox(height: AppSpacing.xl),
                                   JockeyScheduleTimeline(
                                     races: _viewModel.visibleRaces,
-                                    onConfirm: _handleConfirm,
                                     onDirections: _handleDirections,
+                                    showUnscheduledSections:
+                                        _viewModel.viewMode ==
+                                        JockeyScheduleViewMode.list,
                                   ),
                                 ],
                               ],

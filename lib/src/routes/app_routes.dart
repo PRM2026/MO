@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/jockey_profile_response.dart';
 import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../views/account_screen.dart';
@@ -7,6 +8,7 @@ import '../views/login_screen.dart';
 import '../views/main_shell.dart';
 import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
+import '../views/jockey/jockey_profile_edit_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_shell.dart';
 import '../views/owner/owner_change_password_screen.dart';
@@ -48,6 +50,14 @@ abstract final class AppRoutes {
   static Route<void> jockeyProfile() {
     return MaterialPageRoute<void>(
       builder: (_) => const JockeyProfileScreen(),
+    );
+  }
+
+  static Route<JockeyProfileResponse> jockeyProfileEdit(
+    JockeyProfileResponse profile,
+  ) {
+    return MaterialPageRoute<JockeyProfileResponse>(
+      builder: (_) => JockeyProfileEditScreen(profile: profile),
     );
   }
 
@@ -198,6 +208,13 @@ abstract final class AppRoutes {
 
   static void openJockeyProfile(BuildContext context) {
     Navigator.of(context).push(jockeyProfile());
+  }
+
+  static Future<JockeyProfileResponse?> openJockeyProfileEdit(
+    BuildContext context,
+    JockeyProfileResponse profile,
+  ) {
+    return Navigator.of(context).push(jockeyProfileEdit(profile));
   }
 
   static void openJockeyChangePassword(
