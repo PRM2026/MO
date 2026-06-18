@@ -1,6 +1,9 @@
 import 'package:http/http.dart' as http;
 
+import '../models/deposit_order_response.dart';
+import '../models/wallet_response.dart';
 import '../models/wallet_transaction_response.dart';
+import '../models/withdrawal_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -16,12 +19,15 @@ class JockeyWalletService {
 
   final ApiClient _apiClient;
 
-  Future<Map<String, dynamic>> getWallet() {
-    return _apiClient.getObject('/wallets/me', (json) => json);
+  Future<WalletResponse> getWallet() {
+    return _apiClient.getObject('/wallets/me', WalletResponse.fromJson);
   }
 
-  Future<List<Map<String, dynamic>>> getTransactions() {
-    return _apiClient.getList('/wallets/me/transactions', (json) => json);
+  Future<List<WalletTransactionResponse>> getTransactions() {
+    return _apiClient.getList(
+      '/wallets/me/transactions',
+      WalletTransactionResponse.fromJson,
+    );
   }
 
   Future<List<WalletTransactionResponse>> getJockeyPrizes() {
@@ -31,7 +37,7 @@ class JockeyWalletService {
     );
   }
 
-  Future<Map<String, dynamic>> createDepositOrder({
+  Future<DepositOrderResponse> createDepositOrder({
     required num amount,
     String currency = 'VND',
     String? provider,
@@ -45,22 +51,25 @@ class JockeyWalletService {
     return _apiClient.postObject(
       '/wallets/me/deposit-orders',
       body,
-      (json) => json,
+      DepositOrderResponse.fromJson,
     );
   }
 
-  Future<List<Map<String, dynamic>>> getDepositOrders() {
-    return _apiClient.getList('/wallets/me/deposit-orders', (json) => json);
+  Future<List<DepositOrderResponse>> getDepositOrders() {
+    return _apiClient.getList(
+      '/wallets/me/deposit-orders',
+      DepositOrderResponse.fromJson,
+    );
   }
 
-  Future<Map<String, dynamic>> getDepositOrder(String id) {
+  Future<DepositOrderResponse> getDepositOrder(String id) {
     return _apiClient.getObject(
       '/wallets/me/deposit-orders/$id',
-      (json) => json,
+      DepositOrderResponse.fromJson,
     );
   }
 
-  Future<Map<String, dynamic>> createWithdrawal({
+  Future<WithdrawalResponse> createWithdrawal({
     required num amount,
     required String bankName,
     required String bankAccountNumber,
@@ -69,23 +78,29 @@ class JockeyWalletService {
   }) {
     final body = <String, dynamic>{
       'amount': amount,
-      'bankName': bankName,
-      'bankAccountNumber': bankAccountNumber,
-      'bankAccountName': bankAccountName,
+      'bankName': bankName.trim(),
+      'bankAccountNumber': bankAccountNumber.trim(),
+      'bankAccountName': bankAccountName.trim(),
       if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
     };
     return _apiClient.postObject(
       '/wallets/me/withdrawals',
       body,
-      (json) => json,
+      WithdrawalResponse.fromJson,
     );
   }
 
-  Future<List<Map<String, dynamic>>> getWithdrawals() {
-    return _apiClient.getList('/wallets/me/withdrawals', (json) => json);
+  Future<List<WithdrawalResponse>> getWithdrawals() {
+    return _apiClient.getList(
+      '/wallets/me/withdrawals',
+      WithdrawalResponse.fromJson,
+    );
   }
 
-  Future<Map<String, dynamic>> getWithdrawal(String id) {
-    return _apiClient.getObject('/wallets/me/withdrawals/$id', (json) => json);
+  Future<WithdrawalResponse> getWithdrawal(String id) {
+    return _apiClient.getObject(
+      '/wallets/me/withdrawals/$id',
+      WithdrawalResponse.fromJson,
+    );
   }
 }

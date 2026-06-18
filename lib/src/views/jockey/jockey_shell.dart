@@ -36,6 +36,8 @@ class _JockeyShellState extends State<JockeyShell> {
         AppRoutes.openJockeyProfile(context);
         return;
       case 'wallet':
+        AppRoutes.openJockeyWallet(context);
+        return;
       case 'notifications':
         AppToast.showSuccess(context, 'Chua ho tro trong phase nay');
         return;
