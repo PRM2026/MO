@@ -5,7 +5,7 @@ import '../repositories/jockey_results_repository.dart';
 
 class JockeyResultsViewModel extends ChangeNotifier {
   JockeyResultsViewModel({JockeyResultsRepository? repository})
-    : _repository = repository ?? const JockeyResultsRepository();
+    : _repository = repository ?? JockeyResultsRepository();
 
   final JockeyResultsRepository _repository;
 
