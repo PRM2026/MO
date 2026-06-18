@@ -3,16 +3,28 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
+import '../../models/jockey_horse_data.dart';
+import '../../routes/app_routes.dart';
 import '../../viewmodels/jockey_horses_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
 import '../../widgets/jockey/jockey_horse_widgets.dart';
 import '../../widgets/jockey/jockey_state_widgets.dart';
 
+typedef JockeyAssignmentDestinationBuilder =
+    Widget Function(BuildContext context, String id);
+
 class JockeyHorsesScreen extends StatefulWidget {
-  const JockeyHorsesScreen({super.key, this.viewModel});
+  const JockeyHorsesScreen({
+    super.key,
+    this.viewModel,
+    this.raceDetailBuilder,
+    this.invitationDetailBuilder,
+  });
 
   final JockeyHorsesViewModel? viewModel;
+  final JockeyAssignmentDestinationBuilder? raceDetailBuilder;
+  final JockeyAssignmentDestinationBuilder? invitationDetailBuilder;
 
   @override
   State<JockeyHorsesScreen> createState() => _JockeyHorsesScreenState();
@@ -28,11 +40,41 @@ class _JockeyHorsesScreenState extends State<JockeyHorsesScreen> {
     _ownsViewModel = widget.viewModel == null;
     _viewModel = widget.viewModel ?? JockeyHorsesViewModel();
     _viewModel.addListener(_onChanged);
-    _viewModel.loadHorses();
+    _viewModel.loadAssignments();
   }
 
   void _onChanged() {
     if (mounted) setState(() {});
+  }
+
+  Future<void> _openAssignment(JockeyHorseAssignmentItem assignment) async {
+    if (assignment.hasRaceDetail && assignment.raceId != null) {
+      final builder = widget.raceDetailBuilder;
+      if (builder != null) {
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (context) => builder(context, assignment.raceId!),
+          ),
+        );
+      } else {
+        AppRoutes.openJockeyRaceDetail(context, assignment.raceId!);
+      }
+      return;
+    }
+
+    final builder = widget.invitationDetailBuilder;
+    if (builder != null) {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (context) => builder(context, assignment.invitationId),
+        ),
+      );
+    } else {
+      await AppRoutes.openJockeyInvitationDetail(
+        context,
+        assignment.invitationId,
+      );
+    }
   }
 
   @override
@@ -58,7 +100,7 @@ class _JockeyHorsesScreenState extends State<JockeyHorsesScreen> {
               )
             : RefreshIndicator(
                 color: RefereeColors.championshipGold,
-                onRefresh: _viewModel.loadHorses,
+                onRefresh: _viewModel.loadAssignments,
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
@@ -72,19 +114,19 @@ class _JockeyHorsesScreenState extends State<JockeyHorsesScreen> {
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 1280),
+                            constraints: const BoxConstraints(maxWidth: 1100),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  'Ngua duoc phan cong',
+                                  'Ngựa được phân công',
                                   style: AppTypography.displayLg(
                                     RefereeColors.onSurface,
                                   ).copyWith(fontSize: 28),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Danh sach chien ma duoc phan cong hien tai.',
+                                  'Các phân công bạn đã nhận từ chủ ngựa.',
                                   style: AppTypography.bodyMd(
                                     RefereeColors.onSurfaceVariant,
                                   ),
@@ -94,49 +136,39 @@ class _JockeyHorsesScreenState extends State<JockeyHorsesScreen> {
                                   JockeyStateMessage(
                                     message:
                                         _viewModel.errorMessage ??
-                                        'Chua co du lieu ngua duoc phan cong.',
-                                    onRetry: _viewModel.loadHorses,
+                                        'Chưa có dữ liệu ngựa được phân công.',
+                                    onRetry: _viewModel.loadAssignments,
                                   )
-                                else if (data.horses.isEmpty)
+                                else if (data.assignments.isEmpty)
                                   const JockeyStateMessage(
-                                    message: 'Chua co ngua nao duoc phan cong.',
+                                    message: 'Chưa có ngựa nào được phân công.',
+                                    icon: Icons.pets_outlined,
                                   )
                                 else
                                   LayoutBuilder(
                                     builder: (context, constraints) {
-                                      final width = constraints.maxWidth;
-                                      final crossAxisCount = width >= 960
-                                          ? 3
-                                          : width >= 640
-                                          ? 2
-                                          : 1;
-
-                                      return GridView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: crossAxisCount,
-                                              crossAxisSpacing: 24,
-                                              mainAxisSpacing: 24,
-                                              childAspectRatio:
-                                                  crossAxisCount == 1
-                                                  ? 0.82
-                                                  : 0.72,
+                                      final isWide =
+                                          constraints.maxWidth >= 720;
+                                      final cardWidth = isWide
+                                          ? (constraints.maxWidth -
+                                                    AppSpacing.lg) /
+                                                2
+                                          : constraints.maxWidth;
+                                      return Wrap(
+                                        spacing: AppSpacing.lg,
+                                        runSpacing: AppSpacing.lg,
+                                        children: [
+                                          for (final assignment
+                                              in data.assignments)
+                                            SizedBox(
+                                              width: cardWidth,
+                                              child: JockeyHorseAssignmentCard(
+                                                assignment: assignment,
+                                                onTap: () =>
+                                                    _openAssignment(assignment),
+                                              ),
                                             ),
-                                        itemCount: data.horses.length,
-                                        itemBuilder: (context, index) {
-                                          final horse = data.horses[index];
-                                          return JockeyHorseGridCard(
-                                            horse: horse,
-                                            onTap: () =>
-                                                showJockeyHorseDetailSheet(
-                                                  context,
-                                                  horse,
-                                                ),
-                                          );
-                                        },
+                                        ],
                                       );
                                     },
                                   ),

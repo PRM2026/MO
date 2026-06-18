@@ -8,6 +8,7 @@ import '../views/login_screen.dart';
 import '../views/main_shell.dart';
 import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
+import '../views/jockey/jockey_invitations_screen.dart';
 import '../views/jockey/jockey_profile_edit_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_race_detail_screen.dart';
@@ -61,6 +62,12 @@ abstract final class AppRoutes {
   static Route<void> jockeyRaceDetail(String raceId) {
     return MaterialPageRoute<void>(
       builder: (_) => JockeyRaceDetailScreen(raceId: raceId),
+    );
+  }
+
+  static Route<bool> jockeyInvitationDetail(String invitationId) {
+    return MaterialPageRoute<bool>(
+      builder: (_) => JockeyInvitationDetailScreen(invitationId: invitationId),
     );
   }
 
@@ -206,6 +213,13 @@ abstract final class AppRoutes {
 
   static void openJockeyRaceDetail(BuildContext context, String raceId) {
     Navigator.of(context).push(jockeyRaceDetail(raceId));
+  }
+
+  static Future<bool?> openJockeyInvitationDetail(
+    BuildContext context,
+    String invitationId,
+  ) {
+    return Navigator.of(context).push(jockeyInvitationDetail(invitationId));
   }
 
   static void openJockeyRaceResults(

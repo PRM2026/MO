@@ -51,13 +51,13 @@ void main() {
         repository: _FailingJockeyHorsesRepository(),
       );
 
-      await viewModel.loadHorses();
+      await viewModel.loadAssignments();
 
       expect(viewModel.isLoading, isFalse);
       expect(viewModel.data, isNull);
       expect(
         viewModel.errorMessage,
-        'Khong the tai danh sach ngua duoc phan cong.',
+        'Không thể tải danh sách ngựa được phân công.',
       );
     });
 
@@ -103,7 +103,7 @@ class _FailingJockeyScheduleRepository extends JockeyScheduleRepository {
 
 class _FailingJockeyHorsesRepository extends JockeyHorsesRepository {
   @override
-  Future<JockeyHorsesData> fetchHorses() {
+  Future<JockeyHorseAssignmentsData> fetchAssignments() {
     throw Exception('horses api failed');
   }
 }

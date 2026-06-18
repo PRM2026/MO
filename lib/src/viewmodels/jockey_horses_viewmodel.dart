@@ -5,25 +5,25 @@ import '../repositories/jockey_horses_repository.dart';
 
 class JockeyHorsesViewModel extends ChangeNotifier {
   JockeyHorsesViewModel({JockeyHorsesRepository? repository})
-    : _repository = repository ?? const JockeyHorsesRepository();
+    : _repository = repository ?? JockeyHorsesRepository();
 
   final JockeyHorsesRepository _repository;
 
   bool isLoading = false;
   String? errorMessage;
-  JockeyHorsesData? data;
+  JockeyHorseAssignmentsData? data;
 
-  Future<void> loadHorses() async {
+  Future<void> loadAssignments() async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
 
     try {
-      data = await _repository.fetchHorses();
+      data = await _repository.fetchAssignments();
     } catch (error) {
       if (kDebugMode) debugPrint('JockeyHorsesViewModel: $error');
       data = null;
-      errorMessage = 'Khong the tai danh sach ngua duoc phan cong.';
+      errorMessage = 'Không thể tải danh sách ngựa được phân công.';
     } finally {
       isLoading = false;
       notifyListeners();
