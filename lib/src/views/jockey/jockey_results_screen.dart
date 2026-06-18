@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
+import '../../models/jockey_results_data.dart';
+import '../../routes/app_routes.dart';
 import '../../viewmodels/jockey_results_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
@@ -10,9 +12,10 @@ import '../../widgets/jockey/jockey_results_widgets.dart';
 import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyResultsScreen extends StatefulWidget {
-  const JockeyResultsScreen({super.key, this.viewModel});
+  const JockeyResultsScreen({super.key, this.viewModel, this.onRaceTap});
 
   final JockeyResultsViewModel? viewModel;
+  final ValueChanged<JockeyRaceResultItem>? onRaceTap;
 
   @override
   State<JockeyResultsScreen> createState() => _JockeyResultsScreenState();
@@ -35,6 +38,24 @@ class _JockeyResultsScreenState extends State<JockeyResultsScreen> {
     if (mounted) setState(() {});
   }
 
+  void _openRace(JockeyRaceResultItem item) {
+    final callback = widget.onRaceTap;
+    if (callback != null) {
+      callback(item);
+      return;
+    }
+
+    if (item.hasResult) {
+      AppRoutes.openJockeyRaceResults(
+        context,
+        raceId: item.raceId,
+        tournamentId: item.tournamentId,
+      );
+      return;
+    }
+    AppRoutes.openJockeyRaceDetail(context, item.raceId);
+  }
+
   @override
   void dispose() {
     _viewModel.removeListener(_onChanged);
@@ -48,7 +69,7 @@ class _JockeyResultsScreenState extends State<JockeyResultsScreen> {
 
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: JockeyAppBar(profileImageUrl: data?.profileImageUrl),
+      appBar: const JockeyAppBar(),
       body: JockeySpeedlineBackground(
         child: _viewModel.isLoading && data == null
             ? const Center(
@@ -72,104 +93,17 @@ class _JockeyResultsScreenState extends State<JockeyResultsScreen> {
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 1280),
+                            constraints: const BoxConstraints(maxWidth: 1120),
                             child: data == null
                                 ? JockeyStateMessage(
                                     message:
                                         _viewModel.errorMessage ??
-                                        'Chua co du lieu ket qua.',
+                                        'Chưa có dữ liệu kết quả.',
                                     onRetry: _viewModel.loadResults,
                                   )
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'PORTAL QUAN LY CAO CAP',
-                                            style: AppTypography.labelCaps(
-                                              RefereeColors.tertiary,
-                                            ).copyWith(letterSpacing: 1.2),
-                                          ),
-                                          Text(
-                                            'Phan tich ket qua dua',
-                                            style: AppTypography.displayLg(
-                                              RefereeColors.onSurface,
-                                            ).copyWith(fontSize: 28),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: AppSpacing.xl),
-                                      LayoutBuilder(
-                                        builder: (context, constraints) {
-                                          final isWide =
-                                              constraints.maxWidth >= 960;
-
-                                          final statsSection = Column(
-                                            children: [
-                                              JockeyResultsStatsGrid(
-                                                stats: data.stats,
-                                              ),
-                                              const SizedBox(height: 16),
-                                              JockeyPerformanceChartCard(
-                                                heights: data.chartHeights,
-                                                trendLabel:
-                                                    data.chartTrendLabel,
-                                              ),
-                                            ],
-                                          );
-
-                                          if (isWide) {
-                                            return Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  flex: 8,
-                                                  child: statsSection,
-                                                ),
-                                                const SizedBox(
-                                                  width: AppSpacing.lg,
-                                                ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child:
-                                                      JockeyFeaturedHorsePanel(
-                                                        horse:
-                                                            data.featuredHorse,
-                                                      ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-
-                                          return Column(
-                                            children: [
-                                              statsSection,
-                                              const SizedBox(
-                                                height: AppSpacing.lg,
-                                              ),
-                                              JockeyFeaturedHorsePanel(
-                                                horse: data.featuredHorse,
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                      const SizedBox(height: AppSpacing.xl),
-                                      if (data.results.isEmpty)
-                                        const JockeyStateMessage(
-                                          message: 'Chua co ket qua nao.',
-                                        )
-                                      else
-                                        JockeyResultsHistorySection(
-                                          results: data.results,
-                                          totalResults: data.totalResults,
-                                        ),
-                                    ],
+                                : _ResultsContent(
+                                    data: data,
+                                    onRaceTap: _openRace,
                                   ),
                           ),
                         ),
@@ -179,6 +113,52 @@ class _JockeyResultsScreenState extends State<JockeyResultsScreen> {
                 ),
               ),
       ),
+    );
+  }
+}
+
+class _ResultsContent extends StatelessWidget {
+  const _ResultsContent({required this.data, required this.onRaceTap});
+
+  final JockeyResultsData data;
+  final ValueChanged<JockeyRaceResultItem> onRaceTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'THÀNH TÍCH JOCKEY',
+          style: AppTypography.labelCaps(RefereeColors.tertiary),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Kết quả và thanh toán',
+          style: AppTypography.displayLg(
+            RefereeColors.onSurface,
+          ).copyWith(fontSize: 28),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        JockeyResultsStatsGrid(stats: data.stats),
+        const SizedBox(height: AppSpacing.xl),
+        if (data.results.isEmpty)
+          const JockeyStateMessage(
+            message: 'Chưa có cuộc đua nào được phân công.',
+          )
+        else
+          JockeyResultsHistorySection(
+            results: data.results,
+            onResultTap: onRaceTap,
+          ),
+        const SizedBox(height: AppSpacing.xl),
+        if (data.prizes.isEmpty)
+          const JockeyStateMessage(
+            message: 'Chưa có khoản thưởng hoặc thù lao nào.',
+          )
+        else
+          JockeyPrizePayoutSection(prizes: data.prizes),
+      ],
     );
   }
 }

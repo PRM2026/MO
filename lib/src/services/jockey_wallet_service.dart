@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../models/wallet_transaction_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -23,8 +24,11 @@ class JockeyWalletService {
     return _apiClient.getList('/wallets/me/transactions', (json) => json);
   }
 
-  Future<List<Map<String, dynamic>>> getJockeyPrizes() {
-    return _apiClient.getList('/jockey/prizes', (json) => json);
+  Future<List<WalletTransactionResponse>> getJockeyPrizes() {
+    return _apiClient.getList(
+      '/jockey/prizes',
+      WalletTransactionResponse.fromJson,
+    );
   }
 
   Future<Map<String, dynamic>> createDepositOrder({

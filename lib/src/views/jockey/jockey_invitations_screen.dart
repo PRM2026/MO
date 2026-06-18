@@ -4,6 +4,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/jockey_invitation_data.dart';
+import '../../routes/app_routes.dart';
 import '../../utils/app_toast.dart';
 import '../../viewmodels/jockey_invitation_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
@@ -47,13 +48,15 @@ class _JockeyInvitationsScreenState extends State<JockeyInvitationsScreen> {
   }
 
   Future<void> _openDetail(String id) async {
-    final changed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (context) =>
-            widget.detailBuilder?.call(context, id) ??
-            JockeyInvitationDetailScreen(invitationId: id),
-      ),
-    );
+    final builder = widget.detailBuilder;
+    bool? changed;
+    if (builder == null) {
+      changed = await AppRoutes.openJockeyInvitationDetail(context, id);
+    } else {
+      changed = await Navigator.of(context).push<bool>(
+        MaterialPageRoute<bool>(builder: (context) => builder(context, id)),
+      );
+    }
     if (!mounted || changed != true) return;
     await _viewModel.loadInvitations();
   }

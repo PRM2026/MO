@@ -15,6 +15,7 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = false,
     this.titleOverride,
     this.showBrandTitle = true,
+    this.showNotificationAction = true,
     this.onProfileTap,
     this.profileInteractive = true,
   });
@@ -23,6 +24,7 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
   final String? titleOverride;
   final bool showBrandTitle;
+  final bool showNotificationAction;
   final VoidCallback? onProfileTap;
   final bool profileInteractive;
 
@@ -51,30 +53,28 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
               titleOverride!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.headlineSm(RefereeColors.championshipGold)
-                  .copyWith(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
+              style: AppTypography.headlineSm(
+                RefereeColors.championshipGold,
+              ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
             )
           : showBrandTitle
-              ? Row(
-                  children: [
-                    const BrandLogo(size: 32),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        AppConstants.appName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.headlineSm(
-                          RefereeColors.championshipGold,
-                        ).copyWith(fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ],
-                )
-              : null,
+          ? Row(
+              children: [
+                const BrandLogo(size: 32),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    AppConstants.appName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.headlineSm(
+                      RefereeColors.championshipGold,
+                    ).copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            )
+          : null,
       actions: [
         ProfileAvatarButton(
           imageUrl: profileImageUrl,
@@ -88,10 +88,7 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Divider(
-          height: 1,
-          color: Colors.white.withValues(alpha: 0.1),
-        ),
+        child: Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
       ),
     );
   }

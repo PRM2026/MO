@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../constants/referee_colors.dart';
+import '../utils/currency_format.dart';
+import '../utils/wallet_labels.dart';
+import 'jockey_performance_response.dart';
+import 'jockey_race_response.dart';
+import 'jockey_race_result_response.dart';
+import 'wallet_transaction_response.dart';
 
-enum JockeyResultRank {
-  first,
-  second,
-  other,
-}
+enum JockeyResultRank { first, second, other, pending }
+
+enum JockeyRaceResultState { available, pending, missing }
 
 class JockeyResultsStatItem {
   const JockeyResultsStatItem({
@@ -24,153 +28,281 @@ class JockeyResultsStatItem {
   final bool highlightValue;
 }
 
-class JockeyFeaturedHorseCard {
-  const JockeyFeaturedHorseCard({
-    required this.name,
-    required this.subtitle,
-    required this.badgeLabel,
-    required this.winRate,
-    required this.topSpeed,
-    required this.imageUrl,
-  });
-
-  final String name;
-  final String subtitle;
-  final String badgeLabel;
-  final String winRate;
-  final String topSpeed;
-  final String imageUrl;
-}
-
 class JockeyRaceResultItem {
   const JockeyRaceResultItem({
-    required this.id,
+    required this.raceId,
+    this.tournamentId,
     required this.eventName,
+    required this.scheduleLabel,
     required this.trackInfo,
-    required this.horseName,
-    required this.jockeyName,
+    required this.statusCode,
+    required this.statusLabel,
+    required this.resultState,
     required this.rank,
     required this.rankLabel,
+    required this.horseName,
     required this.finishTime,
+    required this.challengePoints,
     required this.prizeAmount,
+    required this.payoutStatus,
+    this.scheduledStartAt,
   });
 
-  final String id;
+  final String raceId;
+  final String? tournamentId;
   final String eventName;
+  final String scheduleLabel;
   final String trackInfo;
-  final String horseName;
-  final String jockeyName;
+  final String statusCode;
+  final String statusLabel;
+  final JockeyRaceResultState resultState;
   final JockeyResultRank rank;
   final String rankLabel;
+  final String horseName;
   final String finishTime;
+  final String challengePoints;
   final String prizeAmount;
+  final String payoutStatus;
+  final DateTime? scheduledStartAt;
+
+  bool get hasResult => resultState == JockeyRaceResultState.available;
 
   Color get rankColor {
     return switch (rank) {
       JockeyResultRank.first => RefereeColors.championshipGold,
       JockeyResultRank.second => RefereeColors.secondary,
-      JockeyResultRank.other => RefereeColors.onSurfaceVariant,
+      JockeyResultRank.other => RefereeColors.successEmerald,
+      JockeyResultRank.pending => RefereeColors.onSurfaceVariant,
     };
   }
+}
+
+class JockeyPrizePayoutItem {
+  const JockeyPrizePayoutItem({
+    required this.id,
+    required this.typeLabel,
+    required this.directionLabel,
+    required this.amountLabel,
+    required this.statusLabel,
+    required this.statusCode,
+    required this.referenceLabel,
+    required this.createdAtLabel,
+    this.note,
+  });
+
+  final String id;
+  final String typeLabel;
+  final String directionLabel;
+  final String amountLabel;
+  final String statusLabel;
+  final String statusCode;
+  final String referenceLabel;
+  final String createdAtLabel;
+  final String? note;
+
+  bool get isSuccessful => statusCode == 'SUCCESS';
 }
 
 class JockeyResultsData {
   const JockeyResultsData({
     required this.stats,
-    required this.chartHeights,
-    required this.chartTrendLabel,
-    required this.featuredHorse,
     required this.results,
-    required this.totalResults,
-    this.profileImageUrl,
+    required this.prizes,
   });
 
   final List<JockeyResultsStatItem> stats;
-  final List<double> chartHeights;
-  final String chartTrendLabel;
-  final JockeyFeaturedHorseCard featuredHorse;
   final List<JockeyRaceResultItem> results;
-  final int totalResults;
-  final String? profileImageUrl;
+  final List<JockeyPrizePayoutItem> prizes;
 
-  static JockeyResultsData sample() {
+  factory JockeyResultsData.fromApi({
+    required JockeyPerformanceResponse performance,
+    required List<JockeyRaceResponse> races,
+    required Map<String, JockeyRaceResultResponse?> jockeyResultsByRaceId,
+    required List<WalletTransactionResponse> prizes,
+  }) {
+    final sortedRaces = [...races]
+      ..sort(
+        (a, b) => _compareDatesDesc(a.scheduledStartAt, b.scheduledStartAt),
+      );
+    final sortedPrizes = [...prizes]
+      ..sort((a, b) => _compareDatesDesc(a.createdAt, b.createdAt));
+
     return JockeyResultsData(
-      profileImageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDkLB5jkaxAnb-1BaACS74YAhxqjUIhk9JvA2sQevctS0Yad-wsNYMBrCu-huTsx4ib7XX7A22sirN6O1hgAtKMKcLQtBIyFwUwx81uO45g_G1-4z3gorcF2ciZQPZusU1Rp9bS5cp5FSmWs0Xj5YJdbdkawYe-9sFrL5IefyavnUbsKvR4zXf-sUMFTXERx7r7FqKJ9TiNszdLZLWNwHO-wqBS7ucJg5AfAc37mBdNcQY7qjrg0XWbz0CGPCSKO4A1OfXz85TiO8c',
-      stats: const [
+      stats: [
         JockeyResultsStatItem(
-          label: 'Tổng giải chạy',
-          value: '148',
+          label: 'Tổng cuộc đua',
+          value: performance.raceCount.toString(),
           icon: Icons.stadium_outlined,
           accentColor: RefereeColors.secondary,
         ),
         JockeyResultsStatItem(
-          label: 'Số lần thắng',
-          value: '32',
-          icon: Icons.emoji_events_outlined,
+          label: 'Đã hoàn thành',
+          value: performance.completedRaceCount.toString(),
+          icon: Icons.task_alt_outlined,
           accentColor: RefereeColors.successEmerald,
         ),
         JockeyResultsStatItem(
-          label: 'Lên bục',
-          value: '84',
+          label: 'Hạng 1 / 2 / 3',
+          value:
+              '${performance.firstPlaces} / ${performance.secondPlaces} / ${performance.thirdPlaces}',
           icon: Icons.military_tech_outlined,
           accentColor: RefereeColors.tertiary,
         ),
         JockeyResultsStatItem(
-          label: 'Tổng thưởng',
-          value: '2,4 tỷ',
+          label: 'Thù lao jockey',
+          value: formatVnd(performance.totalJockeyPayout),
           icon: Icons.payments_outlined,
           accentColor: RefereeColors.championshipGold,
           highlightValue: true,
         ),
-      ],
-      chartHeights: const [0.35, 0.55, 0.45, 0.65, 0.85, 0.75, 0.95, 0.45, 0.65, 1.0],
-      chartTrendLabel: '+12% so với tháng trước',
-      featuredHorse: JockeyFeaturedHorseCard(
-        name: 'Midnight Sovereign',
-        subtitle: 'Ngựa xuất sắc nhất của Elite Stable',
-        badgeLabel: 'MVP STABLE',
-        winRate: '78%',
-        topSpeed: '72 km/h',
-        imageUrl:
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuA383m4MNKRt87KISomlrOUoK5vjovAZ-HVhZC-4A65WXlPLTHGB2BgcHsrKPMIIJjnxHJSKzPhQIaAX_m9atpk6Nq7d9sqbn4jOifIKPjcpIez3RgPs5EbDYfBeBxLtoNmUs3BA0AxOE0_C_DR8cg_p7UnPikmC6OpRaS8Go-1Urt2k9O1zY_J7JmWebqOSirD8hdR7c-ma8VsyvOdDm5Bnp_DmD9fI065EFX3HlGxC1QLDz7gWu2iK8F6uUGchUGXJPc-86l-6c0',
-      ),
-      totalResults: 148,
-      results: const [
-        JockeyRaceResultItem(
-          id: 'res-001',
-          eventName: 'Grand Prix Dubai',
-          trackInfo: 'Đường cát - 2400m',
-          horseName: 'Shadow Runner',
-          jockeyName: 'Minh Tuấn',
-          rank: JockeyResultRank.first,
-          rankLabel: 'Hạng 1',
-          finishTime: '02:14.45',
-          prizeAmount: '450.000.000 VND',
-        ),
-        JockeyRaceResultItem(
-          id: 'res-002',
-          eventName: 'Royal Ascot',
-          trackInfo: 'Cỏ - 1600m',
-          horseName: 'Silver Arrow',
-          jockeyName: 'Minh Tuấn',
-          rank: JockeyResultRank.second,
-          rankLabel: 'Hạng 2',
-          finishTime: '01:42.12',
-          prizeAmount: '120.000.000 VND',
-        ),
-        JockeyRaceResultItem(
-          id: 'res-003',
-          eventName: 'Kentucky Derby',
-          trackInfo: 'Đất - 2000m',
-          horseName: 'Thunder Bolt',
-          jockeyName: 'Minh Tuấn',
-          rank: JockeyResultRank.other,
-          rankLabel: 'Hạng 4',
-          finishTime: '02:02.88',
-          prizeAmount: '15.000.000 VND',
+        JockeyResultsStatItem(
+          label: 'Tiền thưởng',
+          value: formatVnd(performance.totalPrizePayout),
+          icon: Icons.emoji_events_outlined,
+          accentColor: RefereeColors.championshipGold,
+          highlightValue: true,
         ),
       ],
+      results: sortedRaces
+          .map(
+            (race) => _mapRace(
+              race,
+              jockeyResultsByRaceId[race.id],
+              jockeyResultsByRaceId.containsKey(race.id),
+            ),
+          )
+          .toList(growable: false),
+      prizes: sortedPrizes.map(_mapPrize).toList(growable: false),
     );
   }
+}
+
+JockeyRaceResultItem _mapRace(
+  JockeyRaceResponse race,
+  JockeyRaceResultResponse? result,
+  bool resultWasRequested,
+) {
+  final statusCode = race.status?.trim().toUpperCase() ?? '';
+  final state = result != null
+      ? JockeyRaceResultState.available
+      : resultWasRequested
+      ? JockeyRaceResultState.missing
+      : JockeyRaceResultState.pending;
+
+  return JockeyRaceResultItem(
+    raceId: race.id,
+    tournamentId: race.tournamentId,
+    eventName: _firstNonEmpty([race.name, 'Cuộc đua #${race.id}']),
+    scheduleLabel: _dateTimeLabel(race.scheduledStartAt),
+    trackInfo: _trackInfo(race),
+    statusCode: statusCode,
+    statusLabel: _raceStatusLabel(statusCode),
+    resultState: state,
+    rank: _rank(result, state),
+    rankLabel: switch (state) {
+      JockeyRaceResultState.available => result!.rankLabel,
+      JockeyRaceResultState.missing => 'Chưa có kết quả',
+      JockeyRaceResultState.pending => 'Chờ kết quả',
+    },
+    horseName: result?.horseLabel ?? 'Chưa cập nhật ngựa',
+    finishTime: result?.finishTimeLabel ?? '—',
+    challengePoints: result?.challengePointsLabel ?? '—',
+    prizeAmount: result?.jockeyPrizeLabel ?? '—',
+    payoutStatus: result?.payoutStatusLabel ?? '—',
+    scheduledStartAt: race.scheduledStartAt,
+  );
+}
+
+JockeyPrizePayoutItem _mapPrize(WalletTransactionResponse transaction) {
+  final referenceParts = [
+    transaction.referenceType,
+    transaction.referenceId,
+  ].where((value) => value != null && value.trim().isNotEmpty).cast<String>();
+  final direction = transaction.direction?.trim().toUpperCase();
+  final status = transaction.status?.trim().toUpperCase() ?? '';
+  final isCredit =
+      direction == null ||
+      direction.isEmpty ||
+      isWalletCreditDirection(direction);
+
+  return JockeyPrizePayoutItem(
+    id: transaction.id,
+    typeLabel: walletTransactionTypeLabel(transaction.type),
+    directionLabel: walletTransactionDirectionLabel(transaction.direction),
+    amountLabel: '${isCredit ? '+' : '-'}${formatVnd(transaction.amount)}',
+    statusLabel: walletTransactionStatusLabel(transaction.status),
+    statusCode: status,
+    referenceLabel: referenceParts.isEmpty
+        ? 'Không có tham chiếu'
+        : referenceParts.join(' #'),
+    createdAtLabel: _dateTimeLabel(transaction.createdAt),
+    note: transaction.note,
+  );
+}
+
+JockeyResultRank _rank(
+  JockeyRaceResultResponse? result,
+  JockeyRaceResultState state,
+) {
+  if (state != JockeyRaceResultState.available || result == null) {
+    return JockeyResultRank.pending;
+  }
+  return switch (result.rank) {
+    1 => JockeyResultRank.first,
+    2 => JockeyResultRank.second,
+    _ => JockeyResultRank.other,
+  };
+}
+
+String _raceStatusLabel(String status) {
+  return switch (status) {
+    'RESULT_CONFIRMED' => 'Đã có kết quả',
+    'ONGOING' => 'Đang diễn ra',
+    'SCHEDULED' => 'Đã lên lịch',
+    'OPEN_REGISTRATION' => 'Đang mở đăng ký',
+    'REGISTRATION_CLOSED' => 'Đã đóng đăng ký',
+    'PUBLISHED' => 'Đã công bố',
+    'CANCELLED' => 'Đã hủy',
+    'DRAFT' => 'Bản nháp',
+    _ => status.isEmpty ? 'Chưa rõ trạng thái' : status,
+  };
+}
+
+String _trackInfo(JockeyRaceResponse race) {
+  final venue = [race.venueName, race.provinceName]
+      .where((value) => value?.trim().isNotEmpty == true)
+      .cast<String>()
+      .join(' • ');
+  final values = [
+    if (race.distance?.trim().isNotEmpty == true) race.distance!.trim(),
+    if (venue.isNotEmpty) venue,
+  ];
+  return values.isEmpty
+      ? 'Chưa cập nhật thông tin đường đua'
+      : values.join(' • ');
+}
+
+String _dateTimeLabel(DateTime? value) {
+  if (value == null) return 'Chưa cập nhật thời gian';
+  final local = value.toLocal();
+  final day = local.day.toString().padLeft(2, '0');
+  final month = local.month.toString().padLeft(2, '0');
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '$day/$month/${local.year} $hour:$minute';
+}
+
+String _firstNonEmpty(List<String?> values) {
+  for (final value in values) {
+    final trimmed = value?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+  }
+  return '';
+}
+
+int _compareDatesDesc(DateTime? a, DateTime? b) {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  return b.compareTo(a);
 }
