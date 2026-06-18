@@ -4,8 +4,7 @@ import '../models/auth_session.dart';
 import '../models/stored_auth_profile.dart';
 
 class AuthStorage {
-  AuthStorage({SharedPreferences? preferences})
-      : _preferences = preferences;
+  AuthStorage({SharedPreferences? preferences}) : _preferences = preferences;
 
   SharedPreferences? _preferences;
 
@@ -28,6 +27,8 @@ class AuthStorage {
     await prefs.setString(_tokenTypeKey, session.tokenType);
     if (session.userId != null) {
       await prefs.setInt(_userIdKey, session.userId!);
+    } else {
+      await prefs.remove(_userIdKey);
     }
     if (session.email != null) {
       await prefs.setString(_emailKey, session.email!);
@@ -69,6 +70,11 @@ class AuthStorage {
   Future<String?> getToken() async {
     final prefs = await _prefs;
     return prefs.getString(_tokenKey);
+  }
+
+  Future<int?> getUserId() async {
+    final prefs = await _prefs;
+    return prefs.getInt(_userIdKey);
   }
 
   Future<void> updateRole(String role) async {

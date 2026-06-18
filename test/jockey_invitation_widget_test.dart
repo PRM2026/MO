@@ -65,7 +65,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Không thể tải lời mời'), findsOneWidget);
-    expect(find.text('Thu lai'), findsOneWidget);
+    expect(find.text('Thử lại'), findsOneWidget);
   });
 
   testWidgets('tapping invitation opens the detail route', (tester) async {

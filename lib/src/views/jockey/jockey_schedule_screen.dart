@@ -4,6 +4,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/jockey_schedule_data.dart';
+import '../../routes/app_routes.dart';
 import '../../utils/app_toast.dart';
 import '../../viewmodels/jockey_schedule_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
@@ -39,6 +40,10 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
 
   void _handleDirections(JockeyRaceScheduleItem race) {
     AppToast.showSuccess(context, 'Đang mở chỉ đường', subtitle: race.venue);
+  }
+
+  void _handleDetails(JockeyRaceScheduleItem race) {
+    AppRoutes.openJockeyRaceDetail(context, race.id);
   }
 
   @override
@@ -123,6 +128,7 @@ class _JockeyScheduleScreenState extends State<JockeyScheduleScreen> {
                                   JockeyScheduleTimeline(
                                     races: _viewModel.visibleRaces,
                                     onDirections: _handleDirections,
+                                    onDetails: _handleDetails,
                                     showUnscheduledSections:
                                         _viewModel.viewMode ==
                                         JockeyScheduleViewMode.list,

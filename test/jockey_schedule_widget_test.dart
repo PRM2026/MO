@@ -34,6 +34,8 @@ void main() {
     expect(find.text('Xác nhận tham gia'), findsNothing);
     expect(find.text('Silver Storm'), findsNothing);
     expect(find.text('Lane 5'), findsNothing);
+
+    expect(find.byKey(const Key('race-details-1')), findsOneWidget);
   });
 
   testWidgets('list mode shows unscheduled section', (tester) async {
