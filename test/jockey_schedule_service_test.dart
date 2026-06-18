@@ -38,6 +38,8 @@ void main() {
         expect(race.tournamentId, '7');
         expect(race.name, 'Autumn Sprint');
         expect(race.distance, '1600m');
+        expect(race.minParticipants, 4);
+        expect(race.maxParticipants, 12);
         expect(race.venueName, 'Saigon Track');
         expect(race.venueAddress, 'District 7');
         expect(race.provinceName, 'HCMC');
@@ -45,6 +47,10 @@ void main() {
         expect(race.scheduledEndAt, DateTime.parse('2026-06-18T09:00:00'));
         expect(race.refereeUsername, 'referee01');
         expect(race.status, 'SCHEDULED');
+        expect(race.note, 'Bring racing license');
+        expect(race.prizes.single.rank, 1);
+        expect(race.prizes.single.amount, 50000000);
+        expect(race.prizes.single.itemName, 'Gold Cup');
         expect(race.participantCount, 8);
       },
     );
@@ -145,6 +151,91 @@ void main() {
       expect(service.getJockeyRaces, throwsA(isA<JockeyRaceApiException>()));
     });
   });
+
+  group('JockeyRaceService result APIs', () {
+    test('loads typed race results without an authorization header', () async {
+      final service = JockeyRaceService(
+        baseUrl: 'http://example.test',
+        client: MockClient((request) async {
+          expect(
+            request.url.toString(),
+            'http://example.test/races/22/results',
+          );
+          expect(request.headers['Authorization'], isNull);
+          return _jsonResponse({
+            'success': true,
+            'message': 'Success',
+            'data': [
+              {
+                'id': 91,
+                'raceId': 22,
+                'participantId': 31,
+                'ownerId': 4,
+                'ownerUsername': 'owner01',
+                'horseId': 8,
+                'horseName': 'Silver Storm',
+                'jockeyId': 5,
+                'jockeyUsername': 'jockey01',
+                'rank': 1,
+                'finishTimeMillis': 73450,
+                'status': 'FINISHED',
+                'jockeyChallengePoints': 10,
+                'jockeyPrizeAmount': 5000000,
+                'payoutStatus': 'PAID',
+                'note': 'Clean finish',
+              },
+            ],
+          });
+        }),
+      );
+
+      final result = (await service.getRaceResults('22')).single;
+
+      expect(result.jockeyId, 5);
+      expect(result.horseName, 'Silver Storm');
+      expect(result.finishTimeLabel, '1:13.450');
+      expect(result.challengePointsLabel, '10 điểm');
+      expect(result.payoutStatusLabel, 'Đã thanh toán');
+    });
+
+    test('loads typed challenge standings without authentication', () async {
+      final service = JockeyRaceService(
+        baseUrl: 'http://example.test',
+        client: MockClient((request) async {
+          expect(
+            request.url.toString(),
+            'http://example.test/tournaments/7/jockey-challenge',
+          );
+          expect(request.headers['Authorization'], isNull);
+          return _jsonResponse({
+            'success': true,
+            'message': 'Success',
+            'data': [
+              {
+                'jockeyId': 5,
+                'jockeyUsername': 'jockey01',
+                'totalPoints': 28,
+                'firstPlaces': 2,
+                'secondPlaces': 1,
+                'thirdPlaces': 0,
+                'challengeRank': 1,
+                'prizeAmount': 12000000,
+                'payoutStatus': 'PENDING',
+                'finalizedAt': null,
+              },
+            ],
+          });
+        }),
+      );
+
+      final standing = (await service.getJockeyChallengeStandings('7')).single;
+
+      expect(standing.jockeyId, 5);
+      expect(standing.rankLabel, 'Hạng 1');
+      expect(standing.totalPoints, 28);
+      expect(standing.payoutStatusLabel, 'Đang xử lý');
+    });
+  });
 }
 
 Map<String, dynamic> _raceJson({
@@ -159,6 +250,8 @@ Map<String, dynamic> _raceJson({
     'tournamentId': tournamentId,
     'name': 'Autumn Sprint',
     'distance': '1600m',
+    'minParticipants': 4,
+    'maxParticipants': 12,
     'venueName': 'Saigon Track',
     'venueAddress': 'District 7',
     'provinceName': 'HCMC',
@@ -166,6 +259,17 @@ Map<String, dynamic> _raceJson({
     'scheduledEndAt': scheduledEndAt,
     'refereeUsername': 'referee01',
     'status': 'SCHEDULED',
+    'note': 'Bring racing license',
+    'prizes': [
+      {
+        'id': 1,
+        'rank': 1,
+        'amount': 50000000,
+        'itemName': 'Gold Cup',
+        'note': 'Champion',
+        'createdAt': '2026-06-01T08:00:00',
+      },
+    ],
     'participantCount': participantCount,
   };
 }

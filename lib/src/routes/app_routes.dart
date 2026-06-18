@@ -10,6 +10,8 @@ import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
 import '../views/jockey/jockey_profile_edit_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
+import '../views/jockey/jockey_race_detail_screen.dart';
+import '../views/jockey/jockey_race_results_screen.dart';
 import '../views/jockey/jockey_shell.dart';
 import '../views/owner/owner_change_password_screen.dart';
 import '../views/owner/owner_shell.dart';
@@ -22,35 +24,26 @@ import '../widgets/home/home_bottom_nav.dart';
 
 abstract final class AppRoutes {
   static Route<void> login() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const LoginScreen(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const LoginScreen());
   }
 
   static Route<void> register() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const RegisterScreen(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const RegisterScreen());
   }
 
   static Route<void> account() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const AccountScreen(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const AccountScreen());
   }
 
   static Route<void> jockeyChangePassword({String? profileImageUrl}) {
     return MaterialPageRoute<void>(
-      builder: (_) => JockeyChangePasswordScreen(
-        profileImageUrl: profileImageUrl,
-      ),
+      builder: (_) =>
+          JockeyChangePasswordScreen(profileImageUrl: profileImageUrl),
     );
   }
 
   static Route<void> jockeyProfile() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const JockeyProfileScreen(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const JockeyProfileScreen());
   }
 
   static Route<JockeyProfileResponse> jockeyProfileEdit(
@@ -62,15 +55,27 @@ abstract final class AppRoutes {
   }
 
   static Route<void> jockeyPortal() {
+    return MaterialPageRoute<void>(builder: (_) => const JockeyShell());
+  }
+
+  static Route<void> jockeyRaceDetail(String raceId) {
     return MaterialPageRoute<void>(
-      builder: (_) => const JockeyShell(),
+      builder: (_) => JockeyRaceDetailScreen(raceId: raceId),
+    );
+  }
+
+  static Route<void> jockeyRaceResults({
+    required String raceId,
+    String? tournamentId,
+  }) {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          JockeyRaceResultsScreen(raceId: raceId, tournamentId: tournamentId),
     );
   }
 
   static Route<void> ownerPortal() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const OwnerShell(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const OwnerShell());
   }
 
   static Route<void> ownerChangePassword({String? profileImageUrl}) {
@@ -82,9 +87,8 @@ abstract final class AppRoutes {
 
   static Route<void> refereeChangePassword({String? profileImageUrl}) {
     return MaterialPageRoute<void>(
-      builder: (_) => RefereeChangePasswordScreen(
-        profileImageUrl: profileImageUrl,
-      ),
+      builder: (_) =>
+          RefereeChangePasswordScreen(profileImageUrl: profileImageUrl),
     );
   }
 
@@ -95,15 +99,11 @@ abstract final class AppRoutes {
   }
 
   static Route<void> refereePortal() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const RefereeShell(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const RefereeShell());
   }
 
   static Route<void> spectatorPortal() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const SpectatorShell(),
-    );
+    return MaterialPageRoute<void>(builder: (_) => const SpectatorShell());
   }
 
   static Route<void> main({HomeTab initialTab = HomeTab.home}) {
@@ -138,10 +138,7 @@ abstract final class AppRoutes {
       return;
     }
 
-    Navigator.of(context).pushAndRemoveUntil(
-      accountTab(),
-      (route) => false,
-    );
+    Navigator.of(context).pushAndRemoveUntil(accountTab(), (route) => false);
   }
 
   static Route<void> _portalRouteForRole(String role) {
@@ -168,10 +165,7 @@ abstract final class AppRoutes {
 
     final navigator = Navigator.of(context, rootNavigator: true);
     if (hasDedicatedPortal(role)) {
-      navigator.pushAndRemoveUntil(
-        _portalRouteForRole(role),
-        (_) => false,
-      );
+      navigator.pushAndRemoveUntil(_portalRouteForRole(role), (_) => false);
       return;
     }
 
@@ -180,18 +174,18 @@ abstract final class AppRoutes {
 
   /// Clears navigation stack and returns to public home after logout.
   static void openAfterLogout(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      main(initialTab: HomeTab.home),
-      (_) => false,
-    );
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).pushAndRemoveUntil(main(initialTab: HomeTab.home), (_) => false);
   }
 
   static void openDedicatedPortal(BuildContext context, String role) {
     if (!hasDedicatedPortal(role)) return;
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      _portalRouteForRole(role),
-      (_) => false,
-    );
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).pushAndRemoveUntil(_portalRouteForRole(role), (_) => false);
   }
 
   static void openOwnerPortal(BuildContext context) {
@@ -210,6 +204,20 @@ abstract final class AppRoutes {
     Navigator.of(context).push(jockeyProfile());
   }
 
+  static void openJockeyRaceDetail(BuildContext context, String raceId) {
+    Navigator.of(context).push(jockeyRaceDetail(raceId));
+  }
+
+  static void openJockeyRaceResults(
+    BuildContext context, {
+    required String raceId,
+    String? tournamentId,
+  }) {
+    Navigator.of(
+      context,
+    ).push(jockeyRaceResults(raceId: raceId, tournamentId: tournamentId));
+  }
+
   static Future<JockeyProfileResponse?> openJockeyProfileEdit(
     BuildContext context,
     JockeyProfileResponse profile,
@@ -221,18 +229,18 @@ abstract final class AppRoutes {
     BuildContext context, {
     String? profileImageUrl,
   }) {
-    Navigator.of(context).push(
-      jockeyChangePassword(profileImageUrl: profileImageUrl),
-    );
+    Navigator.of(
+      context,
+    ).push(jockeyChangePassword(profileImageUrl: profileImageUrl));
   }
 
   static void openOwnerChangePassword(
     BuildContext context, {
     String? profileImageUrl,
   }) {
-    Navigator.of(context).push(
-      ownerChangePassword(profileImageUrl: profileImageUrl),
-    );
+    Navigator.of(
+      context,
+    ).push(ownerChangePassword(profileImageUrl: profileImageUrl));
   }
 
   static void openRefereeProfile(BuildContext context) {
@@ -243,9 +251,9 @@ abstract final class AppRoutes {
     BuildContext context, {
     String? profileImageUrl,
   }) {
-    Navigator.of(context).push(
-      refereeChangePassword(profileImageUrl: profileImageUrl),
-    );
+    Navigator.of(
+      context,
+    ).push(refereeChangePassword(profileImageUrl: profileImageUrl));
   }
 
   static void openHome(BuildContext context) {

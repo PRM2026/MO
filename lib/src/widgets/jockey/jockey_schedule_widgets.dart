@@ -177,11 +177,13 @@ class JockeyScheduleTimeline extends StatelessWidget {
     super.key,
     required this.races,
     required this.onDirections,
+    required this.onDetails,
     this.showUnscheduledSections = false,
   });
 
   final List<JockeyRaceScheduleItem> races;
   final ValueChanged<JockeyRaceScheduleItem> onDirections;
+  final ValueChanged<JockeyRaceScheduleItem> onDetails;
   final bool showUnscheduledSections;
 
   @override
@@ -212,18 +214,24 @@ class JockeyScheduleTimeline extends StatelessWidget {
               title: 'Đã lên lịch',
               races: scheduled,
               onDirections: onDirections,
+              onDetails: onDetails,
             ),
           if (scheduled.isNotEmpty) const SizedBox(height: AppSpacing.xl),
           _RaceListSection(
             title: 'Chưa lên lịch',
             races: unscheduled,
             onDirections: onDirections,
+            onDetails: onDetails,
           ),
         ],
       );
     }
 
-    return _RaceListSection(races: races, onDirections: onDirections);
+    return _RaceListSection(
+      races: races,
+      onDirections: onDirections,
+      onDetails: onDetails,
+    );
   }
 }
 
@@ -231,12 +239,14 @@ class _RaceListSection extends StatelessWidget {
   const _RaceListSection({
     required this.races,
     required this.onDirections,
+    required this.onDetails,
     this.title,
   });
 
   final String? title;
   final List<JockeyRaceScheduleItem> races;
   final ValueChanged<JockeyRaceScheduleItem> onDirections;
+  final ValueChanged<JockeyRaceScheduleItem> onDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +267,7 @@ class _RaceListSection extends StatelessWidget {
             race: races[i],
             isLast: i == races.length - 1,
             onDirections: () => onDirections(races[i]),
+            onDetails: () => onDetails(races[i]),
           ),
           if (i < races.length - 1) const SizedBox(height: AppSpacing.xl),
         ],
@@ -270,11 +281,13 @@ class _TimelineRaceEntry extends StatelessWidget {
     required this.race,
     required this.isLast,
     required this.onDirections,
+    required this.onDetails,
   });
 
   final JockeyRaceScheduleItem race;
   final bool isLast;
   final VoidCallback onDirections;
+  final VoidCallback onDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +345,11 @@ class _TimelineRaceEntry extends StatelessWidget {
                 ).copyWith(fontSize: 22),
               ),
               const SizedBox(height: AppSpacing.md),
-              JockeyScheduleRaceCard(race: race, onDirections: onDirections),
+              JockeyScheduleRaceCard(
+                race: race,
+                onDirections: onDirections,
+                onDetails: onDetails,
+              ),
             ],
           ),
         ],
@@ -346,10 +363,12 @@ class JockeyScheduleRaceCard extends StatelessWidget {
     super.key,
     required this.race,
     required this.onDirections,
+    required this.onDetails,
   });
 
   final JockeyRaceScheduleItem race;
   final VoidCallback onDirections;
+  final VoidCallback onDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -426,6 +445,21 @@ class JockeyScheduleRaceCard extends StatelessWidget {
             },
           ),
           const SizedBox(height: AppSpacing.lg),
+          FilledButton.icon(
+            key: Key('race-details-${race.id}'),
+            onPressed: onDetails,
+            style: FilledButton.styleFrom(
+              backgroundColor: RefereeColors.championshipGold,
+              foregroundColor: RefereeColors.portalSurface,
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.visibility_outlined, size: 18),
+            label: const Text('Xem chi tiết'),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
             onPressed: onDirections,
             style: OutlinedButton.styleFrom(

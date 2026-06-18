@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 
 import '../models/jockey_race_response.dart';
+import '../models/jockey_race_result_response.dart';
 import 'api_client.dart';
 import 'api_exception.dart';
 import 'auth_storage.dart';
@@ -27,23 +28,23 @@ class JockeyRaceService {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getRaceResults(String raceId) {
+  Future<List<JockeyRaceResultResponse>> getRaceResults(String raceId) {
     return _run(
       () => _apiClient.getList(
         '/races/$raceId/results',
-        (json) => json,
+        JockeyRaceResultResponse.fromJson,
         authenticated: false,
       ),
     );
   }
 
-  Future<List<Map<String, dynamic>>> getJockeyChallengeStandings(
+  Future<List<JockeyChallengeStandingResponse>> getJockeyChallengeStandings(
     String tournamentId,
   ) {
     return _run(
       () => _apiClient.getList(
         '/tournaments/$tournamentId/jockey-challenge',
-        (json) => json,
+        JockeyChallengeStandingResponse.fromJson,
         authenticated: false,
       ),
     );
