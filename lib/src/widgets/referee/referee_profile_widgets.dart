@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/referee_profile_data.dart';
-import '../news/news_network_image.dart';
+import '../common/profile_avatar.dart';
 import 'referee_glass_card.dart';
 
 class RefereeProfileHeader extends StatelessWidget {
-  const RefereeProfileHeader({super.key, required this.profile});
+  const RefereeProfileHeader({
+    super.key,
+    required this.profile,
+    this.fallbackIcon = Icons.shield_outlined,
+  });
 
   final RefereeProfileData profile;
+  final IconData fallbackIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +24,13 @@ class RefereeProfileHeader extends StatelessWidget {
         builder: (context, constraints) {
           final isWide = constraints.maxWidth >= 640;
 
-          final avatar = _ProfileAvatar(
-            imageUrl: profile.avatarUrl,
-            isOnline: profile.isOnline,
+          final avatar = ProfileAvatar(
             size: isWide ? 128 : 96,
+            imageUrl: profile.avatarUrl,
+            fallbackIcon: fallbackIcon,
+            showOnlineIndicator: true,
+            isOnline: profile.isOnline,
+            ringWidth: 3,
           );
 
           final info = Column(
@@ -84,69 +92,6 @@ class RefereeProfileHeader extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({
-    required this.imageUrl,
-    required this.isOnline,
-    required this.size,
-  });
-
-  final String? imageUrl;
-  final bool isOnline;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: RefereeColors.tertiary, width: 4),
-            boxShadow: [
-              BoxShadow(
-                color: RefereeColors.tertiary.withValues(alpha: 0.3),
-                blurRadius: 20,
-              ),
-            ],
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: imageUrl != null && imageUrl!.isNotEmpty
-              ? NewsNetworkImage(imageUrl: imageUrl!)
-              : ColoredBox(
-                  color: RefereeColors.secondaryContainer,
-                  child: Icon(
-                    Icons.person,
-                    size: size * 0.45,
-                    color: RefereeColors.onSecondaryContainer,
-                  ),
-                ),
-        ),
-        if (isOnline)
-          Positioned(
-            right: 4,
-            bottom: 4,
-            child: Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: RefereeColors.successEmerald,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: RefereeColors.portalSurface,
-                  width: 2,
-                ),
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

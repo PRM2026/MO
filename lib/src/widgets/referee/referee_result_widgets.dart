@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/race_result_confirmation.dart';
-import '../news/news_network_image.dart';
 import 'referee_glass_card.dart';
 
 class RefereeBreadcrumb extends StatelessWidget {
   const RefereeBreadcrumb({
     super.key,
     required this.raceCode,
+    required this.raceName,
   });
 
   final String raceCode;
+  final String raceName;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +23,18 @@ class RefereeBreadcrumb extends StatelessWidget {
       runSpacing: 4,
       children: [
         _crumb('Quản lý', RefereeColors.onSurfaceVariant),
-        const Icon(Icons.chevron_right, size: 14, color: RefereeColors.onSurfaceVariant),
+        const Icon(
+          Icons.chevron_right,
+          size: 14,
+          color: RefereeColors.onSurfaceVariant,
+        ),
         _crumb('Cuộc đua $raceCode', RefereeColors.onSurfaceVariant),
-        const Icon(Icons.chevron_right, size: 14, color: RefereeColors.onSurfaceVariant),
-        _crumb('Xác nhận Kết quả', RefereeColors.tertiary),
+        const Icon(
+          Icons.chevron_right,
+          size: 14,
+          color: RefereeColors.onSurfaceVariant,
+        ),
+        _crumb(raceName, RefereeColors.tertiary),
       ],
     );
   }
@@ -41,10 +50,58 @@ class RefereeBreadcrumb extends StatelessWidget {
   }
 }
 
+class RefereeRaceSelector extends StatelessWidget {
+  const RefereeRaceSelector({
+    super.key,
+    required this.races,
+    required this.selectedRaceId,
+    required this.onChanged,
+  });
+
+  final List<RefereeRaceOption> races;
+  final int? selectedRaceId;
+  final ValueChanged<int?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (races.isEmpty) return const SizedBox.shrink();
+
+    return RefereeGlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          isExpanded: true,
+          value: selectedRaceId,
+          dropdownColor: RefereeColors.portalSurface,
+          icon: const Icon(Icons.expand_more, color: RefereeColors.tertiary),
+          items: races
+              .map(
+                (race) => DropdownMenuItem<int>(
+                  value: race.id,
+                  child: Text(
+                    race.label,
+                    style: AppTypography.bodyMd(RefereeColors.onSurface),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              )
+              .toList(growable: false),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+}
+
 class RefereeResultsTable extends StatelessWidget {
-  const RefereeResultsTable({super.key, required this.rows});
+  const RefereeResultsTable({
+    super.key,
+    required this.rows,
+    required this.isFinalized,
+  });
 
   final List<RaceFinisherRow> rows;
+  final bool isFinalized;
 
   @override
   Widget build(BuildContext context) {
@@ -67,276 +124,179 @@ class RefereeResultsTable extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: RefereeColors.successEmerald.withValues(alpha: 0.1),
+                    color: (isFinalized
+                            ? RefereeColors.successEmerald
+                            : RefereeColors.tertiary)
+                        .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
-                      color: RefereeColors.successEmerald.withValues(alpha: 0.2),
+                      color: (isFinalized
+                              ? RefereeColors.successEmerald
+                              : RefereeColors.tertiary)
+                          .withValues(alpha: 0.2),
                     ),
                   ),
                   child: Text(
-                    'DỮ LIỆU TỰ ĐỘNG',
-                    style: AppTypography.labelCaps(RefereeColors.successEmerald)
-                        .copyWith(fontSize: 10),
+                    isFinalized ? 'ĐÃ CHỐT' : 'CHƯA CHỐT',
+                    style: AppTypography.labelCaps(
+                      isFinalized
+                          ? RefereeColors.successEmerald
+                          : RefereeColors.tertiary,
+                    ).copyWith(fontSize: 10),
                   ),
                 ),
               ],
             ),
           ),
           Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: MediaQuery.sizeOf(context).width - 32,
-              ),
-              child: DataTable(
-                headingRowColor: WidgetStateProperty.all(
-                  const Color(0x802C2A25),
+          if (rows.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+              child: Center(
+                child: Text(
+                  'Chưa có dữ liệu kết quả',
+                  style: AppTypography.labelCaps(
+                    RefereeColors.onSurfaceVariant,
+                  ).copyWith(fontWeight: FontWeight.w400),
                 ),
-                dataRowMinHeight: 72,
-                dataRowMaxHeight: 88,
-                columnSpacing: 24,
-                horizontalMargin: 24,
-                headingTextStyle: AppTypography.labelCaps(
-                  RefereeColors.onSurfaceVariant,
-                ).copyWith(fontSize: 11, letterSpacing: 0.8),
-                columns: const [
-                  DataColumn(label: Text('Hạng')),
-                  DataColumn(label: Text('Vận động viên / Ngựa')),
-                  DataColumn(label: Text('Thời gian')),
-                  DataColumn(label: Text('Chênh lệch')),
-                  DataColumn(label: Text('Thao tác')),
-                ],
-                rows: rows.map(_buildRow).toList(),
               ),
+            )
+          else
+            ...rows.map(
+              (row) => _ResultListTile(row: row, showDivider: row != rows.last),
             ),
-          ),
         ],
       ),
     );
   }
+}
 
-  DataRow _buildRow(RaceFinisherRow row) {
-    return DataRow(
-      cells: [
-        DataCell(
-          row.highlightRank
-              ? Container(
-                  width: 32,
-                  height: 32,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: RefereeColors.tertiary.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: RefereeColors.tertiary.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Text(
-                    '${row.rank}',
-                    style: AppTypography.labelCaps(RefereeColors.tertiary)
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: Text(
-                    '${row.rank}',
-                    style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
-                  ),
-                ),
-        ),
-        DataCell(
-          Row(
+class _ResultListTile extends StatelessWidget {
+  const _ResultListTile({required this.row, required this.showDivider});
+
+  final RaceFinisherRow row;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final typeColor = row.highlightRank
+        ? RefereeColors.championshipGold
+        : RefereeColors.onSurface;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: row.horseImageUrl != null
-                      ? NewsNetworkImage(imageUrl: row.horseImageUrl!)
-                      : ColoredBox(
-                          color: const Color(0xFF37342F),
-                          child: Icon(
-                            Icons.pets,
-                            color: RefereeColors.onSurfaceVariant,
-                          ),
-                        ),
+              _RankBadge(rank: row.rank, highlight: row.highlightRank),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      row.horseName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.labelCaps(RefereeColors.onSurface)
+                          .copyWith(fontSize: 14, letterSpacing: 0.2),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      row.jockeyName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.labelCaps(
+                        RefereeColors.onSurfaceVariant,
+                      ).copyWith(fontSize: 11, fontWeight: FontWeight.w400),
+                    ),
+                    if (row.statusLabel != null &&
+                        row.statusLabel != 'Về đích') ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        row.statusLabel!,
+                        style: AppTypography.labelCaps(RefereeColors.statusRed)
+                            .copyWith(fontSize: 10),
+                      ),
+                    ],
+                  ],
                 ),
               ),
               const SizedBox(width: 12),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    row.horseName,
-                    style: AppTypography.labelCaps(RefereeColors.onSurface)
-                        .copyWith(fontSize: 14, letterSpacing: 0.2),
+                    row.finishTime,
+                    style: AppTypography.bodyMd(typeColor).copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: const [],
+                    ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
-                    'Jockey: ${row.jockeyName}',
+                    row.gapLabel,
                     style: AppTypography.labelCaps(
-                      RefereeColors.onSurfaceVariant,
-                    ).copyWith(fontSize: 11, fontWeight: FontWeight.w400),
+                      row.gapIsPositive
+                          ? RefereeColors.statusRed
+                          : RefereeColors.onSurfaceVariant,
+                    ).copyWith(fontSize: 10),
                   ),
                 ],
               ),
             ],
           ),
         ),
-        DataCell(
-          Text(
-            row.finishTime,
-            style: AppTypography.bodyMd(
-              row.highlightRank
-                  ? RefereeColors.championshipGold
-                  : RefereeColors.onSurface,
-            ).copyWith(fontWeight: FontWeight.w500),
-          ),
-        ),
-        DataCell(
-          Text(
-            row.gapLabel,
-            style: AppTypography.bodyMd(
-              row.gapIsPositive
-                  ? RefereeColors.statusRed
-                  : RefereeColors.onSurfaceVariant,
-            ),
-          ),
-        ),
-        DataCell(
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.edit_outlined,
-              color: RefereeColors.onSurfaceVariant,
-              size: 20,
-            ),
-          ),
-        ),
+        if (showDivider)
+          Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
       ],
     );
   }
 }
 
-class RefereeAppliedViolationsCard extends StatelessWidget {
-  const RefereeAppliedViolationsCard({
-    super.key,
-    required this.violations,
-  });
+class _RankBadge extends StatelessWidget {
+  const _RankBadge({required this.rank, required this.highlight});
 
-  final List<AppliedViolationSummary> violations;
+  final int? rank;
+  final bool highlight;
 
   @override
   Widget build(BuildContext context) {
-    return RefereeGlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.warning_amber_rounded, color: RefereeColors.statusRed),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'VI PHẠM & HÌNH PHẠT ĐÃ ÁP DỤNG',
-                  style: AppTypography.labelCaps(RefereeColors.onSurface)
-                      .copyWith(fontSize: 14),
-                ),
-              ),
-            ],
+    final label = rank?.toString() ?? '—';
+
+    if (highlight) {
+      return Container(
+        width: 32,
+        height: 32,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: RefereeColors.tertiary.withValues(alpha: 0.2),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: RefereeColors.tertiary.withValues(alpha: 0.3),
           ),
-          const SizedBox(height: 16),
-          for (final item in violations) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: RefereeColors.statusRed.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: RefereeColors.statusRed.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: RefereeColors.statusRed.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Icon(Icons.block, color: RefereeColors.statusRed),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          style: AppTypography.labelCaps(RefereeColors.onSurface)
-                              .copyWith(fontSize: 14, letterSpacing: 0.2),
-                        ),
-                        Text(
-                          item.penaltyDescription,
-                          style: AppTypography.labelCaps(
-                            RefereeColors.onSurfaceVariant,
-                          ).copyWith(fontSize: 11, fontWeight: FontWeight.w400),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.close,
-                      color: RefereeColors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-          InkWell(
-            onTap: () {},
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  style: BorderStyle.solid,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.add_circle_outline,
-                    color: RefereeColors.onSurfaceVariant,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Thêm vi phạm thủ công',
-                    style: AppTypography.labelCaps(
-                      RefereeColors.onSurfaceVariant,
-                    ).copyWith(fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
+        child: Text(
+          label,
+          style: AppTypography.labelCaps(RefereeColors.tertiary)
+              .copyWith(fontWeight: FontWeight.w700),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: Center(
+        child: Text(
+          label,
+          style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+        ),
       ),
     );
   }
@@ -370,7 +330,7 @@ class RefereePrizePreviewCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'ƯỚC TÍNH THƯỞNG GIẢI',
+                'CƠ CẤU GIẢI THƯỞNG',
                 style: AppTypography.labelCaps(RefereeColors.tertiary)
                     .copyWith(letterSpacing: 1.2),
               ),
@@ -385,67 +345,65 @@ class RefereePrizePreviewCard extends StatelessWidget {
                       RefereeColors.onSurfaceVariant,
                     ).copyWith(fontWeight: FontWeight.w500),
                   ),
-                  RichText(
-                    text: TextSpan(
-                      style: AppTypography.headlineSm(RefereeColors.onSurface)
-                          .copyWith(fontWeight: FontWeight.w700),
-                      children: [
-                        TextSpan(text: totalPrizePool),
-                        TextSpan(
-                          text: ' VND',
-                          style: AppTypography.bodyMd(
-                            RefereeColors.onSurfaceVariant,
-                          ).copyWith(fontWeight: FontWeight.w400),
-                        ),
-                      ],
+                  Flexible(
+                    child: RichText(
+                      textAlign: TextAlign.end,
+                      text: TextSpan(
+                        style: AppTypography.headlineSm(RefereeColors.onSurface)
+                            .copyWith(fontWeight: FontWeight.w700),
+                        children: [
+                          TextSpan(text: totalPrizePool),
+                          TextSpan(
+                            text: ' VND',
+                            style: AppTypography.bodyMd(
+                              RefereeColors.onSurfaceVariant,
+                            ).copyWith(fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Divider(color: Colors.white.withValues(alpha: 0.1)),
-              const SizedBox(height: 12),
-              for (final row in breakdown) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      row.label,
-                      style: AppTypography.bodySm(
-                        RefereeColors.onSurfaceVariant,
+              if (breakdown.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Divider(color: Colors.white.withValues(alpha: 0.1)),
+                const SizedBox(height: 12),
+                for (final row in breakdown) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          row.label,
+                          style: AppTypography.bodySm(
+                            RefereeColors.onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                    ),
-                    Text(
-                      row.amount,
-                      style: AppTypography.bodySm(
-                        row.highlight
-                            ? RefereeColors.championshipGold
-                            : RefereeColors.onSurface,
-                      ).copyWith(
-                        fontWeight:
-                            row.highlight ? FontWeight.w700 : FontWeight.w500,
+                      const SizedBox(width: 8),
+                      Text(
+                        row.amount,
+                        style: AppTypography.bodySm(
+                          row.highlight
+                              ? RefereeColors.championshipGold
+                              : RefereeColors.onSurface,
+                        ).copyWith(
+                          fontWeight:
+                              row.highlight ? FontWeight.w700 : FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
-              const SizedBox(height: 8),
-              OutlinedButton(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: RefereeColors.tertiary,
-                  side: BorderSide(
-                    color: RefereeColors.tertiary.withValues(alpha: 0.3),
+                    ],
                   ),
-                  minimumSize: const Size.fromHeight(40),
+                  const SizedBox(height: 8),
+                ],
+              ] else ...[
+                const SizedBox(height: 12),
+                Text(
+                  'Chưa có thông tin giải thưởng',
+                  style: AppTypography.bodySm(RefereeColors.onSurfaceVariant),
                 ),
-                child: Text(
-                  'Điều chỉnh tỷ lệ thưởng',
-                  style: AppTypography.labelCaps(RefereeColors.tertiary)
-                      .copyWith(fontSize: 12),
-                ),
-              ),
+              ],
             ],
           ),
         ],
@@ -454,111 +412,42 @@ class RefereePrizePreviewCard extends StatelessWidget {
   }
 }
 
-class RefereeActivityTimeline extends StatelessWidget {
-  const RefereeActivityTimeline({super.key, required this.entries});
+class RefereeInfoBanner extends StatelessWidget {
+  const RefereeInfoBanner({super.key, required this.message});
 
-  final List<ActivityLogEntry> entries;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
-    return RefereeGlassCard(
-      child: Column(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: RefereeColors.tertiary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: RefereeColors.tertiary.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.history, color: RefereeColors.secondary),
-              const SizedBox(width: 8),
-              Text(
-                'NHẬT KÝ ĐIỀU HÀNH',
-                style: AppTypography.labelCaps(RefereeColors.onSurface)
-                    .copyWith(fontSize: 14),
-              ),
-            ],
+          Icon(
+            Icons.info_outline_rounded,
+            color: RefereeColors.tertiary,
+            size: 18,
           ),
-          const SizedBox(height: 24),
-          ...entries.map((entry) => _TimelineItem(entry: entry)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTypography.labelCaps(RefereeColors.tertiary).copyWith(
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                letterSpacing: 0,
+              ),
+            ),
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _TimelineItem extends StatelessWidget {
-  const _TimelineItem({required this.entry});
-
-  final ActivityLogEntry entry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 24,
-              child: Column(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: RefereeColors.portalSurface,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: entry.isActive
-                            ? RefereeColors.tertiary
-                            : Colors.white.withValues(alpha: 0.2),
-                        width: 2,
-                      ),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: entry.isActive
-                              ? RefereeColors.tertiary
-                              : Colors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: Colors.white.withValues(alpha: 0.1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    entry.timeLabel,
-                    style: AppTypography.labelCaps(
-                      RefereeColors.onSurfaceVariant,
-                    ).copyWith(fontSize: 11),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    entry.message,
-                    style: AppTypography.bodySm(RefereeColors.onSurface)
-                        .copyWith(fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

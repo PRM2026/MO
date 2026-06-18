@@ -2,9 +2,7 @@ enum ViolationReviewStatus { confirmed, pending }
 
 class ViolationRecordItem {
   const ViolationRecordItem({
-    required this.laneLabel,
     required this.horseLabel,
-    required this.jockeyLabel,
     required this.violationType,
     required this.note,
     required this.timeLabel,
@@ -12,9 +10,7 @@ class ViolationRecordItem {
     this.severityHigh = false,
   });
 
-  final String laneLabel;
   final String horseLabel;
-  final String jockeyLabel;
   final String violationType;
   final String note;
   final String timeLabel;
@@ -33,25 +29,19 @@ class ViolationRecordItem {
 
 class ViolationFormOptions {
   const ViolationFormOptions({
-    required this.lanes,
     required this.horses,
-    required this.jockeys,
     required this.violationTypes,
   });
 
-  final List<String> lanes;
   final List<String> horses;
-  final List<String> jockeys;
   final List<String> violationTypes;
 
   static ViolationFormOptions sample() => const ViolationFormOptions(
-        lanes: ['Làn 01', 'Làn 02', 'Làn 03', 'Làn 04'],
         horses: [
           'H042 - Crimson Blaze',
           'H089 - Silver Wind',
           'H112 - Midnight Shadow',
         ],
-        jockeys: ['J-Văn Nam', 'J-Thế Anh', 'J-Minh Trí'],
         violationTypes: [
           'Lấn làn (Track Interference)',
           'Xuất phát sớm (False Start)',
@@ -85,20 +75,15 @@ class ViolationsPageData {
       pendingCount: 1,
       records: const [
         ViolationRecordItem(
-          laneLabel: 'L03',
           horseLabel: 'H112 - Midnight Shadow',
-          jockeyLabel: 'J-Thế Anh',
           violationType: 'Lấn làn nghiêm trọng',
-          note:
-              'Cố tình ép làn 02 tại khúc cua thứ 3, gây nguy hiểm...',
+          note: 'Cố tình ép làn 02 tại khúc cua thứ 3, gây nguy hiểm...',
           timeLabel: '14:25:02',
           status: ViolationReviewStatus.confirmed,
           severityHigh: true,
         ),
         ViolationRecordItem(
-          laneLabel: 'L01',
           horseLabel: 'H042 - Crimson Blaze',
-          jockeyLabel: 'J-Văn Nam',
           violationType: 'Xuất phát sớm',
           note: 'Rời lồng trước hiệu lệnh 0.15s.',
           timeLabel: '14:10:15',

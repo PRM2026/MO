@@ -23,7 +23,7 @@ class RefereeViolationsScreen extends StatefulWidget {
 
 class _RefereeViolationsScreenState extends State<RefereeViolationsScreen> {
   late final RefereeViolationsViewModel _viewModel;
-  late final TextEditingController _penaltyController;
+  late final TextEditingController _evidenceController;
   late final TextEditingController _notesController;
   late final bool _ownsViewModel;
 
@@ -33,7 +33,7 @@ class _RefereeViolationsScreenState extends State<RefereeViolationsScreen> {
     _ownsViewModel = widget.viewModel == null;
     _viewModel = widget.viewModel ?? RefereeViolationsViewModel();
     _viewModel.addListener(_onChanged);
-    _penaltyController = TextEditingController();
+    _evidenceController = TextEditingController();
     _notesController = TextEditingController();
     _viewModel.loadPage();
   }
@@ -45,12 +45,12 @@ class _RefereeViolationsScreenState extends State<RefereeViolationsScreen> {
   Future<void> _handleSubmit() async {
     final success = await _viewModel.submitViolation();
     if (!mounted || !success) return;
-    _penaltyController.clear();
+    _evidenceController.clear();
     _notesController.clear();
     AppToast.showSuccess(
       context,
-      'Đã ghi nhận thành công',
-      subtitle: 'Dữ liệu đã được gửi tới hội đồng trọng tài.',
+      'Đã ghi nhận (thử nghiệm)',
+      subtitle: 'Tính năng đang chờ tích hợp API từ backend.',
     );
   }
 
@@ -58,7 +58,7 @@ class _RefereeViolationsScreenState extends State<RefereeViolationsScreen> {
   void dispose() {
     _viewModel.removeListener(_onChanged);
     if (_ownsViewModel) _viewModel.dispose();
-    _penaltyController.dispose();
+    _evidenceController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -95,7 +95,7 @@ class _RefereeViolationsScreenState extends State<RefereeViolationsScreen> {
                         final form = _ViolationForm(
                           viewModel: _viewModel,
                           options: options!,
-                          penaltyController: _penaltyController,
+                          evidenceController: _evidenceController,
                           notesController: _notesController,
                           onSubmit: _handleSubmit,
                         );
@@ -143,18 +143,60 @@ class _RefereeViolationsScreenState extends State<RefereeViolationsScreen> {
   }
 }
 
+class _PendingBackendBanner extends StatelessWidget {
+  const _PendingBackendBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: RefereeColors.tertiary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: RefereeColors.tertiary.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: RefereeColors.tertiary,
+            size: 18,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Tính năng ghi vi phạm đang chờ tích hợp API. '
+              'Dữ liệu chưa được gửi lên máy chủ.',
+              style: AppTypography.labelCaps(
+                RefereeColors.tertiary,
+              ).copyWith(
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                letterSpacing: 0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ViolationForm extends StatelessWidget {
   const _ViolationForm({
     required this.viewModel,
     required this.options,
-    required this.penaltyController,
+    required this.evidenceController,
     required this.notesController,
     required this.onSubmit,
   });
 
   final RefereeViolationsViewModel viewModel;
   final ViolationFormOptions options;
-  final TextEditingController penaltyController;
+  final TextEditingController evidenceController;
   final TextEditingController notesController;
   final VoidCallback onSubmit;
 
@@ -183,23 +225,16 @@ class _ViolationForm extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          const _PendingBackendBanner(),
           const SizedBox(height: 24),
           LayoutBuilder(
             builder: (context, constraints) {
-              final threeCol = constraints.maxWidth >= 640;
-              if (threeCol) {
+              final twoCol = constraints.maxWidth >= 480;
+              if (twoCol) {
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: RefereeFormDropdown(
-                        label: 'Làn đua',
-                        value: viewModel.selectedLane,
-                        items: options.lanes,
-                        onChanged: viewModel.updateLane,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
                     Expanded(
                       child: RefereeFormDropdown(
                         label: 'Ngựa (Horse)',
@@ -211,10 +246,10 @@ class _ViolationForm extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: RefereeFormDropdown(
-                        label: 'Nài ngựa (Jockey)',
-                        value: viewModel.selectedJockey,
-                        items: options.jockeys,
-                        onChanged: viewModel.updateJockey,
+                        label: 'Loại vi phạm',
+                        value: viewModel.selectedViolationType,
+                        items: options.violationTypes,
+                        onChanged: viewModel.updateViolationType,
                       ),
                     ),
                   ],
@@ -223,13 +258,6 @@ class _ViolationForm extends StatelessWidget {
 
               return Column(
                 children: [
-                  RefereeFormDropdown(
-                    label: 'Làn đua',
-                    value: viewModel.selectedLane,
-                    items: options.lanes,
-                    onChanged: viewModel.updateLane,
-                  ),
-                  const SizedBox(height: 16),
                   RefereeFormDropdown(
                     label: 'Ngựa (Horse)',
                     value: viewModel.selectedHorse,
@@ -238,67 +266,25 @@ class _ViolationForm extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   RefereeFormDropdown(
-                    label: 'Nài ngựa (Jockey)',
-                    value: viewModel.selectedJockey,
-                    items: options.jockeys,
-                    onChanged: viewModel.updateJockey,
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth >= 480) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: RefereeFormDropdown(
-                        label: 'Loại vi phạm',
-                        value: viewModel.selectedViolationType,
-                        items: options.violationTypes,
-                        onChanged: viewModel.updateViolationType,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: RefereeFormTextField(
-                        label: 'Mức phạt đề xuất',
-                        controller: penaltyController,
-                        hint: 'Ví dụ: 5.000.000 VND / Cấm 2 trận',
-                        onChanged: viewModel.updatePenalty,
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return Column(
-                children: [
-                  RefereeFormDropdown(
                     label: 'Loại vi phạm',
                     value: viewModel.selectedViolationType,
                     items: options.violationTypes,
                     onChanged: viewModel.updateViolationType,
                   ),
-                  const SizedBox(height: 16),
-                  RefereeFormTextField(
-                    label: 'Mức phạt đề xuất',
-                    controller: penaltyController,
-                    hint: 'Ví dụ: 5.000.000 VND / Cấm 2 trận',
-                    onChanged: viewModel.updatePenalty,
-                  ),
                 ],
               );
             },
           ),
           const SizedBox(height: 16),
-          const RefereeUploadZone(),
+          RefereeFormTextField(
+            label: 'URL bằng chứng (tùy chọn)',
+            controller: evidenceController,
+            hint: 'https://...',
+            onChanged: viewModel.updateEvidenceUrl,
+          ),
           const SizedBox(height: 16),
           RefereeFormTextField(
-            label: 'Ghi chú chi tiết',
+            label: 'Lý do / Ghi chú chi tiết',
             controller: notesController,
             hint: 'Mô tả diễn biến vi phạm...',
             maxLines: 4,

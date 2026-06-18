@@ -89,6 +89,7 @@ class _OwnerChangePasswordScreenState extends State<OwnerChangePasswordScreen> {
         showBack: true,
         titleOverride: 'Đổi mật khẩu',
         profileImageUrl: widget.profileImageUrl,
+        profileInteractive: false,
       ),
       body: OwnerPortalBackground(
         child: SingleChildScrollView(

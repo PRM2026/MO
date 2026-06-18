@@ -53,6 +53,15 @@ class ApiClient {
     return _decodeObject(response, mapper);
   }
 
+  Future<List<T>> postList<T>(
+    String path,
+    Map<String, dynamic> body,
+    T Function(Map<String, dynamic>) mapper,
+  ) async {
+    final response = await _send('POST', path, body: body);
+    return _decodeList(response, mapper);
+  }
+
   Future<T> putObject<T>(
     String path,
     Map<String, dynamic>? body,

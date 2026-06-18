@@ -6,7 +6,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../common/brand_logo.dart';
-import '../news/news_network_image.dart';
+import '../common/profile_avatar.dart';
 
 class RefereeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const RefereeAppBar({
@@ -15,14 +15,14 @@ class RefereeAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = false,
     this.onProfileTap,
     this.titleOverride,
-    this.showNotificationAction = true,
+    this.profileInteractive = true,
   });
 
   final String? profileImageUrl;
   final bool showBack;
   final VoidCallback? onProfileTap;
   final String? titleOverride;
-  final bool showNotificationAction;
+  final bool profileInteractive;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -69,38 +69,13 @@ class RefereeAppBar extends StatelessWidget implements PreferredSizeWidget {
               ],
             ),
       actions: [
-        if (showNotificationAction)
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.notifications_none,
-              color: RefereeColors.onSurfaceVariant.withValues(alpha: 0.9),
-            ),
-          ),
-        Padding(
-          padding: const EdgeInsets.only(right: AppSpacing.lg),
-          child: GestureDetector(
-            onTap: onProfileTap ?? () => AppRoutes.openRefereeProfile(context),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: RefereeColors.tertiary, width: 2),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: profileImageUrl != null && profileImageUrl!.isNotEmpty
-                  ? NewsNetworkImage(imageUrl: profileImageUrl!)
-                  : CircleAvatar(
-                      backgroundColor: RefereeColors.secondaryContainer,
-                      child: Icon(
-                        Icons.gavel,
-                        color: RefereeColors.onSecondaryContainer,
-                        size: 20,
-                      ),
-                    ),
-            ),
-          ),
+        ProfileAvatarButton(
+          imageUrl: profileImageUrl,
+          fallbackIcon: Icons.shield_outlined,
+          interactive: profileInteractive,
+          onTap: profileInteractive
+              ? (onProfileTap ?? () => AppRoutes.openRefereeProfile(context))
+              : null,
         ),
       ],
       bottom: PreferredSize(

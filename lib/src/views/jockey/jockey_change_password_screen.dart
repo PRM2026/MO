@@ -85,8 +85,8 @@ class _JockeyChangePasswordScreenState extends State<JockeyChangePasswordScreen>
         showBack: true,
         titleOverride: 'ĐỔI MẬT KHẨU',
         showBrandTitle: false,
-        showNotificationAction: false,
         profileImageUrl: widget.profileImageUrl,
+        profileInteractive: false,
       ),
       body: JockeySpeedlineBackground(
         child: Stack(

@@ -4,7 +4,7 @@ import '../../constants/app_constants.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../news/news_network_image.dart';
+import '../common/profile_avatar.dart';
 
 class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
   const OwnerAppBar({
@@ -15,6 +15,7 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onProfileTap,
     this.showSearchAction = false,
     this.onSearchTap,
+    this.profileInteractive = true,
   });
 
   final String? profileImageUrl;
@@ -23,6 +24,7 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onProfileTap;
   final bool showSearchAction;
   final VoidCallback? onSearchTap;
+  final bool profileInteractive;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -81,25 +83,13 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: RefereeColors.onSurfaceVariant,
             ),
           ),
-        if (profileImageUrl != null && profileImageUrl!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.md),
-            child: GestureDetector(
-              onTap: onProfileTap,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: RefereeColors.championshipGold.withValues(alpha: 0.3),
-                  ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: NewsNetworkImage(imageUrl: profileImageUrl!),
-              ),
-            ),
-          ),
+        ProfileAvatarButton(
+          imageUrl: profileImageUrl,
+          fallbackIcon: Icons.person_rounded,
+          interactive: profileInteractive,
+          onTap: profileInteractive ? onProfileTap : null,
+          padding: const EdgeInsets.only(right: AppSpacing.md),
+        ),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),

@@ -7,7 +7,7 @@ import '../../data/spectator_home_mock.dart';
 import '../../repositories/auth_repository.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/app_toast.dart';
-import '../../widgets/news/news_network_image.dart';
+import '../../widgets/common/profile_avatar.dart';
 import '../../widgets/spectator/spectator_app_bar.dart';
 import '../../widgets/spectator/spectator_glass_card.dart';
 
@@ -70,9 +70,10 @@ class _SpectatorProfileScreenState extends State<SpectatorProfileScreen> {
 
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: const SpectatorAppBar(
+      appBar: SpectatorAppBar(
         displayName: 'Khán giả',
-        showProfileAvatar: false,
+        profileImageUrl: avatarUrl,
+        profileInteractive: false,
       ),
       body: _isLoading
           ? const Center(
@@ -92,18 +93,11 @@ class _SpectatorProfileScreenState extends State<SpectatorProfileScreen> {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      Container(
-                        width: 96,
-                        height: 96,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: RefereeColors.championshipGold,
-                            width: 2,
-                          ),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: NewsNetworkImage(imageUrl: avatarUrl),
+                      ProfileAvatar(
+                        size: 96,
+                        imageUrl: avatarUrl,
+                        fallbackIcon: Icons.person_rounded,
+                        ringWidth: 3,
                       ),
                       const SizedBox(height: 16),
                       Text(

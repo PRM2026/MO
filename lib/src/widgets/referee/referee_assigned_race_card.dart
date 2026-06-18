@@ -196,8 +196,8 @@ class _MetaGrid extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _MetaItem(icon: Icons.route_outlined, label: meta.lanes)),
-            Expanded(child: _MetaItem(icon: Icons.groups_outlined, label: meta.horses)),
+            Expanded(child: _MetaItem(icon: Icons.straighten_outlined, label: meta.distance)),
+            Expanded(child: _MetaItem(icon: Icons.groups_outlined, label: meta.participants)),
           ],
         ),
       ],
