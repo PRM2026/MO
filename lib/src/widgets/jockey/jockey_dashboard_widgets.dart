@@ -420,8 +420,10 @@ IconData _quickLinkIcon(String label) {
   return switch (label.trim().toLowerCase()) {
     'profile' => Icons.person_outline,
     'invitations' => Icons.mail_outline,
+    'assignments' || 'horses' || 'my horses' => Icons.pets_outlined,
+    'schedule' => Icons.calendar_today_outlined,
     'my races' => Icons.calendar_today_outlined,
-    'performance' => Icons.military_tech_outlined,
+    'performance' || 'results' => Icons.military_tech_outlined,
     'wallet' => Icons.account_balance_wallet_outlined,
     'notifications' => Icons.notifications_none,
     _ => Icons.open_in_new,
