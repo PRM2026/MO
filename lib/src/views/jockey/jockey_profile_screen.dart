@@ -7,8 +7,8 @@ import '../../utils/app_toast.dart';
 import '../../viewmodels/jockey_profile_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
+import '../../widgets/jockey/jockey_profile_widgets.dart';
 import '../../widgets/jockey/jockey_state_widgets.dart';
-import '../../widgets/referee/referee_profile_widgets.dart';
 
 class JockeyProfileScreen extends StatefulWidget {
   const JockeyProfileScreen({super.key, this.viewModel});
@@ -44,16 +44,11 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
     AppRoutes.openAfterLogout(context);
   }
 
-  void _handleSettingTap(String title) {
-    if (title == 'Báº£o máº­t & Máº­t kháº©u' ||
-        title == 'Bao mat & Mat khau') {
-      AppRoutes.openJockeyChangePassword(
-        context,
-        profileImageUrl: _viewModel.data?.avatarUrl,
-      );
-      return;
-    }
-    AppToast.showSuccess(context, 'Dang mo $title');
+  void _handleChangePassword() {
+    AppRoutes.openJockeyChangePassword(
+      context,
+      profileImageUrl: _viewModel.data?.avatarUrl,
+    );
   }
 
   @override
@@ -110,21 +105,26 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.stretch,
                                     children: [
-                                      RefereeProfileHeader(profile: data),
+                                      JockeyProfileHeaderCard(profile: data),
+                                      if (data.shouldShowReviewReason) ...[
+                                        const SizedBox(height: AppSpacing.lg),
+                                        JockeyProfileReviewCard(profile: data),
+                                      ],
                                       const SizedBox(height: AppSpacing.lg),
-                                      RefereeProfileStatsGrid(
-                                        stats: data.stats,
+                                      JockeyProfilePerformanceGrid(
+                                        profile: data,
                                       ),
                                       const SizedBox(height: AppSpacing.lg),
-                                      RefereeProfileSettingsCard(
-                                        settings: data.settings,
-                                        onItemTap: (item) =>
-                                            _handleSettingTap(item.title),
+                                      JockeyProfileInfoSection(profile: data),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      JockeyRaceHistorySection(
+                                        items: data.raceHistory,
                                       ),
                                       const SizedBox(height: AppSpacing.lg),
-                                      RefereeProfileLogoutButton(
-                                        isLoading: _viewModel.isLoggingOut,
-                                        onPressed: _handleLogout,
+                                      JockeyProfileActionsCard(
+                                        isLoggingOut: _viewModel.isLoggingOut,
+                                        onChangePassword: _handleChangePassword,
+                                        onLogout: _handleLogout,
                                       ),
                                     ],
                                   ),

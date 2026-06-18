@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horse_racing/src/models/jockey_dashboard_data.dart';
 import 'package:horse_racing/src/models/jockey_horse_data.dart';
+import 'package:horse_racing/src/models/jockey_profile_response.dart';
 import 'package:horse_racing/src/models/jockey_results_data.dart';
 import 'package:horse_racing/src/models/jockey_schedule_data.dart';
-import 'package:horse_racing/src/models/referee_profile_data.dart';
 import 'package:horse_racing/src/repositories/jockey_dashboard_repository.dart';
 import 'package:horse_racing/src/repositories/jockey_horses_repository.dart';
 import 'package:horse_racing/src/repositories/jockey_profile_repository.dart';
@@ -117,7 +117,7 @@ class _FailingJockeyResultsRepository extends JockeyResultsRepository {
 
 class _FailingJockeyProfileRepository extends JockeyProfileRepository {
   @override
-  Future<RefereeProfileData> fetchProfile() {
+  Future<JockeyProfileResponse> fetchProfile() {
     throw Exception('profile api failed');
   }
 }

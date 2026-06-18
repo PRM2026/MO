@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../models/jockey_profile_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -15,8 +16,11 @@ class JockeyProfileService {
 
   final ApiClient _apiClient;
 
-  Future<Map<String, dynamic>> getMyProfile() {
-    return _apiClient.getObject('/jockey/profile', (json) => json);
+  Future<JockeyProfileResponse> getMyProfile() {
+    return _apiClient.getObject(
+      '/jockey/profile',
+      JockeyProfileResponse.fromJson,
+    );
   }
 
   Future<Map<String, dynamic>> updateMyProfile({
