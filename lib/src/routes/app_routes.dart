@@ -9,11 +9,15 @@ import '../views/main_shell.dart';
 import '../views/user_account_screen.dart';
 import '../views/jockey/jockey_change_password_screen.dart';
 import '../views/jockey/jockey_invitations_screen.dart';
+import '../views/jockey/jockey_deposit_screen.dart';
+import '../views/jockey/jockey_notifications_screen.dart';
 import '../views/jockey/jockey_profile_edit_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
 import '../views/jockey/jockey_race_detail_screen.dart';
 import '../views/jockey/jockey_race_results_screen.dart';
 import '../views/jockey/jockey_shell.dart';
+import '../views/jockey/jockey_wallet_screen.dart';
+import '../views/jockey/jockey_withdrawal_screen.dart';
 import '../views/owner/owner_change_password_screen.dart';
 import '../views/owner/owner_create_jockey_invitation_screen.dart';
 import '../views/owner/owner_jockey_invitations_screen.dart';
@@ -59,6 +63,26 @@ abstract final class AppRoutes {
 
   static Route<void> jockeyPortal() {
     return MaterialPageRoute<void>(builder: (_) => const JockeyShell());
+  }
+
+  static Route<void> jockeyWallet() {
+    return MaterialPageRoute<void>(builder: (_) => const JockeyWalletScreen());
+  }
+
+  static Route<void> jockeyNotifications() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const JockeyNotificationsScreen(),
+    );
+  }
+
+  static Route<bool> jockeyDeposit() {
+    return MaterialPageRoute<bool>(builder: (_) => const JockeyDepositScreen());
+  }
+
+  static Route<bool> jockeyWithdrawal() {
+    return MaterialPageRoute<bool>(
+      builder: (_) => const JockeyWithdrawalScreen(),
+    );
   }
 
   static Route<void> jockeyRaceDetail(String raceId) {
@@ -243,6 +267,22 @@ abstract final class AppRoutes {
 
   static void openJockeyProfile(BuildContext context) {
     Navigator.of(context).push(jockeyProfile());
+  }
+
+  static void openJockeyWallet(BuildContext context) {
+    Navigator.of(context).push(jockeyWallet());
+  }
+
+  static Future<void> openJockeyNotifications(BuildContext context) {
+    return Navigator.of(context).push(jockeyNotifications());
+  }
+
+  static Future<bool?> openJockeyDeposit(BuildContext context) {
+    return Navigator.of(context).push(jockeyDeposit());
+  }
+
+  static Future<bool?> openJockeyWithdrawal(BuildContext context) {
+    return Navigator.of(context).push(jockeyWithdrawal());
   }
 
   static void openJockeyRaceDetail(BuildContext context, String raceId) {

@@ -1,5 +1,7 @@
 import 'package:http/http.dart' as http;
 
+import '../models/notification_response.dart';
+import '../models/unread_notification_count_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -15,7 +17,7 @@ class JockeyNotificationService {
 
   final ApiClient _apiClient;
 
-  Future<ApiPage<Map<String, dynamic>>> getNotifications({
+  Future<ApiPage<NotificationResponse>> getNotifications({
     String? status,
     int page = 0,
     int size = 20,
@@ -25,18 +27,32 @@ class JockeyNotificationService {
       'page=$page',
       'size=$size',
     ].join('&');
-    return _apiClient.getPage('/notifications?$query', (json) => json);
+    return _apiClient.getPage(
+      '/notifications?$query',
+      NotificationResponse.fromJson,
+    );
   }
 
-  Future<Map<String, dynamic>> getUnreadCount() {
-    return _apiClient.getObject('/notifications/unread-count', (json) => json);
+  Future<UnreadNotificationCountResponse> getUnreadCount() {
+    return _apiClient.getObject(
+      '/notifications/unread-count',
+      UnreadNotificationCountResponse.fromJson,
+    );
   }
 
-  Future<Map<String, dynamic>> markRead(String id) {
-    return _apiClient.putObject('/notifications/$id/read', {}, (json) => json);
+  Future<NotificationResponse> markRead(String id) {
+    return _apiClient.putObject(
+      '/notifications/$id/read',
+      {},
+      NotificationResponse.fromJson,
+    );
   }
 
-  Future<Map<String, dynamic>> markAllRead() {
-    return _apiClient.putObject('/notifications/read-all', {}, (json) => json);
+  Future<UnreadNotificationCountResponse> markAllRead() {
+    return _apiClient.putObject(
+      '/notifications/read-all',
+      {},
+      UnreadNotificationCountResponse.fromJson,
+    );
   }
 }
