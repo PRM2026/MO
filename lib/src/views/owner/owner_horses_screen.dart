@@ -4,11 +4,12 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/owner_horse_item.dart';
-import '../../utils/app_toast.dart';
 import '../../viewmodels/owner_horses_viewmodel.dart';
 import '../../widgets/owner/owner_app_bar.dart';
 import '../../widgets/owner/owner_dashboard_widgets.dart';
 import '../../widgets/owner/owner_horse_widgets.dart';
+import 'owner_horse_detail_screen.dart';
+import 'owner_horse_form_screen.dart';
 
 class OwnerHorsesScreen extends StatefulWidget {
   const OwnerHorsesScreen({super.key, this.viewModel, this.onProfileTap});
@@ -95,13 +96,27 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
     );
   }
 
-  void _handleAddHorse() {
-    // TODO(Phase 03): open the owner horse create form.
-    AppToast.showSuccess(
-      context,
-      'Tính năng thêm ngựa',
-      subtitle: 'Đang được phát triển.',
+  Future<void> _openCreateForm() async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const OwnerHorseFormScreen()),
     );
+    if (changed == true) {
+      await _viewModel.refreshHorses();
+    }
+  }
+
+  Future<void> _openDetail(OwnerHorseItem horse) async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => OwnerHorseDetailScreen(
+          horseId: horse.id,
+          initialName: horse.name,
+        ),
+      ),
+    );
+    if (changed == true) {
+      await _viewModel.refreshHorses();
+    }
   }
 
   @override
@@ -119,7 +134,7 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
     return Scaffold(
       backgroundColor: RefereeColors.background,
       appBar: OwnerAppBar(
-        titleOverride: 'Danh Sách Ngựa',
+        titleOverride: 'Danh sách ngựa',
         profileImageUrl: _viewModel.profileImageUrl,
         onProfileTap: widget.onProfileTap,
         showSearchAction: true,
@@ -213,12 +228,15 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                               itemBuilder: (context, index) {
                                                 if (index == horses.length) {
                                                   return OwnerAddHorseCard(
-                                                    onTap: _handleAddHorse,
+                                                    onTap: _openCreateForm,
                                                   );
                                                 }
 
+                                                final horse = horses[index];
                                                 return OwnerHorseGridCard(
-                                                  horse: horses[index],
+                                                  horse: horse,
+                                                  onTap: () =>
+                                                      _openDetail(horse),
                                                 );
                                               },
                                             );

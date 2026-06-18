@@ -55,6 +55,16 @@ class OwnerProfileData {
       avatarUrl: _emptyToNull(user.avatarUrl),
       settings: const [
         OwnerProfileSettingItem(
+          title: 'Lời mời jockey',
+          icon: Icons.mail_outline,
+          iconColor: RefereeColors.championshipGold,
+        ),
+        OwnerProfileSettingItem(
+          title: 'Jockey đã nhận lời',
+          icon: Icons.groups_outlined,
+          iconColor: RefereeColors.successEmerald,
+        ),
+        OwnerProfileSettingItem(
           title: 'Bảo mật & Mật khẩu',
           icon: Icons.security_outlined,
           iconColor: RefereeColors.secondary,

@@ -14,6 +14,8 @@ import '../views/jockey/jockey_race_detail_screen.dart';
 import '../views/jockey/jockey_race_results_screen.dart';
 import '../views/jockey/jockey_shell.dart';
 import '../views/owner/owner_change_password_screen.dart';
+import '../views/owner/owner_create_jockey_invitation_screen.dart';
+import '../views/owner/owner_jockey_invitations_screen.dart';
 import '../views/owner/owner_shell.dart';
 import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
@@ -82,6 +84,38 @@ abstract final class AppRoutes {
     return MaterialPageRoute<void>(
       builder: (_) =>
           OwnerChangePasswordScreen(profileImageUrl: profileImageUrl),
+    );
+  }
+
+  static Route<bool> ownerJockeyInvitations() {
+    return MaterialPageRoute<bool>(
+      builder: (_) => const OwnerJockeyInvitationsScreen(),
+    );
+  }
+
+  static Route<void> ownerAcceptedJockeys() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const OwnerAcceptedJockeysScreen(),
+    );
+  }
+
+  static Route<bool> ownerCreateJockeyInvitation({
+    String? initialHorseId,
+    String? initialHorseName,
+    String? initialRaceId,
+    String? initialRaceName,
+    String? initialTournamentId,
+    String? initialTournamentName,
+  }) {
+    return MaterialPageRoute<bool>(
+      builder: (_) => OwnerCreateJockeyInvitationScreen(
+        initialHorseId: initialHorseId,
+        initialHorseName: initialHorseName,
+        initialRaceId: initialRaceId,
+        initialRaceName: initialRaceName,
+        initialTournamentId: initialTournamentId,
+        initialTournamentName: initialTournamentName,
+      ),
     );
   }
 
@@ -241,6 +275,35 @@ abstract final class AppRoutes {
     Navigator.of(
       context,
     ).push(ownerChangePassword(profileImageUrl: profileImageUrl));
+  }
+
+  static Future<bool?> openOwnerJockeyInvitations(BuildContext context) {
+    return Navigator.of(context).push<bool>(ownerJockeyInvitations());
+  }
+
+  static Future<void> openOwnerAcceptedJockeys(BuildContext context) {
+    return Navigator.of(context).push<void>(ownerAcceptedJockeys());
+  }
+
+  static Future<bool?> openOwnerCreateJockeyInvitation(
+    BuildContext context, {
+    String? initialHorseId,
+    String? initialHorseName,
+    String? initialRaceId,
+    String? initialRaceName,
+    String? initialTournamentId,
+    String? initialTournamentName,
+  }) {
+    return Navigator.of(context).push<bool>(
+      ownerCreateJockeyInvitation(
+        initialHorseId: initialHorseId,
+        initialHorseName: initialHorseName,
+        initialRaceId: initialRaceId,
+        initialRaceName: initialRaceName,
+        initialTournamentId: initialTournamentId,
+        initialTournamentName: initialTournamentName,
+      ),
+    );
   }
 
   static void openRefereeProfile(BuildContext context) {

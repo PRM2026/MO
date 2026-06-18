@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/referee_colors.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/owner/owner_bottom_nav.dart';
 import 'owner_dashboard_screen.dart';
 import 'owner_horses_screen.dart';
@@ -32,6 +33,10 @@ class _OwnerShellState extends State<OwnerShell> {
             onProfileTap: () => _selectTab(OwnerTab.profile),
             onViewAllHorses: () => _selectTab(OwnerTab.horses),
             onViewTournament: () => _selectTab(OwnerTab.tournament),
+            onViewInvitations: () =>
+                AppRoutes.openOwnerJockeyInvitations(context),
+            onViewAcceptedJockeys: () =>
+                AppRoutes.openOwnerAcceptedJockeys(context),
           ),
           OwnerTournamentsScreen(
             key: ValueKey('owner_tournaments_tab'),

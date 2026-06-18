@@ -156,9 +156,16 @@ class OwnerTournamentTextSection extends StatelessWidget {
 }
 
 class OwnerTournamentRacesSection extends StatelessWidget {
-  const OwnerTournamentRacesSection({super.key, required this.races});
+  const OwnerTournamentRacesSection({
+    super.key,
+    required this.races,
+    required this.tournamentStatus,
+    this.onInviteJockey,
+  });
 
   final List<OwnerTournamentRace> races;
+  final String tournamentStatus;
+  final ValueChanged<OwnerTournamentRace>? onInviteJockey;
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +189,16 @@ class OwnerTournamentRacesSection extends StatelessWidget {
           ...races.map(
             (race) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: _RaceCard(race: race),
+              child: _RaceCard(
+                race: race,
+                canInviteJockey: _canInviteJockey(
+                  race: race,
+                  tournamentStatus: tournamentStatus,
+                ),
+                onInviteJockey: onInviteJockey == null
+                    ? null
+                    : () => onInviteJockey!(race),
+              ),
             ),
           ),
       ],
@@ -191,9 +207,15 @@ class OwnerTournamentRacesSection extends StatelessWidget {
 }
 
 class _RaceCard extends StatelessWidget {
-  const _RaceCard({required this.race});
+  const _RaceCard({
+    required this.race,
+    required this.canInviteJockey,
+    this.onInviteJockey,
+  });
 
   final OwnerTournamentRace race;
+  final bool canInviteJockey;
+  final VoidCallback? onInviteJockey;
 
   @override
   Widget build(BuildContext context) {
@@ -252,10 +274,42 @@ class _RaceCard extends StatelessWidget {
               ),
             ),
           ],
+          if (canInviteJockey && onInviteJockey != null) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onInviteJockey,
+                icon: const Icon(Icons.mail_outline),
+                label: const Text('Mời jockey'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: RefereeColors.championshipGold,
+                  side: const BorderSide(
+                    color: RefereeColors.championshipGold,
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
+}
+
+bool _canInviteJockey({
+  required OwnerTournamentRace race,
+  required String tournamentStatus,
+}) {
+  const terminalTournamentStatuses = {
+    'COMPLETED',
+    'CANCELLED',
+    'REGISTRATION_CLOSED',
+  };
+  const terminalRaceStatuses = {'COMPLETED', 'CANCELLED', 'RESULT_CONFIRMED'};
+  return !terminalTournamentStatuses.contains(tournamentStatus) &&
+      !terminalRaceStatuses.contains(race.status);
 }
 
 class _MetricCard extends StatelessWidget {

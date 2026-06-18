@@ -13,12 +13,16 @@ class OwnerDashboardScreen extends StatefulWidget {
     this.onProfileTap,
     this.onViewAllHorses,
     this.onViewTournament,
+    this.onViewInvitations,
+    this.onViewAcceptedJockeys,
   });
 
   final OwnerDashboardViewModel? viewModel;
   final VoidCallback? onProfileTap;
   final VoidCallback? onViewAllHorses;
   final VoidCallback? onViewTournament;
+  final VoidCallback? onViewInvitations;
+  final VoidCallback? onViewAcceptedJockeys;
 
   @override
   State<OwnerDashboardScreen> createState() => _OwnerDashboardScreenState();
@@ -106,6 +110,12 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                                 hero: data.hero!,
                                 onViewTournament: widget.onViewTournament,
                               ),
+                            const SizedBox(height: AppSpacing.lg),
+                            OwnerDashboardQuickActionsSection(
+                              onViewInvitations: widget.onViewInvitations,
+                              onViewAcceptedJockeys:
+                                  widget.onViewAcceptedJockeys,
+                            ),
                             const SizedBox(height: AppSpacing.lg),
                             OwnerFeaturedHorsesSection(
                               horses: data.featuredHorses,

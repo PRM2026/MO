@@ -210,6 +210,76 @@ class OwnerFeaturedHorsesSection extends StatelessWidget {
   }
 }
 
+class OwnerDashboardQuickActionsSection extends StatelessWidget {
+  const OwnerDashboardQuickActionsSection({
+    super.key,
+    this.onViewInvitations,
+    this.onViewAcceptedJockeys,
+  });
+
+  final VoidCallback? onViewInvitations;
+  final VoidCallback? onViewAcceptedJockeys;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.mail_outline,
+            label: 'Lời mời jockey',
+            onTap: onViewInvitations,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickActionButton(
+            icon: Icons.groups_outlined,
+            label: 'Jockey đã nhận',
+            onTap: onViewAcceptedJockeys,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickActionButton extends StatelessWidget {
+  const _QuickActionButton({
+    required this.icon,
+    required this.label,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefereeGlassCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(icon, color: RefereeColors.championshipGold),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.labelCaps(
+                RefereeColors.onSurface,
+              ).copyWith(fontSize: 12, letterSpacing: 0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _FeaturedHorseCard extends StatelessWidget {
   const _FeaturedHorseCard({required this.horse});
 
