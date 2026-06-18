@@ -10,4 +10,11 @@ class JockeyProfileRepository {
   Future<JockeyProfileResponse> fetchProfile() {
     return _service.getMyProfile();
   }
+
+  Future<JockeyProfileResponse> updateProfile({
+    required Map<String, String> fields,
+    Map<String, String> filePaths = const {},
+  }) {
+    return _service.updateMyProfile(fields: fields, filePaths: filePaths);
+  }
 }

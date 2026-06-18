@@ -51,6 +51,17 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
     );
   }
 
+  Future<void> _handleEditProfile() async {
+    final profile = _viewModel.data;
+    if (profile == null || profile.statusCode == 'SUSPENDED') return;
+
+    final updated = await AppRoutes.openJockeyProfileEdit(context, profile);
+    if (!mounted || updated == null) return;
+
+    AppToast.showSuccess(context, 'Da cap nhat ho so jockey');
+    await _viewModel.loadData();
+  }
+
   @override
   void dispose() {
     _viewModel.removeListener(_onChanged);
@@ -123,6 +134,9 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
                                       const SizedBox(height: AppSpacing.lg),
                                       JockeyProfileActionsCard(
                                         isLoggingOut: _viewModel.isLoggingOut,
+                                        onEdit: data.statusCode == 'SUSPENDED'
+                                            ? null
+                                            : _handleEditProfile,
                                         onChangePassword: _handleChangePassword,
                                         onLogout: _handleLogout,
                                       ),

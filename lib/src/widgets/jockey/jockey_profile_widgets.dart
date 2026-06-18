@@ -246,11 +246,13 @@ class JockeyProfileActionsCard extends StatelessWidget {
   const JockeyProfileActionsCard({
     super.key,
     required this.isLoggingOut,
+    this.onEdit,
     required this.onChangePassword,
     required this.onLogout,
   });
 
   final bool isLoggingOut;
+  final VoidCallback? onEdit;
   final VoidCallback onChangePassword;
   final VoidCallback? onLogout;
 
@@ -261,6 +263,14 @@ class JockeyProfileActionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (onEdit != null) ...[
+            FilledButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Chinh sua ho so'),
+            ),
+            const SizedBox(height: 12),
+          ],
           OutlinedButton.icon(
             onPressed: onChangePassword,
             icon: const Icon(Icons.security_outlined),

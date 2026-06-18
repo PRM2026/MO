@@ -23,7 +23,7 @@ class JockeyProfileService {
     );
   }
 
-  Future<Map<String, dynamic>> updateMyProfile({
+  Future<JockeyProfileResponse> updateMyProfile({
     required Map<String, String> fields,
     Map<String, String> filePaths = const {},
   }) {
@@ -32,7 +32,7 @@ class JockeyProfileService {
       '/jockey/profile',
       fields,
       filePaths,
-      (json) => json,
+      JockeyProfileResponse.fromJson,
     );
   }
 }

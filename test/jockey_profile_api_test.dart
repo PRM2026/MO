@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horse_racing/src/models/auth_session.dart';
@@ -71,6 +72,153 @@ void main() {
       );
 
       expect(service.getMyProfile, throwsA(isA<ApiException>()));
+    });
+
+    test(
+      'updates profile with PUT multipart fields and BE file keys',
+      () async {
+        final storage = await _storageWithToken('jockey-token');
+        final tempDirectory = await Directory.systemTemp.createTemp(
+          'jockey-profile-update-',
+        );
+        addTearDown(() => tempDirectory.delete(recursive: true));
+        final avatar = await File(
+          '${tempDirectory.path}/avatar.jpg',
+        ).writeAsString('avatar-bytes');
+        final achievements = await File(
+          '${tempDirectory.path}/achievements.png',
+        ).writeAsString('achievement-bytes');
+        final licenseDocument = await File(
+          '${tempDirectory.path}/license.pdf',
+        ).writeAsString('license-bytes');
+
+        final service = JockeyProfileService(
+          baseUrl: 'http://example.test',
+          storage: storage,
+          client: MockClient((request) async {
+            expect(request.method, 'PUT');
+            expect(
+              request.url.toString(),
+              'http://example.test/jockey/profile',
+            );
+            expect(request.headers['Authorization'], 'Bearer jockey-token');
+            expect(
+              request.headers['content-type'],
+              startsWith('multipart/form-data; boundary='),
+            );
+
+            final body = latin1.decode(request.bodyBytes);
+            expect(body, contains('name="licenseNumber"'));
+            expect(body, contains('JCK-2026-002'));
+            expect(body, contains('name="experienceYears"'));
+            expect(body, contains('8'));
+            expect(body, contains('name="bio"'));
+            expect(body, contains('Updated profile'));
+            expect(body, contains('name="avatar"'));
+            expect(body, contains('filename="avatar.jpg"'));
+            expect(body, contains('name="achievements"'));
+            expect(body, contains('filename="achievements.png"'));
+            expect(body, contains('name="licenseDocument"'));
+            expect(body, contains('filename="license.pdf"'));
+
+            final response = _profileEnvelope();
+            final data = response['data'] as Map<String, dynamic>;
+            data['licenseNumber'] = 'JCK-2026-002';
+            data['status'] = 'PENDING';
+            return _jsonResponse(response);
+          }),
+        );
+
+        final profile = await service.updateMyProfile(
+          fields: const {
+            'licenseNumber': 'JCK-2026-002',
+            'experienceYears': '8',
+            'bio': 'Updated profile',
+          },
+          filePaths: {
+            'avatar': avatar.path,
+            'achievements': achievements.path,
+            'licenseDocument': licenseDocument.path,
+          },
+        );
+
+        expect(profile.licenseNumber, 'JCK-2026-002');
+        expect(profile.statusCode, 'PENDING');
+      },
+    );
+
+    test('update throws ApiException for success false', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyProfileService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient(
+          (_) async => _jsonResponse({
+            'success': false,
+            'message': 'Suspended jockey profile cannot be updated',
+            'data': null,
+          }, statusCode: 400),
+        ),
+      );
+
+      expect(
+        () => service.updateMyProfile(fields: const {'bio': 'Updated'}),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.message,
+            'message',
+            'Suspended jockey profile cannot be updated',
+          ),
+        ),
+      );
+    });
+
+    test('update exposes validation message from BE', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyProfileService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient(
+          (_) async => _jsonResponse({
+            'success': false,
+            'message': '',
+            'data': {
+              'licenseNumber': ['License number is required'],
+            },
+          }, statusCode: 400),
+        ),
+      );
+
+      expect(
+        () => service.updateMyProfile(fields: const {'licenseNumber': ''}),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.message,
+            'message',
+            'License number is required',
+          ),
+        ),
+      );
+    });
+
+    test('update throws ApiException for non json response', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyProfileService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient((_) async => http.Response('not-json', 500)),
+      );
+
+      expect(
+        () => service.updateMyProfile(fields: const {'bio': 'Updated'}),
+        throwsA(
+          isA<ApiException>().having(
+            (error) => error.statusCode,
+            'statusCode',
+            500,
+          ),
+        ),
+      );
     });
   });
 
