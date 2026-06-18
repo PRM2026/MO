@@ -21,10 +21,6 @@ abstract final class AppToast {
     final ctx = AppMessenger.key.currentContext;
     if (messenger == null || ctx == null) return;
 
-    final topInset = MediaQuery.paddingOf(ctx).top;
-    final screenHeight = MediaQuery.sizeOf(ctx).height;
-    const snackBarHeight = 72.0;
-
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -68,11 +64,7 @@ abstract final class AppToast {
           ),
           backgroundColor: const Color(0xE60C1D36),
           behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-            bottom: screenHeight - topInset - snackBarHeight - 12,
-            left: 16,
-            right: 16,
-          ),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: const BorderSide(color: Color(0x3310B981)),
@@ -100,10 +92,6 @@ abstract final class AppToast {
     final context = AppMessenger.key.currentContext;
     if (messenger == null || context == null) return;
 
-    final topInset = MediaQuery.paddingOf(context).top;
-    final screenHeight = MediaQuery.sizeOf(context).height;
-    const snackBarHeight = 56.0;
-
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -125,11 +113,7 @@ abstract final class AppToast {
           ),
           backgroundColor: backgroundColor,
           behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.only(
-            bottom: screenHeight - topInset - snackBarHeight - 12,
-            left: 16,
-            right: 16,
-          ),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
