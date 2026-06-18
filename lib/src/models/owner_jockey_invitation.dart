@@ -171,6 +171,14 @@ class OwnerAcceptedJockey {
   final String? tournamentName;
   final DateTime? acceptedAt;
 
+  String get displayName {
+    final name = jockeyFullName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    final username = jockeyUsername?.trim();
+    if (username != null && username.isNotEmpty) return username;
+    return jockeyId == null ? 'Jockey' : 'Jockey #$jockeyId';
+  }
+
   factory OwnerAcceptedJockey.fromJson(Map<String, dynamic> json) {
     final jockey = _readMap(json['jockey']);
     final horse = _readMap(json['horse']);
@@ -238,6 +246,14 @@ class OwnerAvailableJockey {
   final int? profileId;
   final double? rating;
   final int? experienceYears;
+
+  String get displayName {
+    final name = fullName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    final handle = username?.trim();
+    if (handle != null && handle.isNotEmpty) return handle;
+    return id <= 0 ? 'Jockey' : 'Jockey #$id';
+  }
 
   factory OwnerAvailableJockey.fromJson(Map<String, dynamic> json) {
     final profile = _readMap(json['profile']);

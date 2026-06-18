@@ -4,6 +4,8 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/owner_tournament_detail.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/app_toast.dart';
 import '../../viewmodels/owner_tournament_detail_viewmodel.dart';
 import '../../widgets/owner/owner_app_bar.dart';
 import '../../widgets/owner/owner_dashboard_widgets.dart';
@@ -42,6 +44,21 @@ class _OwnerTournamentDetailScreenState
 
   void _onChanged() {
     if (mounted) setState(() {});
+  }
+
+  Future<void> _openInviteJockey(
+    OwnerTournamentDetail detail,
+    OwnerTournamentRace race,
+  ) async {
+    final changed = await AppRoutes.openOwnerCreateJockeyInvitation(
+      context,
+      initialRaceId: race.id,
+      initialRaceName: race.name,
+      initialTournamentId: detail.id,
+      initialTournamentName: detail.name,
+    );
+    if (!mounted || changed != true) return;
+    AppToast.showSuccess(context, 'Đã tạo lời mời jockey.');
   }
 
   @override
@@ -121,8 +138,10 @@ class _OwnerTournamentDetailScreenState
                         onRefresh: _viewModel.refresh,
                       ),
                       _RacesTab(
-                        races: detail.races,
+                        detail: detail,
                         onRefresh: _viewModel.refresh,
+                        onInviteJockey: (race) =>
+                            _openInviteJockey(detail, race),
                       ),
                     ],
                   ),
@@ -181,10 +200,15 @@ class _InformationTab extends StatelessWidget {
 }
 
 class _RacesTab extends StatelessWidget {
-  const _RacesTab({required this.races, required this.onRefresh});
+  const _RacesTab({
+    required this.detail,
+    required this.onRefresh,
+    required this.onInviteJockey,
+  });
 
-  final List<OwnerTournamentRace> races;
+  final OwnerTournamentDetail detail;
   final Future<void> Function() onRefresh;
+  final ValueChanged<OwnerTournamentRace> onInviteJockey;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +227,11 @@ class _RacesTab extends StatelessWidget {
           Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 960),
-              child: OwnerTournamentRacesSection(races: races),
+              child: OwnerTournamentRacesSection(
+                races: detail.races,
+                tournamentStatus: detail.status,
+                onInviteJockey: onInviteJockey,
+              ),
             ),
           ),
         ],

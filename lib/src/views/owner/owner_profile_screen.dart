@@ -44,6 +44,16 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
   }
 
   void _handleSettingTap(String title) {
+    if (title == 'Lời mời jockey') {
+      AppRoutes.openOwnerJockeyInvitations(context);
+      return;
+    }
+
+    if (title == 'Jockey đã nhận lời') {
+      AppRoutes.openOwnerAcceptedJockeys(context);
+      return;
+    }
+
     if (title == 'Bảo mật & Mật khẩu') {
       AppRoutes.openOwnerChangePassword(
         context,

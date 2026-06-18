@@ -4,6 +4,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/owner_horse_item.dart';
+import '../../routes/app_routes.dart';
 import '../../utils/app_toast.dart';
 import '../../viewmodels/owner_horse_detail_viewmodel.dart';
 import '../../widgets/news/news_network_image.dart';
@@ -87,6 +88,16 @@ class _OwnerHorseDetailScreenState extends State<OwnerHorseDetailScreen> {
 
     final message = _viewModel.deleteError ?? 'Không thể xóa ngựa.';
     AppToast.showError(context, message);
+  }
+
+  Future<void> _openInviteJockey(OwnerHorseDetail detail) async {
+    final changed = await AppRoutes.openOwnerCreateJockeyInvitation(
+      context,
+      initialHorseId: detail.id,
+      initialHorseName: detail.name,
+    );
+    if (!mounted || changed != true) return;
+    AppToast.showSuccess(context, 'Đã tạo lời mời jockey.');
   }
 
   @override
@@ -179,6 +190,23 @@ class _OwnerHorseDetailScreenState extends State<OwnerHorseDetailScreen> {
                         onEdit: () => _openEditForm(detail),
                         onDelete: _confirmDelete,
                       ),
+                      if (detail.statusCode == 'APPROVED') ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: _viewModel.isDeleting
+                              ? null
+                              : () => _openInviteJockey(detail),
+                          icon: const Icon(Icons.mail_outline),
+                          label: const Text('Mời jockey'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: RefereeColors.championshipGold,
+                            side: const BorderSide(
+                              color: RefereeColors.championshipGold,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       _InfoSection(
                         title: 'Thông tin cơ bản',
