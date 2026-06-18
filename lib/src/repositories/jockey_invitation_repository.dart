@@ -1,51 +1,37 @@
 import '../models/jockey_invitation_data.dart';
-import '../repositories/auth_repository.dart';
 import '../services/jockey_invitation_service.dart';
 
 class JockeyInvitationRepository {
-  JockeyInvitationRepository({
-    JockeyInvitationService? service,
-    AuthRepository? authRepository,
-  })  : _service = service ?? JockeyInvitationService(),
-        _authRepository = authRepository ?? AuthRepository();
+  JockeyInvitationRepository({JockeyInvitationService? service})
+    : _service = service ?? JockeyInvitationService();
 
   final JockeyInvitationService _service;
-  final AuthRepository _authRepository;
 
   Future<List<JockeyInvitationListItem>> fetchInvitations() async {
     final responses = await _service.getJockeyInvitations();
-    return responses.map((item) => item.toListItem()).toList();
+    return responses.map((item) => item.toListItem()).toList(growable: false);
   }
 
   Future<JockeyInvitationDetail> fetchInvitationDetail(String id) async {
-    final invitationId = int.tryParse(id);
-    if (invitationId == null) {
-      throw JockeyInvitationApiException('Không xác định được mã lời mời.');
-    }
-
-    String? profileImageUrl;
-    try {
-      final user = await _authRepository.refreshCurrentUser();
-      profileImageUrl = user.avatarUrl;
-    } catch (_) {}
-
-    final response = await _service.getJockeyInvitation(invitationId);
-    return response.toDetail(profileImageUrl: profileImageUrl);
+    final response = await _service.getJockeyInvitation(_parseInvitationId(id));
+    return response.toDetail();
   }
 
   Future<void> acceptInvitation(String id, {String? note}) async {
-    final invitationId = int.tryParse(id);
-    if (invitationId == null) {
-      throw JockeyInvitationApiException('Không xác định được mã lời mời.');
-    }
-    await _service.acceptInvitation(invitationId, note: note);
+    await _service.acceptInvitation(_parseInvitationId(id), note: note);
   }
 
   Future<void> rejectInvitation(String id, {String? note}) async {
+    await _service.rejectInvitation(_parseInvitationId(id), note: note);
+  }
+
+  int _parseInvitationId(String id) {
     final invitationId = int.tryParse(id);
-    if (invitationId == null) {
-      throw JockeyInvitationApiException('Không xác định được mã lời mời.');
+    if (invitationId == null || invitationId <= 0) {
+      throw const JockeyInvitationApiException(
+        'Không xác định được mã lời mời.',
+      );
     }
-    await _service.rejectInvitation(invitationId, note: note);
+    return invitationId;
   }
 }

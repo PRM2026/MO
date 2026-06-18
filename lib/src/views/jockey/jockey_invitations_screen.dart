@@ -3,16 +3,25 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../../utils/app_toast.dart';
+import '../../models/jockey_invitation_data.dart';
 import '../../viewmodels/jockey_invitation_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
-import '../../widgets/jockey/jockey_invitation_widgets.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
+import '../../widgets/jockey/jockey_invitation_widgets.dart';
+import '../../widgets/jockey/jockey_state_widgets.dart';
+
+typedef JockeyInvitationDetailBuilder =
+    Widget Function(BuildContext context, String invitationId);
 
 class JockeyInvitationsScreen extends StatefulWidget {
-  const JockeyInvitationsScreen({super.key, this.viewModel});
+  const JockeyInvitationsScreen({
+    super.key,
+    this.viewModel,
+    this.detailBuilder,
+  });
 
   final JockeyInvitationsViewModel? viewModel;
+  final JockeyInvitationDetailBuilder? detailBuilder;
 
   @override
   State<JockeyInvitationsScreen> createState() =>
@@ -36,24 +45,14 @@ class _JockeyInvitationsScreenState extends State<JockeyInvitationsScreen> {
     if (mounted) setState(() {});
   }
 
-  void _openDetail(String id) async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => JockeyInvitationDetailScreen(invitationId: id),
+  Future<void> _openDetail(String id) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            widget.detailBuilder?.call(context, id) ??
+            JockeyInvitationDetailScreen(invitationId: id),
       ),
     );
-    if (!mounted || result == null) return;
-    await _viewModel.loadInvitations();
-    if (!mounted) return;
-    if (result) {
-      AppToast.showSuccess(
-        context,
-        'Đã chấp nhận lời mời',
-        subtitle: 'Lịch thi đấu đã được cập nhật vào lịch đua của bạn.',
-      );
-    } else {
-      AppToast.showSuccess(context, 'Đã từ chối lời mời');
-    }
   }
 
   @override
@@ -65,6 +64,8 @@ class _JockeyInvitationsScreenState extends State<JockeyInvitationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final visibleInvitations = _viewModel.visibleInvitations;
+
     return Scaffold(
       backgroundColor: RefereeColors.background,
       appBar: const JockeyAppBar(),
@@ -89,66 +90,53 @@ class _JockeyInvitationsScreenState extends State<JockeyInvitationsScreen> {
                         120,
                       ),
                       sliver: SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              'Lời mời thi đấu',
-                              style: AppTypography.displayLg(
-                                RefereeColors.onSurface,
-                              ).copyWith(fontSize: 28),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Xem và phản hồi các lời mời từ chủ ngựa.',
-                              style: AppTypography.bodyMd(
-                                RefereeColors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-                            if (_viewModel.loadError != null)
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(32),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        _viewModel.loadError!,
-                                        textAlign: TextAlign.center,
-                                        style: AppTypography.bodyMd(
-                                          RefereeColors.onSurfaceVariant,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      TextButton(
-                                        onPressed: _viewModel.loadInvitations,
-                                        child: const Text('Thử lại'),
-                                      ),
-                                    ],
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1000),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  'Lời mời thi đấu',
+                                  style: AppTypography.displayLg(
+                                    RefereeColors.onSurface,
+                                  ).copyWith(fontSize: 28),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Theo dõi các lời mời từ chủ ngựa và trạng thái phản hồi.',
+                                  style: AppTypography.bodyMd(
+                                    RefereeColors.onSurfaceVariant,
                                   ),
                                 ),
-                              )
-                            else if (_viewModel.invitations.isEmpty)
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(32),
-                                  child: Text(
-                                    'Chưa có lời mời nào.',
-                                    style: AppTypography.bodyMd(
-                                      RefereeColors.onSurfaceVariant,
+                                const SizedBox(height: AppSpacing.lg),
+                                JockeyInvitationFilterChips(
+                                  selected: _viewModel.selectedFilter,
+                                  onSelected: _viewModel.selectFilter,
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                if (_viewModel.loadError != null)
+                                  JockeyStateMessage(
+                                    message: _viewModel.loadError!,
+                                    onRetry: _viewModel.loadInvitations,
+                                    icon: Icons.error_outline,
+                                  )
+                                else if (visibleInvitations.isEmpty)
+                                  JockeyStateMessage(
+                                    message: _viewModel.emptyMessage,
+                                    icon: Icons.mark_email_unread_outlined,
+                                  )
+                                else
+                                  for (final item in visibleInvitations) ...[
+                                    JockeyInvitationListTile(
+                                      item: item,
+                                      onTap: () => _openDetail(item.id),
                                     ),
-                                  ),
-                                ),
-                              )
-                            else
-                              for (final item in _viewModel.invitations) ...[
-                                JockeyInvitationListTile(
-                                  item: item,
-                                  onTap: () => _openDetail(item.id),
-                                ),
-                                const SizedBox(height: 12),
+                                    const SizedBox(height: 12),
+                                  ],
                               ],
-                          ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -184,7 +172,8 @@ class _JockeyInvitationDetailScreenState
   void initState() {
     super.initState();
     _ownsViewModel = widget.viewModel == null;
-    _viewModel = widget.viewModel ??
+    _viewModel =
+        widget.viewModel ??
         JockeyInvitationDetailViewModel(invitationId: widget.invitationId);
     _viewModel.addListener(_onChanged);
     _viewModel.loadDetail();
@@ -192,32 +181,6 @@ class _JockeyInvitationDetailScreenState
 
   void _onChanged() {
     if (mounted) setState(() {});
-  }
-
-  Future<void> _handleAccept() async {
-    final success = await _viewModel.acceptInvitation();
-    if (!mounted) return;
-    if (!success) {
-      AppToast.showError(
-        context,
-        _viewModel.actionError ?? 'Không thể chấp nhận lời mời.',
-      );
-      return;
-    }
-    Navigator.of(context).pop(true);
-  }
-
-  Future<void> _handleDecline() async {
-    final success = await _viewModel.declineInvitation();
-    if (!mounted) return;
-    if (!success) {
-      AppToast.showError(
-        context,
-        _viewModel.actionError ?? 'Không thể từ chối lời mời.',
-      );
-      return;
-    }
-    Navigator.of(context).pop(false);
   }
 
   @override
@@ -233,106 +196,100 @@ class _JockeyInvitationDetailScreenState
 
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: JockeyAppBar(
+      appBar: const JockeyAppBar(
         showBack: true,
         showBrandTitle: false,
         titleOverride: 'CHI TIẾT LỜI MỜI',
-        profileImageUrl: data?.profileImageUrl,
+        showNotificationAction: false,
       ),
-      bottomNavigationBar: data != null && data.isPending
-          ? JockeyInvitationActionBar(
-              isProcessing: _viewModel.isProcessing,
-              onDecline: _handleDecline,
-              onAccept: _handleAccept,
-            )
-          : null,
-      body: _viewModel.isLoading && data == null
-          ? const Center(
-              child: CircularProgressIndicator(
+      body: JockeySpeedlineBackground(
+        child: _viewModel.isLoading && data == null
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: RefereeColors.championshipGold,
+                ),
+              )
+            : RefreshIndicator(
                 color: RefereeColors.championshipGold,
-              ),
-            )
-          : _viewModel.loadError != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _viewModel.loadError!,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.bodyMd(
-                            RefereeColors.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextButton(
-                          onPressed: _viewModel.loadDetail,
-                          child: const Text('Thử lại'),
-                        ),
-                      ],
-                    ),
+                onRefresh: _viewModel.loadDetail,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.xl,
                   ),
-                )
-              : data == null
-                  ? const SizedBox.shrink()
-                  : SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.lg,
-                AppSpacing.md,
-                AppSpacing.lg,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1280),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final isWide = constraints.maxWidth >= 960;
-                      final leftColumn = Column(
-                        children: [
-                          JockeyInvitationOwnerCard(detail: data),
-                          const SizedBox(height: AppSpacing.lg),
-                          if (data.scheduleWarning.isNotEmpty)
-                            JockeyInvitationScheduleWarning(detail: data),
-                        ],
-                      );
-                      final rightColumn = Column(
-                        children: [
-                          JockeyInvitationRemunerationCard(detail: data),
-                          const SizedBox(height: AppSpacing.lg),
-                          JockeyInvitationRaceDetailsCard(detail: data),
-                        ],
-                      );
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          JockeyInvitationHeroCard(detail: data),
-                          const SizedBox(height: AppSpacing.lg),
-                          if (isWide)
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(flex: 7, child: leftColumn),
-                                const SizedBox(width: AppSpacing.lg),
-                                Expanded(flex: 5, child: rightColumn),
-                              ],
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1000),
+                      child: _viewModel.loadError != null
+                          ? JockeyStateMessage(
+                              message: _viewModel.loadError!,
+                              onRetry: _viewModel.loadDetail,
+                              icon: Icons.error_outline,
                             )
-                          else ...[
-                            leftColumn,
-                            const SizedBox(height: AppSpacing.lg),
-                            rightColumn,
-                          ],
-                          const SizedBox(height: 100),
-                        ],
-                      );
-                    },
+                          : data == null
+                          ? const JockeyStateMessage(
+                              message: 'Không có dữ liệu lời mời.',
+                            )
+                          : _InvitationDetailContent(data: data),
+                    ),
                   ),
                 ),
               ),
-            ),
+      ),
+    );
+  }
+}
+
+class _InvitationDetailContent extends StatelessWidget {
+  const _InvitationDetailContent({required this.data});
+
+  final JockeyInvitationDetail data;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 760;
+        final left = Column(
+          children: [
+            JockeyInvitationPartyCard(detail: data),
+            const SizedBox(height: AppSpacing.lg),
+            JockeyInvitationMessageCard(detail: data),
+          ],
+        );
+        final right = Column(
+          children: [
+            JockeyInvitationRaceCard(detail: data),
+            const SizedBox(height: AppSpacing.lg),
+            JockeyInvitationTimelineCard(detail: data),
+          ],
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            JockeyInvitationDetailHeader(detail: data),
+            const SizedBox(height: AppSpacing.lg),
+            if (isWide)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: left),
+                  const SizedBox(width: AppSpacing.lg),
+                  Expanded(child: right),
+                ],
+              )
+            else ...[
+              left,
+              const SizedBox(height: AppSpacing.lg),
+              right,
+            ],
+          ],
+        );
+      },
     );
   }
 }

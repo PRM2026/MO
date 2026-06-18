@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class RaceFinisherRow {
   const RaceFinisherRow({
     required this.rank,

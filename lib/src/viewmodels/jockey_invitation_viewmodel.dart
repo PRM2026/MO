@@ -6,13 +6,34 @@ import '../services/jockey_invitation_service.dart';
 
 class JockeyInvitationsViewModel extends ChangeNotifier {
   JockeyInvitationsViewModel({JockeyInvitationRepository? repository})
-      : _repository = repository ?? JockeyInvitationRepository();
+    : _repository = repository ?? JockeyInvitationRepository();
 
   final JockeyInvitationRepository _repository;
 
   bool isLoading = false;
   String? loadError;
   List<JockeyInvitationListItem> invitations = const [];
+  JockeyInvitationFilter selectedFilter = JockeyInvitationFilter.all;
+
+  List<JockeyInvitationListItem> get visibleInvitations {
+    final status = selectedFilter.statusCode;
+    if (status == null) return invitations;
+    return invitations
+        .where((invitation) => invitation.statusCode == status)
+        .toList(growable: false);
+  }
+
+  String get emptyMessage {
+    return selectedFilter == JockeyInvitationFilter.all
+        ? 'Chưa có lời mời nào.'
+        : 'Không có lời mời ở trạng thái ${selectedFilter.label.toLowerCase()}.';
+  }
+
+  void selectFilter(JockeyInvitationFilter filter) {
+    if (selectedFilter == filter) return;
+    selectedFilter = filter;
+    notifyListeners();
+  }
 
   Future<void> loadInvitations() async {
     isLoading = true;
@@ -46,9 +67,7 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
   final JockeyInvitationRepository _repository;
 
   bool isLoading = false;
-  bool isProcessing = false;
   String? loadError;
-  String? actionError;
   JockeyInvitationDetail? data;
 
   Future<void> loadDetail() async {
@@ -59,43 +78,15 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
     try {
       data = await _repository.fetchInvitationDetail(invitationId);
     } on JockeyInvitationApiException catch (error) {
+      data = null;
       loadError = error.message;
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
     } catch (error) {
+      data = null;
       loadError = 'Không tải được chi tiết lời mời.';
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
     } finally {
       isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<bool> acceptInvitation({String? note}) async {
-    return _runAction(() => _repository.acceptInvitation(invitationId, note: note));
-  }
-
-  Future<bool> declineInvitation({String? note}) async {
-    return _runAction(() => _repository.rejectInvitation(invitationId, note: note));
-  }
-
-  Future<bool> _runAction(Future<void> Function() action) async {
-    isProcessing = true;
-    actionError = null;
-    notifyListeners();
-
-    try {
-      await action();
-      return true;
-    } on JockeyInvitationApiException catch (error) {
-      actionError = error.message;
-      if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
-      return false;
-    } catch (error) {
-      actionError = 'Không thể cập nhật lời mời. Vui lòng thử lại.';
-      if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
-      return false;
-    } finally {
-      isProcessing = false;
       notifyListeners();
     }
   }
