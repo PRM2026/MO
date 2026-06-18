@@ -53,3 +53,17 @@
 ## Regression
 - Role `OWNER`, `REFEREE`, `SPECTATOR`, `ADMIN` khong doi behavior.
 - Jockey UI khong goi owner/referee/admin endpoints.
+
+## Phase 16 Verification Runbook
+- Chay `flutter analyze`.
+- Chay `flutter test` day du, khong exclude `test/widget_test.dart`.
+- Neu fail, phan loai:
+  - Fail do Jockey phase 1-15: sua test/code trong phase 16.
+  - Fail do role khac bi regression: revert/sua ngay vi ngoai scope.
+  - Fail do moi truong/BE/manual-only: ghi chu ro command, error va ly do.
+- Manual smoke voi BE local:
+  - Login role `JOCKEY`.
+  - Di qua dashboard, profile read/update, invitations list/detail/accept/reject.
+  - Di qua schedule, race detail/results, horses/assignments.
+  - Di qua results/performance/prizes, wallet deposit/withdraw, notifications mark read/all.
+  - Smoke nhanh owner/referee/spectator de xac nhan route va bottom nav khong doi.
