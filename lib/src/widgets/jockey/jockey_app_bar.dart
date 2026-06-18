@@ -6,7 +6,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../common/brand_logo.dart';
-import '../news/news_network_image.dart';
+import '../common/profile_avatar.dart';
 
 class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const JockeyAppBar({
@@ -15,16 +15,16 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = false,
     this.titleOverride,
     this.showBrandTitle = true,
-    this.showNotificationAction = true,
     this.onProfileTap,
+    this.profileInteractive = true,
   });
 
   final String? profileImageUrl;
   final bool showBack;
   final String? titleOverride;
   final bool showBrandTitle;
-  final bool showNotificationAction;
   final VoidCallback? onProfileTap;
+  final bool profileInteractive;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -76,41 +76,15 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
                 )
               : null,
       actions: [
-        if (profileImageUrl != null && profileImageUrl!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
-              onTap: onProfileTap ?? () => AppRoutes.openJockeyProfile(context),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: RefereeColors.championshipGold,
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: NewsNetworkImage(imageUrl: profileImageUrl!),
-              ),
-            ),
-          ),
-        if (showNotificationAction)
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.notifications_none,
-              color: RefereeColors.championshipGold,
-            ),
-          ),
-        const SizedBox(width: AppSpacing.sm),
+        ProfileAvatarButton(
+          imageUrl: profileImageUrl,
+          fallbackIcon: Icons.sports_martial_arts_outlined,
+          interactive: profileInteractive,
+          onTap: profileInteractive
+              ? (onProfileTap ?? () => AppRoutes.openJockeyProfile(context))
+              : null,
+          padding: const EdgeInsets.only(right: AppSpacing.md),
+        ),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),

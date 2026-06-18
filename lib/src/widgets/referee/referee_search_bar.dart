@@ -21,7 +21,7 @@ class RefereeSearchBar extends StatelessWidget {
       onChanged: onChanged,
       style: AppTypography.bodyMd(RefereeColors.onSurface),
       decoration: InputDecoration(
-        hintText: 'Tìm tên giải đấu, trường đua...',
+        hintText: 'Tìm tên cuộc đua, trường đua...',
         hintStyle: AppTypography.bodyMd(
           RefereeColors.onSurfaceVariant.withValues(alpha: 0.8),
         ),

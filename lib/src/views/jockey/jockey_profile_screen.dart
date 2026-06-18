@@ -79,7 +79,7 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
         showBack: true,
         showBrandTitle: false,
         profileImageUrl: data?.avatarUrl,
-        showNotificationAction: false,
+        profileInteractive: false,
       ),
       body: JockeySpeedlineBackground(
         child: _viewModel.isLoading && data == null

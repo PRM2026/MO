@@ -71,6 +71,7 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
       appBar: OwnerAppBar(
         titleOverride: 'Hồ sơ',
         profileImageUrl: data?.avatarUrl,
+        profileInteractive: false,
       ),
       body: OwnerPortalBackground(
         child: _viewModel.isLoading && data == null

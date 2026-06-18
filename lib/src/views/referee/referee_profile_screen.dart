@@ -70,6 +70,7 @@ class _RefereeProfileScreenState extends State<RefereeProfileScreen> {
       appBar: RefereeAppBar(
         showBack: true,
         profileImageUrl: data?.avatarUrl,
+        profileInteractive: false,
       ),
       body: RefereeAmbientBackground(
         child: _viewModel.isLoading && data == null

@@ -50,12 +50,6 @@ class _RefereeAssignedRacesScreenState extends State<RefereeAssignedRacesScreen>
     return Scaffold(
       backgroundColor: RefereeColors.background,
       appBar: RefereeAppBar(profileImageUrl: _viewModel.data?.profileImageUrl),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: RefereeColors.tertiary,
-        foregroundColor: RefereeColors.onTertiary,
-        child: const Icon(Icons.add),
-      ),
       body: _viewModel.isLoading && _viewModel.data == null
           ? const Center(
               child: CircularProgressIndicator(color: RefereeColors.tertiary),
@@ -83,7 +77,8 @@ class _RefereeAssignedRacesScreenState extends State<RefereeAssignedRacesScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Chào mừng trở lại, hãy kiểm tra các lịch trình điều hành trong ngày hôm nay.',
+                          _viewModel.data?.welcomeMessage ??
+                              'Chào mừng trở lại, hãy kiểm tra các lịch trình điều hành được giao.',
                           style: AppTypography.bodyMd(
                             RefereeColors.onSurfaceVariant,
                           ),
