@@ -67,8 +67,13 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
   final JockeyInvitationRepository _repository;
 
   bool isLoading = false;
+  bool isProcessing = false;
+  bool actionCompleted = false;
   String? loadError;
+  String? actionError;
   JockeyInvitationDetail? data;
+
+  static const maxDecisionNoteLength = 1000;
 
   Future<void> loadDetail() async {
     isLoading = true;
@@ -87,6 +92,59 @@ class JockeyInvitationDetailViewModel extends ChangeNotifier {
       if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> acceptInvitation({String? note}) {
+    return _runAction(
+      note: note,
+      action: (trimmedNote) =>
+          _repository.acceptInvitation(invitationId, note: trimmedNote),
+    );
+  }
+
+  Future<bool> rejectInvitation({String? note}) {
+    return _runAction(
+      note: note,
+      action: (trimmedNote) =>
+          _repository.rejectInvitation(invitationId, note: trimmedNote),
+    );
+  }
+
+  Future<bool> _runAction({
+    required String? note,
+    required Future<void> Function(String? note) action,
+  }) async {
+    if (isProcessing) return false;
+
+    final trimmedNote = note?.trim();
+    if (trimmedNote != null && trimmedNote.length > maxDecisionNoteLength) {
+      actionError = 'Ghi chú tối đa 1000 ký tự.';
+      notifyListeners();
+      return false;
+    }
+
+    isProcessing = true;
+    actionError = null;
+    notifyListeners();
+
+    try {
+      await action(trimmedNote?.isEmpty == true ? null : trimmedNote);
+      actionCompleted = true;
+      await loadDetail();
+      actionError = null;
+      return true;
+    } on JockeyInvitationApiException catch (error) {
+      actionError = error.message;
+      if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
+      return false;
+    } catch (error) {
+      actionError = 'Không thể cập nhật lời mời.';
+      if (kDebugMode) debugPrint('JockeyInvitationDetailViewModel: $error');
+      return false;
+    } finally {
+      isProcessing = false;
       notifyListeners();
     }
   }

@@ -4,6 +4,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/jockey_invitation_data.dart';
+import '../../utils/app_toast.dart';
 import '../../viewmodels/jockey_invitation_viewmodel.dart';
 import '../../widgets/jockey/jockey_app_bar.dart';
 import '../../widgets/jockey/jockey_dashboard_widgets.dart';
@@ -46,13 +47,15 @@ class _JockeyInvitationsScreenState extends State<JockeyInvitationsScreen> {
   }
 
   Future<void> _openDetail(String id) async {
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
         builder: (context) =>
             widget.detailBuilder?.call(context, id) ??
             JockeyInvitationDetailScreen(invitationId: id),
       ),
     );
+    if (!mounted || changed != true) return;
+    await _viewModel.loadInvitations();
   }
 
   @override
@@ -183,6 +186,62 @@ class _JockeyInvitationDetailScreenState
     if (mounted) setState(() {});
   }
 
+  Future<void> _handleAccept() async {
+    final note = await _showDecisionDialog(
+      title: 'Chấp nhận lời mời',
+      confirmLabel: 'Chấp nhận',
+      noteHint: 'Ghi chú cho chủ ngựa (không bắt buộc)',
+    );
+    if (!mounted || note == null) return;
+
+    final success = await _viewModel.acceptInvitation(note: note);
+    if (!mounted) return;
+    if (success) {
+      AppToast.showSuccess(context, 'Đã chấp nhận lời mời');
+      return;
+    }
+
+    AppToast.showError(
+      context,
+      _viewModel.actionError ?? 'Không thể chấp nhận lời mời.',
+    );
+  }
+
+  Future<void> _handleReject() async {
+    final note = await _showDecisionDialog(
+      title: 'Từ chối lời mời',
+      confirmLabel: 'Từ chối',
+      noteHint: 'Lý do từ chối (không bắt buộc)',
+    );
+    if (!mounted || note == null) return;
+
+    final success = await _viewModel.rejectInvitation(note: note);
+    if (!mounted) return;
+    if (success) {
+      AppToast.showSuccess(context, 'Đã từ chối lời mời');
+      return;
+    }
+
+    AppToast.showError(
+      context,
+      _viewModel.actionError ?? 'Không thể từ chối lời mời.',
+    );
+  }
+
+  Future<String?> _showDecisionDialog({
+    required String title,
+    required String confirmLabel,
+    required String noteHint,
+  }) => showDialog<String>(
+    context: context,
+    builder: (context) => _InvitationDecisionDialog(
+      title: title,
+      confirmLabel: confirmLabel,
+      noteHint: noteHint,
+      isSubmitting: _viewModel.isProcessing,
+    ),
+  );
+
   @override
   void dispose() {
     _viewModel.removeListener(_onChanged);
@@ -193,52 +252,160 @@ class _JockeyInvitationDetailScreenState
   @override
   Widget build(BuildContext context) {
     final data = _viewModel.data;
+    final isPending = data?.statusCode == 'PENDING';
 
-    return Scaffold(
-      backgroundColor: RefereeColors.background,
-      appBar: const JockeyAppBar(
-        showBack: true,
-        showBrandTitle: false,
-        titleOverride: 'CHI TIẾT LỜI MỜI',
-        showNotificationAction: false,
-      ),
-      body: JockeySpeedlineBackground(
-        child: _viewModel.isLoading && data == null
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: RefereeColors.championshipGold,
-                ),
+    return PopScope<bool>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.of(context).pop(_viewModel.actionCompleted);
+      },
+      child: Scaffold(
+        backgroundColor: RefereeColors.background,
+        appBar: const JockeyAppBar(
+          showBack: true,
+          showBrandTitle: false,
+          titleOverride: 'CHI TIẾT LỜI MỜI',
+          showNotificationAction: false,
+        ),
+        bottomNavigationBar: isPending
+            ? JockeyInvitationActionBar(
+                isProcessing: _viewModel.isProcessing,
+                onReject: _handleReject,
+                onAccept: _handleAccept,
               )
-            : RefreshIndicator(
-                color: RefereeColors.championshipGold,
-                onRefresh: _viewModel.loadDetail,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.md,
-                    AppSpacing.lg,
-                    AppSpacing.md,
-                    AppSpacing.xl,
+            : null,
+        body: JockeySpeedlineBackground(
+          child: _viewModel.isLoading && data == null
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: RefereeColors.championshipGold,
                   ),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1000),
-                      child: _viewModel.loadError != null
-                          ? JockeyStateMessage(
-                              message: _viewModel.loadError!,
-                              onRetry: _viewModel.loadDetail,
-                              icon: Icons.error_outline,
-                            )
-                          : data == null
-                          ? const JockeyStateMessage(
-                              message: 'Không có dữ liệu lời mời.',
-                            )
-                          : _InvitationDetailContent(data: data),
+                )
+              : RefreshIndicator(
+                  color: RefereeColors.championshipGold,
+                  onRefresh: _viewModel.loadDetail,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      isPending ? 120 : AppSpacing.xl,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1000),
+                        child: _viewModel.loadError != null
+                            ? JockeyStateMessage(
+                                message: _viewModel.loadError!,
+                                onRetry: _viewModel.loadDetail,
+                                icon: Icons.error_outline,
+                              )
+                            : data == null
+                            ? const JockeyStateMessage(
+                                message: 'Không có dữ liệu lời mời.',
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (_viewModel.actionError != null) ...[
+                                    Text(
+                                      _viewModel.actionError!,
+                                      textAlign: TextAlign.center,
+                                      style: AppTypography.bodyMd(
+                                        RefereeColors.statusRed,
+                                      ),
+                                    ),
+                                    const SizedBox(height: AppSpacing.md),
+                                  ],
+                                  _InvitationDetailContent(data: data),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
+    );
+  }
+}
+
+class _InvitationDecisionDialog extends StatefulWidget {
+  const _InvitationDecisionDialog({
+    required this.title,
+    required this.confirmLabel,
+    required this.noteHint,
+    required this.isSubmitting,
+  });
+
+  final String title;
+  final String confirmLabel;
+  final String noteHint;
+  final bool isSubmitting;
+
+  @override
+  State<_InvitationDecisionDialog> createState() =>
+      _InvitationDecisionDialogState();
+}
+
+class _InvitationDecisionDialogState extends State<_InvitationDecisionDialog> {
+  late final TextEditingController _controller;
+  String? _errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final note = _controller.text.trim();
+    if (note.length > JockeyInvitationDetailViewModel.maxDecisionNoteLength) {
+      setState(() => _errorText = 'Ghi chú tối đa 1000 ký tự.');
+      return;
+    }
+    Navigator.pop(context, note);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _controller,
+        enabled: !widget.isSubmitting,
+        maxLength: JockeyInvitationDetailViewModel.maxDecisionNoteLength,
+        maxLines: 4,
+        decoration: InputDecoration(
+          hintText: widget.noteHint,
+          errorText: _errorText,
+          border: const OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: widget.isSubmitting ? null : () => Navigator.pop(context),
+          child: const Text('Hủy'),
+        ),
+        FilledButton(
+          onPressed: widget.isSubmitting ? null : _submit,
+          child: widget.isSubmitting
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(widget.confirmLabel),
+        ),
+      ],
     );
   }
 }

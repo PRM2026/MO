@@ -370,6 +370,78 @@ class JockeyInvitationStatusBadge extends StatelessWidget {
   }
 }
 
+class JockeyInvitationActionBar extends StatelessWidget {
+  const JockeyInvitationActionBar({
+    super.key,
+    required this.isProcessing,
+    required this.onReject,
+    required this.onAccept,
+  });
+
+  final bool isProcessing;
+  final VoidCallback onReject;
+  final VoidCallback onAccept;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: RefereeColors.portalSurface.withValues(alpha: 0.94),
+        border: Border(
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: isProcessing ? null : onReject,
+                  icon: const Icon(Icons.close),
+                  label: const Text('Từ chối'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: RefereeColors.statusRed,
+                    side: BorderSide(
+                      color: RefereeColors.statusRed.withValues(alpha: 0.5),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  onPressed: isProcessing ? null : onAccept,
+                  icon: isProcessing
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: RefereeColors.portalSurface,
+                          ),
+                        )
+                      : const Icon(Icons.check),
+                  label: Text(isProcessing ? 'Đang gửi...' : 'Chấp nhận'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: RefereeColors.championshipGold,
+                    foregroundColor: RefereeColors.portalSurface,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DetailCard extends StatelessWidget {
   const _DetailCard({required this.title, required this.children});
 

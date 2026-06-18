@@ -155,30 +155,109 @@ void main() {
     });
   });
 
-  test('accept action remains available for Phase 8', () async {
-    final storage = await _storageWithToken('jockey-token');
-    final service = JockeyInvitationService(
-      baseUrl: 'http://example.test',
-      storage: storage,
-      client: MockClient((request) async {
-        expect(request.method, 'PUT');
-        expect(
-          request.url.toString(),
-          'http://example.test/jockey/invitations/7/accept',
-        );
-        expect(jsonDecode(request.body), {'note': 'Ready'});
-        return _jsonResponse({
-          'success': true,
-          'message': 'Accepted',
-          'data': _invitationJson(status: 'ACCEPTED', responseNote: 'Ready'),
-        });
-      }),
-    );
+  group('JockeyInvitationService action APIs', () {
+    test('accept sends trimmed note as json body', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyInvitationService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient((request) async {
+          expect(request.method, 'PUT');
+          expect(
+            request.url.toString(),
+            'http://example.test/jockey/invitations/7/accept',
+          );
+          expect(request.headers['Authorization'], 'Bearer jockey-token');
+          expect(request.headers['Content-Type'], 'application/json');
+          expect(jsonDecode(request.body), {'note': 'Ready'});
+          return _jsonResponse({
+            'success': true,
+            'message': 'Accepted',
+            'data': _invitationJson(status: 'ACCEPTED', responseNote: 'Ready'),
+          });
+        }),
+      );
 
-    final invitation = await service.acceptInvitation(7, note: ' Ready ');
+      final invitation = await service.acceptInvitation(7, note: ' Ready ');
 
-    expect(invitation.statusCode, 'ACCEPTED');
-    expect(invitation.responseNote, 'Ready');
+      expect(invitation.statusCode, 'ACCEPTED');
+      expect(invitation.responseNote, 'Ready');
+    });
+
+    test('reject sends note to jockey reject endpoint', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyInvitationService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient((request) async {
+          expect(request.method, 'PUT');
+          expect(
+            request.url.toString(),
+            'http://example.test/jockey/invitations/7/reject',
+          );
+          expect(jsonDecode(request.body), {'note': 'Busy'});
+          return _jsonResponse({
+            'success': true,
+            'message': 'Rejected',
+            'data': _invitationJson(status: 'REJECTED', responseNote: 'Busy'),
+          });
+        }),
+      );
+
+      final invitation = await service.rejectInvitation(7, note: 'Busy');
+
+      expect(invitation.statusCode, 'REJECTED');
+      expect(invitation.responseNote, 'Busy');
+    });
+
+    test('empty action note sends empty json object', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyInvitationService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient((request) async {
+          expect(request.method, 'PUT');
+          expect(jsonDecode(request.body), <String, dynamic>{});
+          return _jsonResponse({
+            'success': true,
+            'message': 'Accepted',
+            'data': _invitationJson(status: 'ACCEPTED'),
+          });
+        }),
+      );
+
+      final invitation = await service.acceptInvitation(7, note: '   ');
+
+      expect(invitation.statusCode, 'ACCEPTED');
+    });
+
+    test('action wraps backend validation error', () async {
+      final storage = await _storageWithToken('jockey-token');
+      final service = JockeyInvitationService(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient(
+          (_) async => _jsonResponse({
+            'success': false,
+            'message': '',
+            'data': {
+              'note': ['Note must be at most 1000 characters'],
+            },
+          }, statusCode: 400),
+        ),
+      );
+
+      expect(
+        () => service.rejectInvitation(7, note: 'x' * 1001),
+        throwsA(
+          isA<JockeyInvitationApiException>().having(
+            (error) => error.message,
+            'message',
+            'Note must be at most 1000 characters',
+          ),
+        ),
+      );
+    });
   });
 
   test('missing token is wrapped as invitation exception', () async {

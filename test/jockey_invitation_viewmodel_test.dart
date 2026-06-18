@@ -135,11 +135,88 @@ void main() {
       expect(viewModel.data, isNull);
       expect(viewModel.loadError, 'Không xác định được mã lời mời.');
     });
+
+    test('note longer than 1000 is rejected without repository call', () async {
+      final repository = _FakeRepository(detail: _detail());
+      final viewModel = JockeyInvitationDetailViewModel(
+        invitationId: '7',
+        repository: repository,
+      );
+
+      final success = await viewModel.acceptInvitation(note: 'x' * 1001);
+
+      expect(success, isFalse);
+      expect(repository.acceptCalls, 0);
+      expect(viewModel.actionError, 'Ghi chú tối đa 1000 ký tự.');
+    });
+
+    test('accept success reloads detail and marks action completed', () async {
+      final pending = _detail(
+        statusCode: 'PENDING',
+        statusLabel: 'Chờ phản hồi',
+      );
+      final accepted = _detail(
+        statusCode: 'ACCEPTED',
+        statusLabel: 'Đã nhận',
+        responseNote: 'Ready',
+      );
+      final repository = _FakeRepository(detailQueue: [pending, accepted]);
+      final viewModel = JockeyInvitationDetailViewModel(
+        invitationId: '7',
+        repository: repository,
+      );
+
+      await viewModel.loadDetail();
+      final success = await viewModel.acceptInvitation(note: ' Ready ');
+
+      expect(success, isTrue);
+      expect(repository.acceptCalls, 1);
+      expect(repository.lastNote, 'Ready');
+      expect(repository.detailFetches, 2);
+      expect(viewModel.data, same(accepted));
+      expect(viewModel.actionCompleted, isTrue);
+      expect(viewModel.isProcessing, isFalse);
+      expect(viewModel.actionError, isNull);
+    });
+
+    test(
+      'reject action error keeps current detail and exposes message',
+      () async {
+        final pending = _detail(
+          statusCode: 'PENDING',
+          statusLabel: 'Chờ phản hồi',
+        );
+        final repository = _FakeRepository(
+          detail: pending,
+          actionError: const JockeyInvitationApiException(
+            'Invitation is no longer pending',
+          ),
+        );
+        final viewModel = JockeyInvitationDetailViewModel(
+          invitationId: '7',
+          repository: repository,
+        );
+
+        await viewModel.loadDetail();
+        final success = await viewModel.rejectInvitation(note: 'Busy');
+
+        expect(success, isFalse);
+        expect(repository.rejectCalls, 1);
+        expect(viewModel.data, same(pending));
+        expect(viewModel.actionCompleted, isFalse);
+        expect(viewModel.isProcessing, isFalse);
+        expect(viewModel.actionError, 'Invitation is no longer pending');
+      },
+    );
   });
 }
 
-JockeyInvitationDetail _detail() {
-  return const JockeyInvitationDetail(
+JockeyInvitationDetail _detail({
+  String statusCode = 'PENDING',
+  String statusLabel = 'Chờ phản hồi',
+  String responseNote = '',
+}) {
+  return JockeyInvitationDetail(
     id: '7',
     ownerName: 'stable_owner',
     ownerReference: 'Chủ ngựa #3',
@@ -152,9 +229,9 @@ JockeyInvitationDetail _detail() {
     tournamentReference: 'Giải đấu #41',
     remunerationLabel: '500.000 đ',
     message: 'Mời bạn tham gia.',
-    responseNote: '',
-    statusCode: 'PENDING',
-    statusLabel: 'Chờ phản hồi',
+    responseNote: responseNote,
+    statusCode: statusCode,
+    statusLabel: statusLabel,
     createdAtLabel: '18/06/2026 08:00',
     updatedAtLabel: '18/06/2026 09:00',
     respondedAtLabel: '',
@@ -163,11 +240,23 @@ JockeyInvitationDetail _detail() {
 }
 
 class _FakeRepository extends JockeyInvitationRepository {
-  _FakeRepository({this.invitations = const [], this.detail, this.error});
+  _FakeRepository({
+    this.invitations = const [],
+    this.detail,
+    List<JockeyInvitationDetail>? detailQueue,
+    this.error,
+    this.actionError,
+  }) : detailQueue = detailQueue ?? const [];
 
   final List<JockeyInvitationListItem> invitations;
   final JockeyInvitationDetail? detail;
+  final List<JockeyInvitationDetail> detailQueue;
   final Object? error;
+  final Object? actionError;
+  int detailFetches = 0;
+  int acceptCalls = 0;
+  int rejectCalls = 0;
+  String? lastNote;
 
   @override
   Future<List<JockeyInvitationListItem>> fetchInvitations() async {
@@ -177,8 +266,29 @@ class _FakeRepository extends JockeyInvitationRepository {
 
   @override
   Future<JockeyInvitationDetail> fetchInvitationDetail(String id) async {
+    detailFetches++;
     if (error != null) throw error!;
+    if (detailQueue.isNotEmpty) {
+      final index = detailFetches - 1;
+      return detailQueue[index < detailQueue.length
+          ? index
+          : detailQueue.length - 1];
+    }
     return detail!;
+  }
+
+  @override
+  Future<void> acceptInvitation(String id, {String? note}) async {
+    acceptCalls++;
+    lastNote = note;
+    if (actionError != null) throw actionError!;
+  }
+
+  @override
+  Future<void> rejectInvitation(String id, {String? note}) async {
+    rejectCalls++;
+    lastNote = note;
+    if (actionError != null) throw actionError!;
   }
 }
 
