@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 
-enum JockeyTab { dashboard, invitations, schedule, results, profile }
+enum JockeyTab { dashboard, invitations, schedule, results, assignments }
 
 class JockeyBottomNav extends StatelessWidget {
   const JockeyBottomNav({
@@ -67,7 +67,7 @@ const _items = [
   _NavItemData(JockeyTab.invitations, Icons.mail_outline, 'Lời mời'),
   _NavItemData(JockeyTab.schedule, Icons.calendar_today_outlined, 'Lịch đua'),
   _NavItemData(JockeyTab.results, Icons.military_tech_outlined, 'Kết quả'),
-  _NavItemData(JockeyTab.profile, Icons.person_outline, 'Hồ sơ'),
+  _NavItemData(JockeyTab.assignments, Icons.pets_outlined, 'Phân công'),
 ];
 
 class _NavItem extends StatelessWidget {

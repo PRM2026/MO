@@ -247,12 +247,16 @@ class JockeyProfileActionsCard extends StatelessWidget {
     super.key,
     required this.isLoggingOut,
     this.onEdit,
+    this.onWallet,
+    this.onNotifications,
     required this.onChangePassword,
     required this.onLogout,
   });
 
   final bool isLoggingOut;
   final VoidCallback? onEdit;
+  final VoidCallback? onWallet;
+  final VoidCallback? onNotifications;
   final VoidCallback onChangePassword;
   final VoidCallback? onLogout;
 
@@ -271,6 +275,18 @@ class JockeyProfileActionsCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ],
+          OutlinedButton.icon(
+            onPressed: onWallet,
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            label: const Text('Vi cua toi'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: onNotifications,
+            icon: const Icon(Icons.notifications_none),
+            label: const Text('Thong bao'),
+          ),
+          const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: onChangePassword,
             icon: const Icon(Icons.security_outlined),

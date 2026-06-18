@@ -22,15 +22,18 @@ class _JockeyShellState extends State<JockeyShell> {
   JockeyTab _currentTab = JockeyTab.dashboard;
 
   void _handleQuickLink(JockeyDashboardQuickLink link) {
-    switch (link.label.trim().toLowerCase()) {
+    switch (_quickLinkKey(link)) {
       case 'invitations':
         setState(() => _currentTab = JockeyTab.invitations);
         return;
-      case 'my races':
+      case 'schedule':
         setState(() => _currentTab = JockeyTab.schedule);
         return;
-      case 'performance':
+      case 'results':
         setState(() => _currentTab = JockeyTab.results);
+        return;
+      case 'assignments':
+        setState(() => _currentTab = JockeyTab.assignments);
         return;
       case 'profile':
         AppRoutes.openJockeyProfile(context);
@@ -42,7 +45,7 @@ class _JockeyShellState extends State<JockeyShell> {
         AppRoutes.openJockeyNotifications(context);
         return;
       default:
-        AppToast.showSuccess(context, 'Chua ho tro trong phase nay');
+        AppToast.showSuccess(context, 'Chua ho tro lien ket nay');
         return;
     }
   }
@@ -67,4 +70,39 @@ class _JockeyShellState extends State<JockeyShell> {
       ),
     );
   }
+}
+
+String _quickLinkKey(JockeyDashboardQuickLink link) {
+  final route = _normalizeQuickLinkValue(link.route);
+  final label = _normalizeQuickLinkValue(link.label);
+  final combined = '$route $label';
+
+  if (combined.contains('notification')) return 'notifications';
+  if (combined.contains('wallet')) return 'wallet';
+  if (combined.contains('profile')) return 'profile';
+  if (combined.contains('invitation')) return 'invitations';
+  if (combined.contains('assignment') ||
+      combined.contains('horse') ||
+      combined.contains('horses')) {
+    return 'assignments';
+  }
+  if (combined.contains('result') || combined.contains('performance')) {
+    return 'results';
+  }
+  if (combined.contains('schedule') ||
+      combined.contains('race') ||
+      combined.contains('races') ||
+      combined.contains('my races')) {
+    return 'schedule';
+  }
+
+  return label;
+}
+
+String _normalizeQuickLinkValue(String value) {
+  return value
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[_/-]+'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ');
 }

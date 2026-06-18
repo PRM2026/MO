@@ -51,6 +51,14 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
     );
   }
 
+  void _handleWallet() {
+    AppRoutes.openJockeyWallet(context);
+  }
+
+  void _handleNotifications() {
+    AppRoutes.openJockeyNotifications(context);
+  }
+
   Future<void> _handleEditProfile() async {
     final profile = _viewModel.data;
     if (profile == null || profile.statusCode == 'SUSPENDED') return;
@@ -137,6 +145,8 @@ class _JockeyProfileScreenState extends State<JockeyProfileScreen> {
                                         onEdit: data.statusCode == 'SUSPENDED'
                                             ? null
                                             : _handleEditProfile,
+                                        onWallet: _handleWallet,
+                                        onNotifications: _handleNotifications,
                                         onChangePassword: _handleChangePassword,
                                         onLogout: _handleLogout,
                                       ),
