@@ -14,32 +14,34 @@ class OwnerProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefereeGlassCard(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isWide = constraints.maxWidth >= 640;
           final avatar = ProfileAvatar(
-            size: isWide ? 128 : 96,
+            size: isWide ? 112 : 88,
             imageUrl: profile.avatarUrl,
             fallbackIcon: Icons.home_work_outlined,
             ringWidth: 3,
           );
           final info = Column(
-            crossAxisAlignment: isWide
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
+            crossAxisAlignment:
+                isWide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             children: [
               Text(
                 profile.fullName,
                 textAlign: isWide ? TextAlign.start : TextAlign.center,
                 style: AppTypography.displayLg(
                   RefereeColors.onSurface,
-                ).copyWith(fontSize: isWide ? 32 : 28),
+                ).copyWith(
+                  fontSize: isWide ? 28 : 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Wrap(
                 alignment: isWide ? WrapAlignment.start : WrapAlignment.center,
-                spacing: 12,
+                spacing: 10,
                 runSpacing: 8,
                 children: [
                   _OwnerBadge(label: profile.roleLabel),
@@ -48,7 +50,7 @@ class OwnerProfileHeader extends StatelessWidget {
                 ],
               ),
               if (profile.email != null || profile.username != null) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 if (profile.email != null)
                   _OwnerProfileLine(
                     icon: Icons.mail_outline,
@@ -67,13 +69,13 @@ class OwnerProfileHeader extends StatelessWidget {
             return Row(
               children: [
                 avatar,
-                const SizedBox(width: 24),
+                const SizedBox(width: 20),
                 Expanded(child: info),
               ],
             );
           }
 
-          return Column(children: [avatar, const SizedBox(height: 20), info]);
+          return Column(children: [avatar, const SizedBox(height: 16), info]);
         },
       ),
     );
@@ -239,15 +241,24 @@ class _OwnerSettingsRow extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Icon(item.icon, color: item.iconColor, size: 22),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: item.iconColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(item.icon, color: item.iconColor, size: 20),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   item.title,
-                  style: AppTypography.bodyMd(RefereeColors.onSurface),
+                  style: AppTypography.bodyMd(RefereeColors.onSurface).copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               if (item.trailingLabel != null) ...[
@@ -255,13 +266,14 @@ class _OwnerSettingsRow extends StatelessWidget {
                   item.trailingLabel!,
                   style: AppTypography.labelCaps(
                     RefereeColors.onSurfaceVariant,
-                  ).copyWith(fontWeight: FontWeight.w500),
+                  ).copyWith(fontWeight: FontWeight.w500, fontSize: 11),
                 ),
                 const SizedBox(width: 8),
               ],
               const Icon(
-                Icons.chevron_right,
+                Icons.chevron_right_rounded,
                 color: RefereeColors.onSurfaceVariant,
+                size: 20,
               ),
             ],
           ),

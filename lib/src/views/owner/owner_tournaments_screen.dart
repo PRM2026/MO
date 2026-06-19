@@ -106,36 +106,48 @@ class _OwnerTournamentsScreenState extends State<OwnerTournamentsScreen> {
                                   LayoutBuilder(
                                     builder: (context, constraints) {
                                       final width = constraints.maxWidth;
-                                      final crossAxisCount = width >= 640
-                                          ? 2
-                                          : 1;
+                                      if (width < 640) {
+                                        // On mobile/single column, use a dynamic ListView so cards wrap their content perfectly without vertical stretching
+                                        return ListView.separated(
+                                          shrinkWrap: true,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          itemCount: tournaments.length,
+                                          separatorBuilder: (context, index) => const SizedBox(height: 24),
+                                          itemBuilder: (context, index) {
+                                            final tournament = tournaments[index];
+                                            return OwnerTournamentGridCard(
+                                              tournament: tournament,
+                                              onPrimaryAction: () =>
+                                                  _openTournamentDetail(tournament),
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        // On multi-column, calculate childAspectRatio dynamically to maintain target height of 380px
+                                        const crossAxisCount = 2;
+                                        final itemWidth = (width - 24) / crossAxisCount;
+                                        final childAspectRatio = itemWidth / 380;
 
-                                      return GridView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: crossAxisCount,
-                                              crossAxisSpacing: 24,
-                                              mainAxisSpacing: 24,
-                                              childAspectRatio:
-                                                  crossAxisCount == 1
-                                                  ? 0.68
-                                                  : 0.58,
-                                            ),
-                                        itemCount: tournaments.length,
-                                        itemBuilder: (context, index) {
-                                          final tournament = tournaments[index];
-                                          return OwnerTournamentGridCard(
-                                            tournament: tournament,
-                                            onPrimaryAction: () =>
-                                                _openTournamentDetail(
-                                                  tournament,
-                                                ),
-                                          );
-                                        },
-                                      );
+                                        return GridView.builder(
+                                          shrinkWrap: true,
+                                          physics: const NeverScrollableScrollPhysics(),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: crossAxisCount,
+                                            crossAxisSpacing: 24,
+                                            mainAxisSpacing: 24,
+                                            childAspectRatio: childAspectRatio,
+                                          ),
+                                          itemCount: tournaments.length,
+                                          itemBuilder: (context, index) {
+                                            final tournament = tournaments[index];
+                                            return OwnerTournamentGridCard(
+                                              tournament: tournament,
+                                              onPrimaryAction: () =>
+                                                  _openTournamentDetail(tournament),
+                                            );
+                                          },
+                                        );
+                                      }
                                     },
                                   ),
                                 if (!_viewModel.isLoading &&

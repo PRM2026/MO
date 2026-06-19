@@ -41,66 +41,88 @@ class OwnerHeroBanner extends StatelessWidget {
               right: 0,
               bottom: 0,
               child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: RefereeColors.championshipGold.withValues(
-                          alpha: 0.2,
-                        ),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: RefereeColors.championshipGold.withValues(
-                            alpha: 0.3,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: RefereeColors.championshipGold.withValues(
+                                alpha: 0.15,
+                              ),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: RefereeColors.championshipGold.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              hero.badgeLabel,
+                              style: AppTypography.labelCaps(
+                                RefereeColors.championshipGold,
+                              ).copyWith(fontSize: 10),
+                            ),
                           ),
-                        ),
-                      ),
-                      child: Text(
-                        hero.badgeLabel,
-                        style: AppTypography.labelCaps(
-                          RefereeColors.championshipGold,
-                        ).copyWith(fontSize: 11),
+                          const SizedBox(height: 10),
+                          Text(
+                            hero.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.headlineSm(
+                              Colors.white,
+                            ).copyWith(fontSize: 22, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            hero.subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodySm(
+                              RefereeColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      hero.title,
-                      style: AppTypography.headlineSm(
-                        Colors.white,
-                      ).copyWith(fontSize: 28),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      hero.subtitle,
-                      style: AppTypography.bodyMd(
-                        RefereeColors.onSurfaceVariant,
+                    const SizedBox(width: 16),
+                    OutlinedButton(
+                      onPressed: onViewTournament,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: RefereeColors.championshipGold,
+                        side: const BorderSide(
+                          color: RefereeColors.championshipGold,
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: onViewTournament,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: RefereeColors.championshipGold,
-                          foregroundColor: RefereeColors.background,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Xem giải',
+                            style: AppTypography.labelCaps(
+                              RefereeColors.championshipGold,
+                            ).copyWith(fontSize: 12),
                           ),
-                        ),
-                        child: Text(
-                          'Xem giải đấu',
-                          style: AppTypography.labelCaps(
-                            RefereeColors.background,
-                          ),
-                        ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward, size: 14),
+                        ],
                       ),
                     ),
                   ],
@@ -259,11 +281,25 @@ class _QuickActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefereeGlassCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Row(
         children: [
-          Icon(icon, color: RefereeColors.championshipGold),
-          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: RefereeColors.championshipGold.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: RefereeColors.championshipGold.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Icon(
+              icon,
+              color: RefereeColors.championshipGold,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 14),
           Expanded(
             child: Text(
               label,
@@ -271,8 +307,17 @@ class _QuickActionButton extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTypography.labelCaps(
                 RefereeColors.onSurface,
-              ).copyWith(fontSize: 12, letterSpacing: 0),
+              ).copyWith(
+                fontSize: 13,
+                letterSpacing: 0,
+                fontWeight: FontWeight.w600,
+              ),
             ),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: RefereeColors.onSurfaceVariant,
+            size: 18,
           ),
         ],
       ),
@@ -288,9 +333,9 @@ class _FeaturedHorseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefereeGlassCard(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       child: SizedBox(
-        width: 192,
+        width: 180,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -307,23 +352,26 @@ class _FeaturedHorseCard extends StatelessWidget {
                         left: 8,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
+                            horizontal: 10,
+                            vertical: 3,
                           ),
                           decoration: BoxDecoration(
                             color: RefereeColors.portalSurface.withValues(
-                              alpha: 0.8,
+                              alpha: 0.85,
                             ),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.1),
+                              color: RefereeColors.championshipGold.withValues(
+                                alpha: 0.3,
+                              ),
+                              width: 1,
                             ),
                           ),
                           child: Text(
                             horse.rankLabel!,
                             style: AppTypography.labelCaps(
                               RefereeColors.championshipGold,
-                            ).copyWith(fontSize: 10),
+                            ).copyWith(fontSize: 9),
                           ),
                         ),
                       ),
@@ -331,22 +379,23 @@ class _FeaturedHorseCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
               horse.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.labelCaps(
+              style: AppTypography.headlineSm(
                 RefereeColors.onSurface,
-              ).copyWith(fontSize: 14, letterSpacing: 0.2),
+              ).copyWith(fontSize: 15, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 2),
             Text(
               horse.subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.labelCaps(
+              style: AppTypography.bodySm(
                 RefereeColors.onSurfaceVariant,
-              ).copyWith(fontWeight: FontWeight.w400, fontSize: 11),
+              ).copyWith(fontSize: 12),
             ),
           ],
         ),
@@ -450,12 +499,12 @@ class _UpcomingRaceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefereeGlassCard(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           Container(
             width: 4,
-            height: 56,
+            height: 52,
             decoration: BoxDecoration(
               color: _accentColor,
               borderRadius: BorderRadius.circular(999),
@@ -463,61 +512,72 @@ class _UpcomingRaceTile extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Container(
-            width: 56,
-            height: 56,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: RefereeColors.surfaceContainer,
+              color: RefereeColors.portalSurface.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              border: Border.all(
+                color: RefereeColors.championshipGold.withValues(alpha: 0.2),
+                width: 1,
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '${race.day}',
-                  style: AppTypography.labelCaps(
+                  style: AppTypography.displayMd(
                     RefereeColors.championshipGold,
-                  ).copyWith(fontSize: 14),
+                  ).copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    height: 1.1,
+                  ),
                 ),
                 Text(
                   race.monthLabel,
                   style: AppTypography.labelCaps(
                     RefereeColors.onSurfaceVariant,
-                  ).copyWith(fontSize: 9),
+                  ).copyWith(fontSize: 9, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   race.title,
-                  style: AppTypography.labelCaps(
+                  style: AppTypography.headlineSm(
                     RefereeColors.onSurface,
-                  ).copyWith(fontSize: 14, letterSpacing: 0.2),
+                  ).copyWith(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
+                const SizedBox(height: 3),
                 Text(
                   race.detail,
-                  style: AppTypography.labelCaps(
+                  style: AppTypography.bodySm(
                     RefereeColors.onSurfaceVariant,
-                  ).copyWith(fontWeight: FontWeight.w400, fontSize: 11),
+                  ).copyWith(fontSize: 12),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: _badgeBackground,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: _badgeBorder),
             ),
             child: Text(
-              race.statusLabel.toUpperCase(),
-              style: AppTypography.labelCaps(_badgeText).copyWith(fontSize: 9),
+              race.statusLabel,
+              style: AppTypography.labelCaps(_badgeText).copyWith(
+                fontSize: 9,
+                letterSpacing: 0.2,
+              ),
             ),
           ),
         ],

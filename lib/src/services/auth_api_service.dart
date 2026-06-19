@@ -62,7 +62,7 @@ class AuthApiService {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
-    );
+    ).timeout(const Duration(seconds: 5));
 
     Map<String, dynamic>? decoded;
     try {
@@ -103,7 +103,7 @@ class AuthApiService {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
       }),
-    );
+    ).timeout(const Duration(seconds: 5));
 
     Map<String, dynamic>? decoded;
     try {
@@ -139,7 +139,7 @@ class AuthApiService {
         'Content-Type': 'application/json',
       },
       body: jsonEncode(body),
-    );
+    ).timeout(const Duration(seconds: 5));
 
     Map<String, dynamic>? decoded;
     try {

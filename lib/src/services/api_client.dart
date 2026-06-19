@@ -122,10 +122,10 @@ class ApiClient {
     }
 
     return switch (method) {
-      'GET' => _client.get(uri, headers: headers),
-      'POST' => _client.post(uri, headers: headers, body: encodedBody),
-      'PUT' => _client.put(uri, headers: headers, body: encodedBody),
-      'DELETE' => _client.delete(uri, headers: headers),
+      'GET' => _client.get(uri, headers: headers).timeout(const Duration(seconds: 5)),
+      'POST' => _client.post(uri, headers: headers, body: encodedBody).timeout(const Duration(seconds: 5)),
+      'PUT' => _client.put(uri, headers: headers, body: encodedBody).timeout(const Duration(seconds: 5)),
+      'DELETE' => _client.delete(uri, headers: headers).timeout(const Duration(seconds: 5)),
       _ => throw ApiException('Phuong thuc API khong duoc ho tro: $method.'),
     };
   }

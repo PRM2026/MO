@@ -41,17 +41,22 @@ class OwnerTournamentFilterChips extends StatelessWidget {
             selected: isSelected,
             showCheckmark: false,
             onSelected: (_) => onSelected(filter),
-            backgroundColor: RefereeColors.portalSurface.withValues(alpha: 0.7),
-            selectedColor: RefereeColors.portalSurface.withValues(alpha: 0.7),
+            backgroundColor: RefereeColors.surfaceContainer.withValues(
+              alpha: 0.5,
+            ),
+            selectedColor: RefereeColors.championshipGold.withValues(
+              alpha: 0.12,
+            ),
             side: BorderSide(
               color: isSelected
-                  ? RefereeColors.championshipGold.withValues(alpha: 0.4)
+                  ? RefereeColors.championshipGold
                   : Colors.white.withValues(alpha: 0.1),
+              width: isSelected ? 1.5 : 1,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(999),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           );
         },
       ),
@@ -81,7 +86,7 @@ class OwnerTournamentGridCard extends StatelessWidget {
           children: [
             _BannerSection(tournament: tournament),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -91,7 +96,7 @@ class OwnerTournamentGridCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.headlineSm(
                       RefereeColors.onSurface,
-                    ).copyWith(fontSize: 22),
+                    ).copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   _InfoRow(
@@ -116,21 +121,24 @@ class OwnerTournamentGridCard extends StatelessWidget {
                       OutlinedButton(
                         onPressed: onPrimaryAction,
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: RefereeColors.onSurface,
-                          side: BorderSide(color: RefereeColors.outlineVariant),
+                          foregroundColor: RefereeColors.championshipGold,
+                          side: const BorderSide(
+                            color: RefereeColors.championshipGold,
+                            width: 1.5,
+                          ),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
+                            horizontal: 16,
                             vertical: 10,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                         child: Text(
                           'Chi Tiết',
                           style: AppTypography.labelCaps(
-                            RefereeColors.onSurface,
-                          ).copyWith(fontSize: 13),
+                            RefereeColors.championshipGold,
+                          ).copyWith(fontSize: 11),
                         ),
                       ),
                     ],
@@ -163,22 +171,22 @@ class _BannerSection extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
       child: SizedBox(
-        height: 224,
+        height: 180,
         child: Stack(
           fit: StackFit.expand,
           children: [
             tournament.imageUrl.isNotEmpty
                 ? NewsNetworkImage(imageUrl: tournament.imageUrl)
                 : ColoredBox(
-                    color: RefereeColors.surfaceContainer,
-                    child: Icon(
-                      Icons.emoji_events_outlined,
-                      size: 64,
-                      color: RefereeColors.onSurfaceVariant.withValues(
-                        alpha: 0.4,
-                      ),
+                  color: RefereeColors.surfaceContainer,
+                  child: Icon(
+                    Icons.emoji_events_outlined,
+                    size: 64,
+                    color: RefereeColors.onSurfaceVariant.withValues(
+                      alpha: 0.4,
                     ),
                   ),
+                ),
             if (!isOngoing)
               ColoredBox(color: Colors.black.withValues(alpha: 0.15)),
             Positioned(

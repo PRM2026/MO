@@ -143,10 +143,13 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
       floatingActionButton: _showSearchBar
           ? null
           : FloatingActionButton(
-              onPressed: _showFilterSheet,
+              onPressed: _openCreateForm,
               backgroundColor: RefereeColors.championshipGold,
               foregroundColor: RefereeColors.onTertiary,
-              child: const Icon(Icons.tune),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.add, size: 28),
             ),
       body: OwnerPortalBackground(
         child: Column(
@@ -207,8 +210,6 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                                 ? 2
                                                 : 1;
 
-                                            final itemCount = horses.length + 1;
-
                                             return GridView.builder(
                                               shrinkWrap: true,
                                               physics:
@@ -221,17 +222,11 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
                                                     mainAxisSpacing: 16,
                                                     childAspectRatio:
                                                         crossAxisCount == 1
-                                                        ? 0.56
-                                                        : 0.52,
+                                                        ? 0.85
+                                                        : 0.74,
                                                   ),
-                                              itemCount: itemCount,
+                                              itemCount: horses.length,
                                               itemBuilder: (context, index) {
-                                                if (index == horses.length) {
-                                                  return OwnerAddHorseCard(
-                                                    onTap: _openCreateForm,
-                                                  );
-                                                }
-
                                                 final horse = horses[index];
                                                 return OwnerHorseGridCard(
                                                   horse: horse,

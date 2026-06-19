@@ -40,17 +40,22 @@ class OwnerHorseFilterChips extends StatelessWidget {
             selected: isSelected,
             showCheckmark: false,
             onSelected: (_) => onSelected(filter),
-            backgroundColor: RefereeColors.portalSurface.withValues(alpha: 0.7),
-            selectedColor: RefereeColors.portalSurface.withValues(alpha: 0.7),
+            backgroundColor: RefereeColors.surfaceContainer.withValues(
+              alpha: 0.5,
+            ),
+            selectedColor: RefereeColors.championshipGold.withValues(
+              alpha: 0.12,
+            ),
             side: BorderSide(
               color: isSelected
                   ? RefereeColors.championshipGold
                   : Colors.white.withValues(alpha: 0.1),
+              width: isSelected ? 1.5 : 1,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(999),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           );
         },
       ),
@@ -64,12 +69,71 @@ class OwnerHorseGridCard extends StatelessWidget {
   final OwnerHorseItem horse;
   final VoidCallback? onTap;
 
+  Widget _buildTag(String label, {IconData? icon}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: RefereeColors.onSurfaceVariant),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: AppTypography.bodySm(
+              RefereeColors.onSurfaceVariant,
+            ).copyWith(fontSize: 11, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem({
+    required String label,
+    required String value,
+    Color? valueColor,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: AppTypography.labelCaps(
+            RefereeColors.onSurfaceVariant,
+          ).copyWith(
+            fontSize: 9,
+            letterSpacing: 0.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: AppTypography.displayMd(
+            valueColor ?? RefereeColors.onSurface,
+          ).copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerticalDivider() {
+    return Container(
+      width: 1,
+      height: 24,
+      color: Colors.white.withValues(alpha: 0.08),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final winRateColor = horse.performance.totalRaces > 0
-        ? RefereeColors.successEmerald
-        : RefereeColors.onSurface;
-
     return RefereeGlassCard(
       padding: EdgeInsets.zero,
       child: InkWell(
@@ -80,107 +144,143 @@ class OwnerHorseGridCard extends StatelessWidget {
           children: [
             _HorseImageHeader(horse: horse),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              horse.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.headlineSm(
-                                RefereeColors.onSurface,
-                              ).copyWith(fontSize: 22),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              horse.breed,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.bodyMd(
-                                RefereeColors.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          horse.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.headlineSm(
+                            RefereeColors.onSurface,
+                          ).copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            'WIN RATE',
-                            style: AppTypography.labelCaps(
-                              RefereeColors.onSurfaceVariant,
-                            ).copyWith(fontSize: 10),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _statusColor(
+                            horse.statusCode,
+                          ).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: _statusColor(
+                              horse.statusCode,
+                            ).withValues(alpha: 0.3),
                           ),
-                          Text(
-                            horse.performance.winRateLabel,
-                            style: AppTypography.headlineSm(
-                              winRateColor,
-                            ).copyWith(fontSize: 22),
+                        ),
+                        child: Text(
+                          horse.statusLabel.toUpperCase(),
+                          style: AppTypography.labelCaps(
+                            _statusColor(horse.statusCode),
+                          ).copyWith(fontSize: 9, letterSpacing: 0.2),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      _buildTag(horse.breed, icon: Icons.pets_outlined),
+                      if (horse.age != null)
+                        _buildTag(
+                          horse.ageLabel,
+                          icon: Icons.calendar_today_outlined,
+                        ),
+                      _buildTag(
+                        horse.genderLabel,
+                        icon: Icons.transgender_outlined,
+                      ),
+                      _buildTag(
+                        horse.colorLabel,
+                        icon: Icons.color_lens_outlined,
+                      ),
+                      if (horse.heightCm != null || horse.weightKg != null)
+                        _buildTag(
+                          horse.bodyMetricsLabel,
+                          icon: Icons.monitor_weight_outlined,
+                        ),
+                    ],
+                  ),
+                  if (horse.reviewReason?.trim().isNotEmpty == true) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: RefereeColors.statusRed.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: RefereeColors.statusRed.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 16,
+                            color: RefereeColors.statusRed,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              horse.reviewReason!.trim(),
+                              style: AppTypography.bodySm(
+                                RefereeColors.statusRed,
+                              ).copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Divider(color: Colors.white.withValues(alpha: 0.05)),
-                  const SizedBox(height: 12),
-                  _HorseDetailRow(
-                    icon: Icons.badge_outlined,
-                    label: 'Trạng thái',
-                    value: horse.statusLabel,
-                    valueColor: _statusColor(horse.statusCode),
-                  ),
-                  const SizedBox(height: 8),
-                  _HorseDetailRow(
-                    icon: Icons.pets_outlined,
-                    label: 'Thông tin',
-                    value:
-                        '${horse.ageLabel} • ${horse.genderLabel} • ${horse.colorLabel}',
-                  ),
-                  const SizedBox(height: 8),
-                  _HorseDetailRow(
-                    icon: Icons.monitor_weight_outlined,
-                    label: 'Thể trạng',
-                    value: horse.bodyMetricsLabel,
-                  ),
-                  if (horse.reviewReason?.trim().isNotEmpty == true) ...[
-                    const SizedBox(height: 8),
-                    _HorseDetailRow(
-                      icon: Icons.info_outline,
-                      label: 'Phản hồi',
-                      value: horse.reviewReason!.trim(),
                     ),
                   ],
                   const SizedBox(height: 16),
-                  Divider(color: Colors.white.withValues(alpha: 0.05)),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      _StatColumn(
-                        label: 'Cuộc đua',
-                        value: '${horse.performance.totalRaces}',
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: RefereeColors.portalSurface.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
-                      const SizedBox(width: 16),
-                      _StatColumn(
-                        label: 'Tỷ lệ thắng',
-                        value: horse.performance.winRateLabel,
-                      ),
-                      const SizedBox(width: 16),
-                      _StatColumn(
-                        label: 'Thắng',
-                        value: '${horse.performance.wins}',
-                      ),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatItem(
+                          label: 'CUỘC ĐUA',
+                          value: '${horse.performance.totalRaces}',
+                        ),
+                        _buildVerticalDivider(),
+                        _buildStatItem(
+                          label: 'THẮNG',
+                          value: '${horse.performance.wins}',
+                          valueColor: RefereeColors.championshipGold,
+                        ),
+                        _buildVerticalDivider(),
+                        _buildStatItem(
+                          label: 'TỶ LỆ THẮNG',
+                          value: horse.performance.winRateLabel,
+                          valueColor: RefereeColors.successEmerald,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -188,45 +288,6 @@ class OwnerHorseGridCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _HorseDetailRow extends StatelessWidget {
-  const _HorseDetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.valueColor,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color? valueColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: RefereeColors.onSurfaceVariant),
-        const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: AppTypography.bodySm(RefereeColors.onSurfaceVariant),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.bodySm(
-              valueColor ?? RefereeColors.onSurface,
-            ).copyWith(fontWeight: FontWeight.w600),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -252,22 +313,22 @@ class _HorseImageHeader extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
       child: SizedBox(
-        height: 256,
+        height: 200,
         child: Stack(
           fit: StackFit.expand,
           children: [
             horse.imageUrl.isNotEmpty
                 ? NewsNetworkImage(imageUrl: horse.imageUrl)
                 : ColoredBox(
-                    color: RefereeColors.surfaceContainer,
-                    child: Icon(
-                      Icons.art_track_outlined,
-                      size: 64,
-                      color: RefereeColors.onSurfaceVariant.withValues(
-                        alpha: 0.4,
-                      ),
+                  color: RefereeColors.surfaceContainer,
+                  child: Icon(
+                    Icons.art_track_outlined,
+                    size: 64,
+                    color: RefereeColors.onSurfaceVariant.withValues(
+                      alpha: 0.4,
                     ),
                   ),
+                ),
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -298,8 +359,8 @@ class _HorseImageHeader extends StatelessWidget {
                     border: isTopRank
                         ? null
                         : Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
-                          ),
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                   ),
                   child: Text(
                     horse.rankLabel!,
@@ -318,39 +379,6 @@ class _HorseImageHeader extends StatelessWidget {
   }
 }
 
-class _StatColumn extends StatelessWidget {
-  const _StatColumn({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTypography.labelCaps(
-              RefereeColors.onSurfaceVariant,
-            ).copyWith(fontSize: 11),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.labelCaps(
-              RefereeColors.championshipGold,
-            ).copyWith(fontSize: 14, letterSpacing: 0),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class OwnerAddHorseCard extends StatelessWidget {
   const OwnerAddHorseCard({super.key, this.onTap});
 
@@ -358,39 +386,48 @@ class OwnerAddHorseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Ink(
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1),
-              width: 2,
-              strokeAlign: BorderSide.strokeAlignInside,
+    return RefereeGlassCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: RefereeColors.championshipGold.withValues(alpha: 0.05),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: RefereeColors.championshipGold.withValues(alpha: 0.2),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: RefereeColors.championshipGold.withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add_rounded,
+              size: 32,
+              color: RefereeColors.championshipGold,
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.add_circle_outline,
-                size: 48,
-                color: RefereeColors.championshipGold.withValues(alpha: 0.4),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Thêm ngựa mới',
-                style: AppTypography.labelCaps(
-                  RefereeColors.onSurfaceVariant,
-                ).copyWith(fontSize: 14),
-              ),
-            ],
+          const SizedBox(height: 16),
+          Text(
+            'Thêm ngựa mới',
+            style: AppTypography.labelCaps(
+              RefereeColors.championshipGold,
+            ).copyWith(
+              fontSize: 13,
+              letterSpacing: 0.8,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
