@@ -40,6 +40,10 @@ void main() {
     expect(find.textContaining('Khan gia'), findsOneWidget);
     expect(find.text('Chua co giai dau noi bat.'), findsOneWidget);
     expect(find.text('Chua co cuoc dua sap toi.'), findsOneWidget);
+    expect(find.text('Chua co bang xep hang ngua.'), findsOneWidget);
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
+    await tester.pump();
+    expect(find.text('Chua co ket qua gan day.'), findsOneWidget);
   });
 
   testWidgets('home upcoming race tap opens races flow', (tester) async {

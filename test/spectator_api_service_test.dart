@@ -171,6 +171,42 @@ void main() {
       expect(results.single.rank, 1);
     });
 
+    test('gets public horse rankings without bearer token', () async {
+      final service = SpectatorApiService(
+        baseUrl: 'http://example.test',
+        client: MockClient((request) async {
+          expect(request.method, 'GET');
+          expect(request.url.toString(), 'http://example.test/horses/rankings');
+          expect(request.headers.containsKey('Authorization'), isFalse);
+
+          return _jsonResponse('''
+          {
+            "success": true,
+            "message": "Success",
+            "data": [
+              {
+                "horseId": 8,
+                "horseName": "Night Wind",
+                "jockeyUsername": "jockey01",
+                "rank": 1,
+                "horseImageUrl": "/uploads/horses/8.jpg",
+                "winRateLabel": "80%"
+              }
+            ]
+          }
+          ''');
+        }),
+      );
+
+      final horses = await service.getHorseRankings();
+
+      expect(horses, hasLength(1));
+      expect(horses.single.id, '8');
+      expect(horses.single.name, 'Night Wind');
+      expect(horses.single.rider, 'jockey01');
+      expect(horses.single.rank, 1);
+    });
+
     test('gets current user with bearer token', () async {
       final storage = await _storageWithToken('spectator-token');
       final service = SpectatorApiService(

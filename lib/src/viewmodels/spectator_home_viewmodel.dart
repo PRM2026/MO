@@ -32,6 +32,8 @@ class SpectatorHomeViewModel extends ChangeNotifier {
       final featured = _resolveFeaturedTournament(tournaments);
       final details = await _fetchTournamentDetails(tournaments);
       final races = _resolveUpcomingRaces(details);
+      final featuredHorses = await _tryFetchFeaturedHorses();
+      final recentResults = await _resolveRecentResults(details);
 
       data = SpectatorHomeData(
         featuredEvent: featured,
@@ -40,6 +42,8 @@ class SpectatorHomeViewModel extends ChangeNotifier {
             ? null
             : SpectatorScheduleFeatured.fromRace(races.first),
         upcomingRaces: races,
+        featuredHorses: featuredHorses,
+        recentResults: recentResults,
       );
     } catch (error) {
       if (kDebugMode) debugPrint('SpectatorHomeViewModel: $error');
@@ -91,6 +95,67 @@ class SpectatorHomeViewModel extends ChangeNotifier {
     });
 
     return races.take(3).toList(growable: false);
+  }
+
+  Future<List<SpectatorFeaturedHorse>> _tryFetchFeaturedHorses() async {
+    try {
+      final horses = await _repository.fetchHorseRankings();
+      return horses.take(6).toList(growable: false);
+    } catch (error) {
+      if (kDebugMode) debugPrint('SpectatorHomeViewModel horses: $error');
+      return const [];
+    }
+  }
+
+  Future<List<SpectatorRecentResult>> _resolveRecentResults(
+    List<OwnerTournamentDetail> details,
+  ) async {
+    final items = <_RecentRaceResult>[];
+    for (final detail in details) {
+      for (final race in detail.races) {
+        final raceItem = SpectatorRaceItem.fromTournamentRace(
+          race,
+          tournament: detail,
+        );
+        if (raceItem.isUpcoming) continue;
+
+        try {
+          final results = await _repository.fetchRaceResults(race.id);
+          if (results.isEmpty) continue;
+          final finishers =
+              results
+                  .map(SpectatorResultFinisher.fromJockeyResult)
+                  .toList(growable: false)
+                ..sort((a, b) => a.rank.compareTo(b.rank));
+          items.add(
+            _RecentRaceResult(
+              race: raceItem,
+              result: SpectatorRecentResult.fromFinisher(
+                raceId: raceItem.id,
+                eventName: raceItem.name,
+                finisher: finishers.first,
+                highlight: finishers.first.rank == 1,
+              ),
+            ),
+          );
+        } catch (error) {
+          if (kDebugMode) {
+            debugPrint('SpectatorHomeViewModel results ${race.id}: $error');
+          }
+        }
+      }
+    }
+
+    items.sort((a, b) {
+      final aDate = a.race.scheduledStartAt;
+      final bDate = b.race.scheduledStartAt;
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
+
+    return items.map((item) => item.result).take(3).toList(growable: false);
   }
 
   Future<SpectatorProfileData?> _tryFetchProfile() async {
@@ -150,4 +215,11 @@ class SpectatorHomeViewModel extends ChangeNotifier {
   DateTime _dateOnly(DateTime date) {
     return DateTime(date.year, date.month, date.day);
   }
+}
+
+class _RecentRaceResult {
+  const _RecentRaceResult({required this.race, required this.result});
+
+  final SpectatorRaceItem race;
+  final SpectatorRecentResult result;
 }

@@ -128,10 +128,10 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
       ] else ...[
         const _HomeEmptyUpcomingRacesState(),
       ],
-      if (data?.featuredHorses.isNotEmpty == true) ...[
-        const SizedBox(height: AppSpacing.section),
-        const SpectatorSectionHeader(title: 'Chien ma noi bat'),
-        const SizedBox(height: AppSpacing.lg),
+      const SizedBox(height: AppSpacing.section),
+      const SpectatorSectionHeader(title: 'Chien ma noi bat'),
+      const SizedBox(height: AppSpacing.lg),
+      if (data?.featuredHorses.isNotEmpty == true)
         SpectatorHorizontalList(
           itemCount: data!.featuredHorses.length,
           itemBuilder: (context, index) {
@@ -139,14 +139,16 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
               horse: data.featuredHorses[index],
             );
           },
-        ),
-      ],
-      if (data?.recentResults.isNotEmpty == true) ...[
-        const SizedBox(height: AppSpacing.section),
-        const SpectatorSectionHeader(title: 'Ket qua gan day'),
-        const SizedBox(height: AppSpacing.lg),
-        SpectatorRecentResultsPanel(results: data!.recentResults),
-      ],
+        )
+      else
+        const _HomeEmptyHorsesState(),
+      const SizedBox(height: AppSpacing.section),
+      const SpectatorSectionHeader(title: 'Ket qua gan day'),
+      const SizedBox(height: AppSpacing.lg),
+      if (data?.recentResults.isNotEmpty == true)
+        SpectatorRecentResultsPanel(results: data!.recentResults)
+      else
+        const _HomeEmptyRecentResultsState(),
     ];
   }
 }
@@ -238,6 +240,58 @@ class _HomeEmptyUpcomingRacesState extends StatelessWidget {
           Expanded(
             child: Text(
               'Chua co cuoc dua sap toi.',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeEmptyHorsesState extends StatelessWidget {
+  const _HomeEmptyHorsesState();
+
+  @override
+  Widget build(BuildContext context) {
+    return SpectatorGlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.pets_outlined,
+            color: RefereeColors.championshipGold.withValues(alpha: 0.8),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Chua co bang xep hang ngua.',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeEmptyRecentResultsState extends StatelessWidget {
+  const _HomeEmptyRecentResultsState();
+
+  @override
+  Widget build(BuildContext context) {
+    return SpectatorGlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.emoji_events_outlined,
+            color: RefereeColors.championshipGold.withValues(alpha: 0.8),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Chua co ket qua gan day.',
               style: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
             ),
           ),

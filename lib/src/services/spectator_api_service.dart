@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/jockey_race_result_response.dart';
 import '../models/owner_tournament_detail.dart';
+import '../models/spectator_models.dart';
 import '../models/tournament_list_item.dart';
 import '../models/user_profile.dart';
 import 'api_client.dart';
@@ -49,6 +50,16 @@ class SpectatorApiService {
       () => _apiClient.getList(
         '/races/$raceId/results',
         JockeyRaceResultResponse.fromJson,
+        authenticated: false,
+      ),
+    );
+  }
+
+  Future<List<SpectatorFeaturedHorse>> getHorseRankings() {
+    return _run(
+      () => _apiClient.getList(
+        '/horses/rankings',
+        SpectatorFeaturedHorse.fromJson,
         authenticated: false,
       ),
     );

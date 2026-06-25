@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horse_racing/src/models/jockey_race_result_response.dart';
 import 'package:horse_racing/src/models/owner_tournament_detail.dart';
+import 'package:horse_racing/src/models/spectator_models.dart';
 import 'package:horse_racing/src/models/tournament_list_item.dart';
 import 'package:horse_racing/src/models/user_profile.dart';
 import 'package:horse_racing/src/repositories/spectator_repository.dart';
@@ -187,6 +188,48 @@ void main() {
       },
     );
 
+    test('home loads featured horses and recent race results', () async {
+      final viewModel = SpectatorHomeViewModel(
+        repository: _FakeSpectatorRepository(
+          tournaments: [_tournament(id: 50, name: 'Result Cup')],
+          details: {
+            '50': _detail(
+              id: 50,
+              name: 'Result Cup',
+              races: [
+                _raceJson(
+                  id: 20,
+                  name: 'Completed Race',
+                  startAt: '2026-06-20T09:00:00',
+                  status: 'RESULT_CONFIRMED',
+                ),
+              ],
+            ),
+          },
+          horses: const [
+            SpectatorFeaturedHorse(
+              id: '8',
+              name: 'Night Wind',
+              rider: 'jockey01',
+              rank: 1,
+              imageUrl: '/uploads/horses/8.jpg',
+            ),
+          ],
+          results: {
+            '20': [_result()],
+          },
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.data?.featuredHorses, hasLength(1));
+      expect(viewModel.data?.featuredHorses.single.name, 'Night Wind');
+      expect(viewModel.data?.recentResults, hasLength(1));
+      expect(viewModel.data?.recentResults.single.eventName, 'Completed Race');
+      expect(viewModel.data?.recentResults.single.horseName, 'Night Wind');
+    });
+
     test('races load filters upcoming finished and date', () async {
       final viewModel = SpectatorRacesViewModel(
         repository: _FakeSpectatorRepository(
@@ -295,6 +338,7 @@ class _FakeSpectatorRepository extends SpectatorRepository {
     this.tournaments = const [],
     this.details = const {},
     this.results = const {},
+    this.horses = const [],
     this.user,
     this.error,
   }) : super();
@@ -302,6 +346,7 @@ class _FakeSpectatorRepository extends SpectatorRepository {
   final List<TournamentListItem> tournaments;
   final Map<String, OwnerTournamentDetail> details;
   final Map<String, List<JockeyRaceResultResponse>> results;
+  final List<SpectatorFeaturedHorse> horses;
   final UserProfile? user;
   final String? error;
   int tournamentCalls = 0;
@@ -329,6 +374,12 @@ class _FakeSpectatorRepository extends SpectatorRepository {
   Future<List<JockeyRaceResultResponse>> fetchRaceResults(String raceId) async {
     _throwIfNeeded();
     return results[raceId] ?? const [];
+  }
+
+  @override
+  Future<List<SpectatorFeaturedHorse>> fetchHorseRankings() async {
+    _throwIfNeeded();
+    return horses;
   }
 
   @override
