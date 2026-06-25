@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../../data/spectator_races_mock.dart';
+import '../../models/spectator_models.dart';
+import '../../viewmodels/spectator_races_viewmodel.dart';
 import '../news/news_network_image.dart';
 import 'spectator_glass_card.dart';
 
@@ -27,10 +28,7 @@ class SpectatorScheduleHero extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [
-                    RefereeColors.background,
-                    Colors.transparent,
-                  ],
+                  colors: [RefereeColors.background, Colors.transparent],
                 ),
               ),
             ),
@@ -60,10 +58,9 @@ class SpectatorScheduleHero extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     featured.title,
-                    style: AppTypography.headlineSm(Colors.white).copyWith(
-                      fontSize: 24,
-                      height: 32 / 24,
-                    ),
+                    style: AppTypography.headlineSm(
+                      Colors.white,
+                    ).copyWith(fontSize: 24, height: 32 / 24),
                   ),
                 ],
               ),
@@ -83,8 +80,8 @@ class SpectatorRaceFilterBar extends StatelessWidget {
     this.onDateTap,
   });
 
-  final SpectatorRaceFilter selected;
-  final ValueChanged<SpectatorRaceFilter> onSelected;
+  final SpectatorRaceListFilter selected;
+  final ValueChanged<SpectatorRaceListFilter> onSelected;
   final VoidCallback? onDateTap;
 
   @override
@@ -94,22 +91,22 @@ class SpectatorRaceFilterBar extends StatelessWidget {
       child: Row(
         children: [
           _FilterChip(
-            label: 'Sắp tới',
-            selected: selected == SpectatorRaceFilter.upcoming,
-            onTap: () => onSelected(SpectatorRaceFilter.upcoming),
+            label: 'Sap toi',
+            selected: selected == SpectatorRaceListFilter.upcoming,
+            onTap: () => onSelected(SpectatorRaceListFilter.upcoming),
           ),
           const SizedBox(width: 12),
           _FilterChip(
-            label: 'Đã kết thúc',
-            selected: selected == SpectatorRaceFilter.finished,
-            onTap: () => onSelected(SpectatorRaceFilter.finished),
+            label: 'Da ket thuc',
+            selected: selected == SpectatorRaceListFilter.finished,
+            onTap: () => onSelected(SpectatorRaceListFilter.finished),
           ),
           const SizedBox(width: 12),
           _FilterChip(
-            label: 'Ngày',
+            label: 'Ngay',
             icon: Icons.calendar_today_outlined,
-            selected: selected == SpectatorRaceFilter.date,
-            onTap: onDateTap ?? () => onSelected(SpectatorRaceFilter.date),
+            selected: selected == SpectatorRaceListFilter.date,
+            onTap: onDateTap ?? () => onSelected(SpectatorRaceListFilter.date),
           ),
         ],
       ),
@@ -188,7 +185,7 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
     this.onViewDetails,
   });
 
-  final SpectatorScheduleRace race;
+  final SpectatorRaceItem race;
   final VoidCallback? onViewDetails;
 
   @override
@@ -214,11 +211,12 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              race.category.toUpperCase(),
+                              race.statusLabel.toUpperCase(),
                               style: AppTypography.labelCaps(
                                 race.featured
-                                    ? RefereeColors.championshipGold
-                                        .withValues(alpha: 0.8)
+                                    ? RefereeColors.championshipGold.withValues(
+                                        alpha: 0.8,
+                                      )
                                     : RefereeColors.onSurfaceVariant,
                               ).copyWith(fontSize: 12),
                             ),
@@ -235,17 +233,20 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Text(
-                              race.trackInfo,
-                              style: AppTypography.bodySm(
-                                RefereeColors.onSurfaceVariant,
-                              ).copyWith(fontSize: 12),
+                            Expanded(
+                              child: Text(
+                                race.trackInfo,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.bodySm(
+                                  RefereeColors.onSurfaceVariant,
+                                ).copyWith(fontSize: 12),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          race.title,
+                          race.name,
                           style: AppTypography.headlineSm(
                             RefereeColors.onSurface,
                           ).copyWith(fontSize: 24, height: 32 / 24),
@@ -254,10 +255,7 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _TimeBadge(
-                    label: race.timeBadge,
-                    featured: race.featured,
-                  ),
+                  _TimeBadge(label: race.timeBadge, featured: race.featured),
                 ],
               ),
               const SizedBox(height: 16),
@@ -266,7 +264,7 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
                   Expanded(
                     child: _InfoTile(
                       icon: Icons.schedule_outlined,
-                      label: 'Giờ',
+                      label: 'Gio',
                       value: race.time,
                     ),
                   ),
@@ -274,7 +272,7 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
                   Expanded(
                     child: _InfoTile(
                       icon: Icons.location_on_outlined,
-                      label: 'Địa điểm',
+                      label: 'Dia diem',
                       value: race.venue,
                     ),
                   ),
@@ -388,10 +386,11 @@ class _InfoTile extends StatelessWidget {
               ),
               Text(
                 value,
-                style: AppTypography.bodySm(RefereeColors.onSurface).copyWith(
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.14,
-                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.bodySm(
+                  RefereeColors.onSurface,
+                ).copyWith(fontWeight: FontWeight.w500, letterSpacing: -0.14),
               ),
             ],
           ),
@@ -402,10 +401,7 @@ class _InfoTile extends StatelessWidget {
 }
 
 class _ParticipantStack extends StatelessWidget {
-  const _ParticipantStack({
-    required this.avatars,
-    required this.extraCount,
-  });
+  const _ParticipantStack({required this.avatars, required this.extraCount});
 
   final List<String> avatars;
   final int extraCount;
@@ -417,8 +413,7 @@ class _ParticipantStack extends StatelessWidget {
     }
 
     final chips = <Widget>[
-      for (final url in avatars.take(2))
-        _AvatarChip(imageUrl: url),
+      for (final url in avatars.take(2)) _AvatarChip(imageUrl: url),
       if (extraCount > 0) _ExtraChip(count: extraCount),
     ];
 
@@ -428,10 +423,7 @@ class _ParticipantStack extends StatelessWidget {
       child: Stack(
         children: [
           for (var i = 0; i < chips.length; i++)
-            Positioned(
-              left: i * 22.0,
-              child: chips[i],
-            ),
+            Positioned(left: i * 22.0, child: chips[i]),
         ],
       ),
     );
@@ -500,14 +492,12 @@ class _ViewDetailsButton extends StatelessWidget {
           backgroundColor: RefereeColors.championshipGold,
           foregroundColor: RefereeColors.background,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         icon: const Icon(Icons.arrow_forward, size: 18),
         iconAlignment: IconAlignment.end,
         label: const Text(
-          'Xem chi tiết',
+          'Xem chi tiet',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
       );
@@ -522,7 +512,7 @@ class _ViewDetailsButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: const Text(
-        'Xem chi tiết',
+        'Xem chi tiet',
         style: TextStyle(fontWeight: FontWeight.w600),
       ),
     );
