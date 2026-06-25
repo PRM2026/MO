@@ -1,5 +1,7 @@
 .gitattributes text eol=lf
 docs/spectator-api-integration/** text eol=lf
+lib/src/models/spectator_models.dart text eol=lf
 lib/src/services/spectator_api_service.dart text eol=lf
 lib/src/repositories/spectator_repository.dart text eol=lf
+test/spectator_models_test.dart text eol=lf
 test/spectator_api_service_test.dart text eol=lf
