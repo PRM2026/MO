@@ -118,7 +118,7 @@ class SpectatorHeroBanner extends StatelessWidget {
                         ),
                       ),
                       child: const Text(
-                        'Xem chi tiết',
+                        'Xem chi tiet',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),

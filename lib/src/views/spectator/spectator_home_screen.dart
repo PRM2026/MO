@@ -16,6 +16,7 @@ class SpectatorHomeScreen extends StatefulWidget {
     this.onResultsTap,
     this.onViewAllRaces,
     this.onRaceTap,
+    this.onTournamentTap,
     this.viewModel,
   });
 
@@ -24,6 +25,7 @@ class SpectatorHomeScreen extends StatefulWidget {
   final VoidCallback? onResultsTap;
   final VoidCallback? onViewAllRaces;
   final ValueChanged<SpectatorRaceItem>? onRaceTap;
+  final ValueChanged<SpectatorFeaturedEvent>? onTournamentTap;
   final SpectatorHomeViewModel? viewModel;
 
   @override
@@ -103,7 +105,9 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
       if (data?.featuredEvent != null) ...[
         SpectatorHeroBanner(
           event: data!.featuredEvent!,
-          onViewDetails: widget.onViewAllRaces,
+          onViewDetails: widget.onTournamentTap == null
+              ? widget.onViewAllRaces
+              : () => widget.onTournamentTap!(data.featuredEvent!),
         ),
         const SizedBox(height: AppSpacing.section),
       ] else ...[

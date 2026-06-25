@@ -30,6 +30,7 @@ import '../views/register_screen.dart';
 import '../views/spectator/spectator_race_detail_screen.dart';
 import '../views/spectator/spectator_race_results_screen.dart';
 import '../views/spectator/spectator_shell.dart';
+import '../views/spectator/spectator_tournament_detail_screen.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
 abstract final class AppRoutes {
@@ -195,6 +196,13 @@ abstract final class AppRoutes {
         race: race,
         initialGroup: initialGroup,
       ),
+    );
+  }
+
+  static Route<void> spectatorTournamentDetail({required String tournamentId}) {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          SpectatorTournamentDetailScreen(tournamentId: tournamentId),
     );
   }
 
@@ -423,6 +431,15 @@ abstract final class AppRoutes {
         initialGroup: initialGroup,
       ),
     );
+  }
+
+  static void openSpectatorTournamentDetail(
+    BuildContext context, {
+    required String tournamentId,
+  }) {
+    Navigator.of(
+      context,
+    ).push(spectatorTournamentDetail(tournamentId: tournamentId));
   }
 
   static void openHome(BuildContext context) {

@@ -39,6 +39,10 @@ class _SpectatorShellState extends State<SpectatorShell> {
     );
   }
 
+  void _openTournamentDetail(SpectatorFeaturedEvent event) {
+    AppRoutes.openSpectatorTournamentDetail(context, tournamentId: event.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +56,7 @@ class _SpectatorShellState extends State<SpectatorShell> {
             onResultsTap: () => _selectTab(SpectatorTab.results),
             onViewAllRaces: () => _selectTab(SpectatorTab.races),
             onRaceTap: _openRaceDetail,
+            onTournamentTap: _openTournamentDetail,
           ),
           SpectatorRacesScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),

@@ -341,6 +341,86 @@ class SpectatorRacePrize {
   }
 }
 
+class SpectatorTournamentDetail {
+  const SpectatorTournamentDetail({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.location,
+    required this.bannerUrl,
+    required this.status,
+    required this.registrationOpenAt,
+    required this.registrationCloseAt,
+    required this.startAt,
+    required this.endAt,
+    required this.rules,
+    required this.races,
+  });
+
+  final String id;
+  final String name;
+  final String description;
+  final String location;
+  final String bannerUrl;
+  final String status;
+  final DateTime? registrationOpenAt;
+  final DateTime? registrationCloseAt;
+  final DateTime? startAt;
+  final DateTime? endAt;
+  final String rules;
+  final List<SpectatorRaceDetail> races;
+
+  factory SpectatorTournamentDetail.fromOwnerDetail(
+    OwnerTournamentDetail detail,
+  ) {
+    return SpectatorTournamentDetail(
+      id: detail.id,
+      name: _fallback(detail.name, 'Giai dau ${detail.id}'),
+      description: detail.description,
+      location: _fallback(detail.location, spectatorPlaceholder),
+      bannerUrl: detail.bannerUrl,
+      status: _normalizeStatus(detail.status),
+      registrationOpenAt: detail.registrationOpenAt,
+      registrationCloseAt: detail.registrationCloseAt,
+      startAt: detail.startAt,
+      endAt: detail.endAt,
+      rules: detail.rules,
+      races: detail.races
+          .map(
+            (race) => SpectatorRaceDetail.fromTournamentRace(
+              race,
+              tournament: detail,
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  String get statusLabel {
+    return switch (status) {
+      'PUBLISHED' => 'Da cong bo',
+      'OPEN_REGISTRATION' => 'Mo dang ky',
+      'REGISTRATION_CLOSED' => 'Dong dang ky',
+      'SCHEDULED' => 'Da len lich',
+      'ONGOING' => 'Dang dien ra',
+      'COMPLETED' => 'Da ket thuc',
+      'CANCELLED' => 'Da huy',
+      _ => spectatorPlaceholder,
+    };
+  }
+
+  String get registrationWindowLabel {
+    return _joinNonEmpty([
+      _formatDate(registrationOpenAt),
+      _formatDate(registrationCloseAt),
+    ]);
+  }
+
+  String get scheduleWindowLabel {
+    return _joinNonEmpty([_formatDate(startAt), _formatDate(endAt)]);
+  }
+}
+
 class SpectatorFeaturedHorse {
   const SpectatorFeaturedHorse({
     required this.id,
