@@ -267,9 +267,10 @@ class SpectatorSectionHeader extends StatelessWidget {
 }
 
 class SpectatorRaceListTile extends StatelessWidget {
-  const SpectatorRaceListTile({super.key, required this.race});
+  const SpectatorRaceListTile({super.key, required this.race, this.onTap});
 
   final SpectatorRaceItem race;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -278,35 +279,42 @@ class SpectatorRaceListTile extends StatelessWidget {
         ? RefereeColors.championshipGold
         : RefereeColors.championshipGold.withValues(alpha: 0.4);
 
-    return SpectatorGlassCard(
-      accentBorder: true,
-      accentColor: accentColor,
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  race.name,
-                  style: AppTypography.bodyMd(
-                    Colors.white,
-                  ).copyWith(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Row(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: SpectatorGlassCard(
+          accentBorder: true,
+          accentColor: accentColor,
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetaChip(icon: Icons.schedule, label: race.time),
-                    const SizedBox(width: 12),
-                    _MetaChip(icon: Icons.straighten, label: race.distance),
+                    Text(
+                      race.name,
+                      style: AppTypography.bodyMd(
+                        Colors.white,
+                      ).copyWith(fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        _MetaChip(icon: Icons.schedule, label: race.time),
+                        const SizedBox(width: 12),
+                        _MetaChip(icon: Icons.straighten, label: race.distance),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              _StatusBadge(isOpen: isOpen),
+            ],
           ),
-          _StatusBadge(isOpen: isOpen),
-        ],
+        ),
       ),
     );
   }

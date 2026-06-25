@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/owner_tournament_detail.dart';
 import '../models/spectator_models.dart';
 import '../models/tournament_list_item.dart';
 import '../repositories/spectator_repository.dart';
@@ -29,21 +30,8 @@ class SpectatorHomeViewModel extends ChangeNotifier {
       final tournaments = await _repository.fetchTournaments();
       final profile = await _tryFetchProfile();
       final featured = _resolveFeaturedTournament(tournaments);
-
-      var races = const <SpectatorRaceItem>[];
-      if (featured != null && featured.id.isNotEmpty) {
-        final detail = await _repository.fetchTournamentDetail(featured.id);
-        races = detail.races
-            .map((race) {
-              return SpectatorRaceItem.fromTournamentRace(
-                race,
-                tournament: detail,
-              );
-            })
-            .where((race) => race.isUpcoming)
-            .take(3)
-            .toList(growable: false);
-      }
+      final details = await _fetchTournamentDetails(tournaments);
+      final races = _resolveUpcomingRaces(details);
 
       data = SpectatorHomeData(
         featuredEvent: featured,
@@ -64,6 +52,46 @@ class SpectatorHomeViewModel extends ChangeNotifier {
   }
 
   Future<void> retry() => load();
+
+  Future<List<OwnerTournamentDetail>> _fetchTournamentDetails(
+    List<TournamentListItem> tournaments,
+  ) async {
+    final details = <OwnerTournamentDetail>[];
+    for (final tournament in tournaments) {
+      if (tournament.id.trim().isEmpty) continue;
+      details.add(await _repository.fetchTournamentDetail(tournament.id));
+    }
+    return details;
+  }
+
+  List<SpectatorRaceItem> _resolveUpcomingRaces(
+    List<OwnerTournamentDetail> details,
+  ) {
+    final races = <SpectatorRaceItem>[];
+    for (final detail in details) {
+      races.addAll(
+        detail.races
+            .map((race) {
+              return SpectatorRaceItem.fromTournamentRace(
+                race,
+                tournament: detail,
+              );
+            })
+            .where((race) => race.isUpcoming),
+      );
+    }
+
+    races.sort((a, b) {
+      final aDate = a.scheduledStartAt;
+      final bDate = b.scheduledStartAt;
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return aDate.compareTo(bDate);
+    });
+
+    return races.take(3).toList(growable: false);
+  }
 
   Future<SpectatorProfileData?> _tryFetchProfile() async {
     try {

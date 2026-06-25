@@ -131,6 +131,62 @@ void main() {
       },
     );
 
+    test(
+      'home upcoming races are sorted across tournaments and limited to 3',
+      () async {
+        final viewModel = SpectatorHomeViewModel(
+          repository: _FakeSpectatorRepository(
+            tournaments: [
+              _tournament(id: 40, name: 'Cup A'),
+              _tournament(id: 41, name: 'Cup B'),
+            ],
+            details: {
+              '40': _detail(
+                id: 40,
+                name: 'Cup A',
+                races: [
+                  _raceJson(
+                    id: 10,
+                    name: 'Race 10',
+                    startAt: '2026-08-10T09:00:00',
+                  ),
+                  _raceJson(
+                    id: 11,
+                    name: 'Race 11',
+                    startAt: '2026-08-01T09:00:00',
+                  ),
+                ],
+              ),
+              '41': _detail(
+                id: 41,
+                name: 'Cup B',
+                races: [
+                  _raceJson(
+                    id: 12,
+                    name: 'Race 12',
+                    startAt: '2026-07-20T09:00:00',
+                  ),
+                  _raceJson(
+                    id: 13,
+                    name: 'Race 13',
+                    startAt: '2026-07-25T09:00:00',
+                  ),
+                ],
+              ),
+            },
+          ),
+        );
+
+        await viewModel.load();
+
+        expect(viewModel.data?.upcomingRaces.map((race) => race.id), [
+          '12',
+          '13',
+          '11',
+        ]);
+      },
+    );
+
     test('races load filters upcoming finished and date', () async {
       final viewModel = SpectatorRacesViewModel(
         repository: _FakeSpectatorRepository(
@@ -304,6 +360,7 @@ OwnerTournamentDetail _detail({
   bool includeFinished = false,
   int id = 12,
   String name = 'Summer Cup',
+  List<Map<String, Object?>>? races,
 }) {
   return OwnerTournamentDetail.fromJson({
     'id': id,
@@ -312,32 +369,38 @@ OwnerTournamentDetail _detail({
     'location': 'Phu Tho',
     'bannerUrl': '/uploads/tournaments/12.jpg',
     'status': 'OPEN_REGISTRATION',
-    'races': [
-      {
-        'id': 5,
-        'name': 'Qualifier',
-        'distance': '1200m',
-        'venueName': 'Track A',
-        'scheduledStartAt': '2026-07-15T09:00:00',
-        'participantCount': 4,
-        'maxParticipants': 12,
-        'entryFee': 500000,
-        'status': 'SCHEDULED',
-      },
-      if (includeFinished)
-        {
-          'id': 6,
-          'name': 'Final',
-          'distance': '1400m',
-          'venueName': 'Track A',
-          'scheduledStartAt': '2026-07-16T09:00:00',
-          'participantCount': 4,
-          'maxParticipants': 12,
-          'entryFee': 500000,
-          'status': 'RESULT_CONFIRMED',
-        },
-    ],
+    'races':
+        races ??
+        [
+          _raceJson(id: 5, name: 'Qualifier', startAt: '2026-07-15T09:00:00'),
+          if (includeFinished)
+            _raceJson(
+              id: 6,
+              name: 'Final',
+              startAt: '2026-07-16T09:00:00',
+              status: 'RESULT_CONFIRMED',
+            ),
+        ],
   });
+}
+
+Map<String, Object?> _raceJson({
+  required int id,
+  required String name,
+  required String startAt,
+  String status = 'SCHEDULED',
+}) {
+  return {
+    'id': id,
+    'name': name,
+    'distance': '1200m',
+    'venueName': 'Track A',
+    'scheduledStartAt': startAt,
+    'participantCount': 4,
+    'maxParticipants': 12,
+    'entryFee': 500000,
+    'status': status,
+  };
 }
 
 JockeyRaceResultResponse _result() {

@@ -39,6 +39,39 @@ void main() {
 
     expect(find.textContaining('Khan gia'), findsOneWidget);
     expect(find.text('Chua co giai dau noi bat.'), findsOneWidget);
+    expect(find.text('Chua co cuoc dua sap toi.'), findsOneWidget);
+  });
+
+  testWidgets('home upcoming race tap opens races flow', (tester) async {
+    var openedRaces = false;
+    final viewModel = _HomeViewModel(
+      data: SpectatorHomeData(
+        upcomingRaces: [
+          SpectatorRaceItem.fromJson(const {
+            'id': 5,
+            'name': 'Qualifier',
+            'distance': '1200m',
+            'scheduledStartAt': '2026-07-15T09:00:00',
+            'status': 'SCHEDULED',
+          }),
+        ],
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SpectatorHomeScreen(
+          viewModel: viewModel,
+          onRacesTap: () => openedRaces = true,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.text('Qualifier'));
+    await tester.pump();
+
+    expect(openedRaces, isTrue);
   });
 }
 

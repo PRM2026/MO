@@ -113,18 +113,20 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
         onHorsesTap: widget.onRacesTap,
         onResultsTap: widget.onResultsTap,
       ),
+      const SizedBox(height: AppSpacing.section),
+      SpectatorSectionHeader(
+        title: 'Cuoc dua sap toi',
+        actionLabel: 'Xem tat ca',
+        onActionTap: widget.onViewAllRaces,
+      ),
+      const SizedBox(height: AppSpacing.lg),
       if (data?.upcomingRaces.isNotEmpty == true) ...[
-        const SizedBox(height: AppSpacing.section),
-        SpectatorSectionHeader(
-          title: 'Cuoc dua sap toi',
-          actionLabel: 'Xem tat ca',
-          onActionTap: widget.onViewAllRaces,
-        ),
-        const SizedBox(height: AppSpacing.lg),
         for (final race in data!.upcomingRaces) ...[
-          SpectatorRaceListTile(race: race),
+          SpectatorRaceListTile(race: race, onTap: widget.onRacesTap),
           const SizedBox(height: 12),
         ],
+      ] else ...[
+        const _HomeEmptyUpcomingRacesState(),
       ],
       if (data?.featuredHorses.isNotEmpty == true) ...[
         const SizedBox(height: AppSpacing.section),
@@ -212,6 +214,32 @@ class _HomeEmptyHeroState extends StatelessWidget {
           Text(
             'Hay quay lai sau khi ban to chuc cong bo giai dau moi.',
             style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeEmptyUpcomingRacesState extends StatelessWidget {
+  const _HomeEmptyUpcomingRacesState();
+
+  @override
+  Widget build(BuildContext context) {
+    return SpectatorGlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.calendar_month_outlined,
+            color: RefereeColors.championshipGold.withValues(alpha: 0.8),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Chua co cuoc dua sap toi.',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
+            ),
           ),
         ],
       ),
