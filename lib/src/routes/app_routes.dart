@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/jockey_profile_response.dart';
+import '../models/spectator_models.dart';
 import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../views/account_screen.dart';
@@ -27,6 +28,7 @@ import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
 import '../views/spectator/spectator_race_detail_screen.dart';
+import '../views/spectator/spectator_race_results_screen.dart';
 import '../views/spectator/spectator_shell.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
@@ -179,6 +181,20 @@ abstract final class AppRoutes {
     return MaterialPageRoute<void>(
       builder: (_) =>
           SpectatorRaceDetailScreen(raceId: raceId, tournamentId: tournamentId),
+    );
+  }
+
+  static Route<void> spectatorRaceResults({
+    required String raceId,
+    SpectatorRaceItem? race,
+    SpectatorResultGroup? initialGroup,
+  }) {
+    return MaterialPageRoute<void>(
+      builder: (_) => SpectatorRaceResultsScreen(
+        raceId: raceId,
+        race: race,
+        initialGroup: initialGroup,
+      ),
     );
   }
 
@@ -392,6 +408,21 @@ abstract final class AppRoutes {
     Navigator.of(
       context,
     ).push(spectatorRaceDetail(raceId: raceId, tournamentId: tournamentId));
+  }
+
+  static void openSpectatorRaceResults(
+    BuildContext context, {
+    required String raceId,
+    SpectatorRaceItem? race,
+    SpectatorResultGroup? initialGroup,
+  }) {
+    Navigator.of(context).push(
+      spectatorRaceResults(
+        raceId: raceId,
+        race: race,
+        initialGroup: initialGroup,
+      ),
+    );
   }
 
   static void openHome(BuildContext context) {

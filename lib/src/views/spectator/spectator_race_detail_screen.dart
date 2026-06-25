@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/spectator_models.dart';
+import '../../routes/app_routes.dart';
 import '../../viewmodels/spectator_race_detail_viewmodel.dart';
 import '../../widgets/spectator/spectator_app_bar.dart';
 import '../../widgets/spectator/spectator_glass_card.dart';
@@ -12,11 +13,13 @@ class SpectatorRaceDetailScreen extends StatefulWidget {
     super.key,
     required this.raceId,
     this.tournamentId,
+    this.onResultsTap,
     this.viewModel,
   });
 
   final String raceId;
   final String? tournamentId;
+  final ValueChanged<SpectatorRaceDetail>? onResultsTap;
   final SpectatorRaceDetailViewModel? viewModel;
 
   @override
@@ -78,7 +81,10 @@ class _SpectatorRaceDetailScreenState extends State<SpectatorRaceDetailScreen> {
                   onRetry: _viewModel.retry,
                 )
               else if (detail != null)
-                _RaceDetailContent(detail: detail)
+                _RaceDetailContent(
+                  detail: detail,
+                  onResultsTap: widget.onResultsTap ?? _openResults,
+                )
               else
                 const _DetailEmptyState(),
             ],
@@ -87,12 +93,21 @@ class _SpectatorRaceDetailScreenState extends State<SpectatorRaceDetailScreen> {
       },
     );
   }
+
+  void _openResults(SpectatorRaceDetail detail) {
+    AppRoutes.openSpectatorRaceResults(
+      context,
+      raceId: detail.race.id,
+      race: detail.race,
+    );
+  }
 }
 
 class _RaceDetailContent extends StatelessWidget {
-  const _RaceDetailContent({required this.detail});
+  const _RaceDetailContent({required this.detail, required this.onResultsTap});
 
   final SpectatorRaceDetail detail;
+  final ValueChanged<SpectatorRaceDetail> onResultsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +172,7 @@ class _RaceDetailContent extends StatelessWidget {
         _PrizeSection(prizes: detail.prizes),
         const SizedBox(height: AppSpacing.section),
         FilledButton.icon(
-          onPressed: detail.hasResults ? () {} : null,
+          onPressed: detail.hasResults ? () => onResultsTap(detail) : null,
           style: FilledButton.styleFrom(
             backgroundColor: RefereeColors.championshipGold,
             foregroundColor: RefereeColors.background,

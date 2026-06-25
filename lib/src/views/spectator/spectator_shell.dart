@@ -31,6 +31,14 @@ class _SpectatorShellState extends State<SpectatorShell> {
     );
   }
 
+  void _openLeaderboard(SpectatorResultGroup group) {
+    AppRoutes.openSpectatorRaceResults(
+      context,
+      raceId: group.raceId,
+      initialGroup: group,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +59,7 @@ class _SpectatorShellState extends State<SpectatorShell> {
           ),
           SpectatorResultsScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
+            onLeaderboardTap: _openLeaderboard,
           ),
           const SpectatorProfileScreen(),
         ],

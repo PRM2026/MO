@@ -198,7 +198,7 @@ class SpectatorRaceResultCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (group.showLeaderboardAction)
+                if (group.showLeaderboardAction || onLeaderboardTap != null)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: OutlinedButton(
