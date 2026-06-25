@@ -50,8 +50,10 @@ class SpectatorRacesViewModel extends ChangeNotifier {
       }
 
       loaded.sort((a, b) {
-        final aDate = a.scheduledStartAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bDate = b.scheduledStartAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final aDate =
+            a.scheduledStartAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate =
+            b.scheduledStartAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         return aDate.compareTo(bDate);
       });
       _allRaces = loaded;

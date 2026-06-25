@@ -87,7 +87,9 @@ void main() {
         tournamentId: '12',
         repository: _FakeSpectatorRepository(
           details: {'12': _detail()},
-          results: {'5': [_result()]},
+          results: {
+            '5': [_result()],
+          },
         ),
       );
 
@@ -117,7 +119,11 @@ void main() {
     test('race results load maps leaderboard group', () async {
       final viewModel = SpectatorRaceResultsViewModel(
         raceId: '5',
-        repository: _FakeSpectatorRepository(results: {'5': [_result()]}),
+        repository: _FakeSpectatorRepository(
+          results: {
+            '5': [_result()],
+          },
+        ),
       );
 
       await viewModel.load();
