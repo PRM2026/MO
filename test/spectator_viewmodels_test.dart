@@ -44,6 +44,7 @@ void main() {
       await viewModel.load();
 
       expect(viewModel.errorMessage, isNull);
+      expect(viewModel.profileErrorMessage, contains('No user'));
       expect(viewModel.data?.isEmpty, isTrue);
     });
 

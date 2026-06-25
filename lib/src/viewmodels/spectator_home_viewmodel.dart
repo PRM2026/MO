@@ -12,11 +12,13 @@ class SpectatorHomeViewModel extends ChangeNotifier {
 
   bool isLoading = false;
   String? errorMessage;
+  String? profileErrorMessage;
   SpectatorHomeData? data;
 
   Future<void> load() async {
     isLoading = true;
     errorMessage = null;
+    profileErrorMessage = null;
     notifyListeners();
 
     try {
@@ -63,7 +65,8 @@ class SpectatorHomeViewModel extends ChangeNotifier {
     try {
       final user = await _repository.fetchCurrentUser();
       return SpectatorProfileData.fromUserProfile(user);
-    } catch (_) {
+    } catch (error) {
+      profileErrorMessage = error.toString();
       return null;
     }
   }

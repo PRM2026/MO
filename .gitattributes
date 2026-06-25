@@ -1,4 +1,5 @@
 .gitattributes text eol=lf
+.editorconfig text eol=lf
 docs/spectator-api-integration/** text eol=lf
 lib/src/models/spectator_models.dart text eol=lf
 lib/src/services/spectator_api_service.dart text eol=lf
@@ -9,6 +10,9 @@ lib/src/viewmodels/spectator_race_detail_viewmodel.dart text eol=lf
 lib/src/viewmodels/spectator_race_results_viewmodel.dart text eol=lf
 lib/src/viewmodels/spectator_races_viewmodel.dart text eol=lf
 lib/src/viewmodels/spectator_results_viewmodel.dart text eol=lf
+lib/src/views/spectator/spectator_home_screen.dart text eol=lf
+lib/src/widgets/spectator/spectator_home_widgets.dart text eol=lf
 test/spectator_models_test.dart text eol=lf
+test/spectator_home_phase4_widget_test.dart text eol=lf
 test/spectator_viewmodels_test.dart text eol=lf
 test/spectator_api_service_test.dart text eol=lf

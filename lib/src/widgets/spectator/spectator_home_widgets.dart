@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../../data/spectator_home_mock.dart';
+import '../../models/spectator_models.dart';
 import '../news/news_network_image.dart';
 import 'spectator_glass_card.dart';
 
@@ -178,11 +178,7 @@ class SpectatorQuickActions extends StatelessWidget {
 }
 
 class _QuickActionTile extends StatelessWidget {
-  const _QuickActionTile({
-    required this.icon,
-    required this.label,
-    this.onTap,
-  });
+  const _QuickActionTile({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
@@ -206,7 +202,9 @@ class _QuickActionTile extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: RefereeColors.championshipGold.withValues(alpha: 0.1),
                   border: Border.all(
-                    color: RefereeColors.championshipGold.withValues(alpha: 0.2),
+                    color: RefereeColors.championshipGold.withValues(
+                      alpha: 0.2,
+                    ),
                   ),
                 ),
                 child: Icon(icon, color: RefereeColors.championshipGold),
@@ -258,8 +256,9 @@ class SpectatorSectionHeader extends StatelessWidget {
             onTap: onActionTap,
             child: Text(
               actionLabel!,
-              style: AppTypography.bodySm(RefereeColors.championshipGold)
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: AppTypography.bodySm(
+                RefereeColors.championshipGold,
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
       ],
@@ -291,10 +290,9 @@ class SpectatorRaceListTile extends StatelessWidget {
               children: [
                 Text(
                   race.name,
-                  style: AppTypography.bodyMd(Colors.white).copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppTypography.bodyMd(
+                    Colors.white,
+                  ).copyWith(fontSize: 18, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -329,8 +327,9 @@ class _MetaChip extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: AppTypography.bodySm(Colors.white.withValues(alpha: 0.5))
-              .copyWith(fontSize: 12),
+          style: AppTypography.bodySm(
+            Colors.white.withValues(alpha: 0.5),
+          ).copyWith(fontSize: 12),
         ),
       ],
     );
@@ -476,10 +475,7 @@ class SpectatorRecentResultsPanel extends StatelessWidget {
         children: [
           for (var i = 0; i < results.length; i++) ...[
             if (i > 0)
-              Divider(
-                height: 1,
-                color: Colors.white.withValues(alpha: 0.05),
-              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
             SpectatorRecentResultTile(result: results[i]),
           ],
         ],
@@ -528,19 +524,20 @@ class SpectatorRecentResultTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         result.horseName,
-                        style: AppTypography.bodyMd(Colors.white).copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: AppTypography.bodyMd(
+                          Colors.white,
+                        ).copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                     Text(
                       result.time,
-                      style: AppTypography.bodySm(
-                        RefereeColors.championshipGold,
-                      ).copyWith(
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: -0.14,
-                      ),
+                      style:
+                          AppTypography.bodySm(
+                            RefereeColors.championshipGold,
+                          ).copyWith(
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: -0.14,
+                          ),
                     ),
                   ],
                 ),
@@ -575,7 +572,9 @@ class SpectatorHorizontalList extends StatelessWidget {
       height: 280,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+        ),
         itemCount: itemCount,
         separatorBuilder: (_, index) => const SizedBox(width: 16),
         itemBuilder: itemBuilder,
