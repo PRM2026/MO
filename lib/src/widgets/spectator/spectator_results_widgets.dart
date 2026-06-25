@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../../data/spectator_results_mock.dart';
-import '../news/news_network_image.dart';
+import '../../models/spectator_models.dart';
 import 'spectator_glass_card.dart';
 
 class SpectatorResultsHero extends StatelessWidget {
@@ -11,53 +10,36 @@ class SpectatorResultsHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+    return SpectatorGlassCard(
+      padding: const EdgeInsets.all(24),
       child: SizedBox(
-        height: 192,
+        height: 144,
         width: double.infinity,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Opacity(
-              opacity: 0.4,
-              child: NewsNetworkImage(imageUrl: SpectatorResultsMock.heroImageUrl),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    RefereeColors.glassFill,
-                    RefereeColors.glassFill.withValues(alpha: 0.6),
-                  ],
-                ),
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Icon(
+                Icons.emoji_events_outlined,
+                color: RefereeColors.championshipGold.withValues(alpha: 0.9),
+                size: 36,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Kết Quả Đua Ngựa',
-                    style: AppTypography.displayLg(
-                      RefereeColors.championshipGold,
-                    ).copyWith(fontSize: 32, height: 40 / 32),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Thống kê chi tiết các chặng đua gần nhất',
-                    style: AppTypography.bodyMd(
-                      RefereeColors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 12),
+              Text(
+                'Ket qua dua ngua',
+                style: AppTypography.displayLg(
+                  RefereeColors.championshipGold,
+                ).copyWith(fontSize: 32, height: 40 / 32),
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                'Thong ke top 3 cua cac chang dua da co ket qua',
+                style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -71,8 +53,8 @@ class SpectatorResultsFilterBar extends StatelessWidget {
     required this.onSelected,
   });
 
-  final SpectatorResultsFilter selected;
-  final ValueChanged<SpectatorResultsFilter> onSelected;
+  final SpectatorResultCategory selected;
+  final ValueChanged<SpectatorResultCategory> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -80,20 +62,25 @@ class SpectatorResultsFilterBar extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          for (final (filter, label) in SpectatorResultsMock.filters) ...[
+          for (final (filter, label) in _resultFilters) ...[
             _FilterChip(
               label: label,
               selected: selected == filter,
               onTap: () => onSelected(filter),
             ),
-            if (filter != SpectatorResultsFilter.speedChallenge)
-              const SizedBox(width: 12),
+            if (filter != _resultFilters.last.$1) const SizedBox(width: 12),
           ],
         ],
       ),
     );
   }
 }
+
+const _resultFilters = [
+  (SpectatorResultCategory.all, 'Tat ca'),
+  (SpectatorResultCategory.recent, 'Gan day'),
+  (SpectatorResultCategory.verified, 'Da xac thuc'),
+];
 
 class _FilterChip extends StatelessWidget {
   const _FilterChip({
@@ -146,13 +133,12 @@ class SpectatorRaceResultCard extends StatelessWidget {
     this.onLeaderboardTap,
   });
 
-  final SpectatorRaceResultGroup group;
+  final SpectatorResultGroup group;
   final VoidCallback? onLeaderboardTap;
 
   @override
   Widget build(BuildContext context) {
-    final accentColor =
-        group.accentColor ?? RefereeColors.championshipGold;
+    final topFinishers = group.finishers.take(3).toList(growable: false);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -174,8 +160,9 @@ class SpectatorRaceResultCard extends StatelessWidget {
                           children: [
                             Text(
                               group.title,
-                              style: AppTypography.headlineSm(Colors.white)
-                                  .copyWith(fontSize: 24, height: 32 / 24),
+                              style: AppTypography.headlineSm(
+                                Colors.white,
+                              ).copyWith(fontSize: 24, height: 32 / 24),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -198,17 +185,14 @@ class SpectatorRaceResultCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Divider(
-                  height: 1,
-                  color: Colors.white.withValues(alpha: 0.05),
-                ),
+                Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      for (final finisher in group.finishers) ...[
+                      for (final finisher in topFinishers) ...[
                         _FinisherRow(finisher: finisher),
-                        if (finisher != group.finishers.last)
+                        if (finisher != topFinishers.last)
                           const SizedBox(height: 16),
                       ],
                     ],
@@ -232,7 +216,7 @@ class SpectatorRaceResultCard extends StatelessWidget {
                         ),
                       ),
                       child: const Text(
-                        'Xem chi tiết bảng xếp hạng',
+                        'Xem chi tiet bang xep hang',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -240,13 +224,13 @@ class SpectatorRaceResultCard extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
+          const Positioned(
             left: 0,
             top: 0,
             bottom: 0,
-            child: Container(
-              width: 4,
-              color: accentColor,
+            child: ColoredBox(
+              color: RefereeColors.championshipGold,
+              child: SizedBox(width: 4),
             ),
           ),
         ],
@@ -302,10 +286,7 @@ class _FinisherRow extends StatelessWidget {
                   isFirst
                       ? RefereeColors.championshipGold
                       : RefereeColors.onSurface,
-                ).copyWith(
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.14,
-                ),
+                ).copyWith(fontWeight: FontWeight.w500, letterSpacing: -0.14),
               ),
               if (finisher.delta != null)
                 Text(
@@ -352,60 +333,6 @@ class _RankBadge extends StatelessWidget {
               ? RefereeColors.background
               : RefereeColors.onSurfaceVariant,
         ).copyWith(fontWeight: FontWeight.w700, fontSize: 14),
-      ),
-    );
-  }
-}
-
-class SpectatorResultsPromoBanner extends StatelessWidget {
-  const SpectatorResultsPromoBanner({super.key, this.onBuyTicket});
-
-  final VoidCallback? onBuyTicket;
-
-  @override
-  Widget build(BuildContext context) {
-    return SpectatorGlassCard(
-      padding: const EdgeInsets.all(24),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Royal Ascot VIP',
-                  style: AppTypography.headlineSm(Colors.white).copyWith(
-                    fontSize: 24,
-                    height: 32 / 24,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Đặt vé ngay cho sự kiện tiếp theo',
-                  style: AppTypography.bodyMd(
-                    RefereeColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          FilledButton(
-            onPressed: onBuyTicket,
-            style: FilledButton.styleFrom(
-              backgroundColor: RefereeColors.championshipGold,
-              foregroundColor: const Color(0xFF101C2E),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              'Mua Vé',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
       ),
     );
   }
