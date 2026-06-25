@@ -26,6 +26,7 @@ import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
+import '../views/spectator/spectator_race_detail_screen.dart';
 import '../views/spectator/spectator_shell.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
@@ -169,6 +170,16 @@ abstract final class AppRoutes {
 
   static Route<void> spectatorPortal() {
     return MaterialPageRoute<void>(builder: (_) => const SpectatorShell());
+  }
+
+  static Route<void> spectatorRaceDetail({
+    required String raceId,
+    String? tournamentId,
+  }) {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          SpectatorRaceDetailScreen(raceId: raceId, tournamentId: tournamentId),
+    );
   }
 
   static Route<void> main({HomeTab initialTab = HomeTab.home}) {
@@ -371,6 +382,16 @@ abstract final class AppRoutes {
     Navigator.of(
       context,
     ).push(refereeChangePassword(profileImageUrl: profileImageUrl));
+  }
+
+  static void openSpectatorRaceDetail(
+    BuildContext context, {
+    required String raceId,
+    String? tournamentId,
+  }) {
+    Navigator.of(
+      context,
+    ).push(spectatorRaceDetail(raceId: raceId, tournamentId: tournamentId));
   }
 
   static void openHome(BuildContext context) {

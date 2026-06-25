@@ -15,6 +15,7 @@ class SpectatorHomeScreen extends StatefulWidget {
     this.onRacesTap,
     this.onResultsTap,
     this.onViewAllRaces,
+    this.onRaceTap,
     this.viewModel,
   });
 
@@ -22,6 +23,7 @@ class SpectatorHomeScreen extends StatefulWidget {
   final VoidCallback? onRacesTap;
   final VoidCallback? onResultsTap;
   final VoidCallback? onViewAllRaces;
+  final ValueChanged<SpectatorRaceItem>? onRaceTap;
   final SpectatorHomeViewModel? viewModel;
 
   @override
@@ -122,7 +124,12 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
       const SizedBox(height: AppSpacing.lg),
       if (data?.upcomingRaces.isNotEmpty == true) ...[
         for (final race in data!.upcomingRaces) ...[
-          SpectatorRaceListTile(race: race, onTap: widget.onRacesTap),
+          SpectatorRaceListTile(
+            race: race,
+            onTap: widget.onRaceTap == null
+                ? widget.onRacesTap
+                : () => widget.onRaceTap!(race),
+          ),
           const SizedBox(height: 12),
         ],
       ] else ...[

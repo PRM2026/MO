@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/referee_colors.dart';
+import '../../models/spectator_models.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/spectator/spectator_bottom_nav.dart';
 import 'spectator_home_screen.dart';
 import 'spectator_profile_screen.dart';
@@ -21,6 +23,14 @@ class _SpectatorShellState extends State<SpectatorShell> {
     setState(() => _currentTab = tab);
   }
 
+  void _openRaceDetail(SpectatorRaceItem race) {
+    AppRoutes.openSpectatorRaceDetail(
+      context,
+      raceId: race.id,
+      tournamentId: race.tournamentId,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,9 +43,11 @@ class _SpectatorShellState extends State<SpectatorShell> {
             onRacesTap: () => _selectTab(SpectatorTab.races),
             onResultsTap: () => _selectTab(SpectatorTab.results),
             onViewAllRaces: () => _selectTab(SpectatorTab.races),
+            onRaceTap: _openRaceDetail,
           ),
           SpectatorRacesScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
+            onRaceTap: _openRaceDetail,
           ),
           SpectatorResultsScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
