@@ -5,10 +5,14 @@ import '../models/tournament_list_item.dart';
 import '../repositories/spectator_repository.dart';
 
 class SpectatorHomeViewModel extends ChangeNotifier {
-  SpectatorHomeViewModel({SpectatorRepository? repository})
-    : _repository = repository ?? SpectatorRepository();
+  SpectatorHomeViewModel({
+    SpectatorRepository? repository,
+    DateTime Function()? now,
+  }) : _repository = repository ?? SpectatorRepository(),
+       _now = now ?? DateTime.now;
 
   final SpectatorRepository _repository;
+  final DateTime Function() _now;
 
   bool isLoading = false;
   String? errorMessage;
@@ -76,21 +80,46 @@ class SpectatorHomeViewModel extends ChangeNotifier {
   ) {
     if (tournaments.isEmpty) return null;
 
-    final sorted = [...tournaments]
+    const priorityStatuses = ['OPEN_REGISTRATION', 'PUBLISHED', 'ONGOING'];
+
+    for (final status in priorityStatuses) {
+      final candidates = tournaments
+          .where((item) => item.status == status)
+          .toList(growable: false);
+      if (candidates.isNotEmpty) {
+        return SpectatorFeaturedEvent.fromTournament(
+          _nearestByStartDate(candidates),
+        );
+      }
+    }
+
+    final future = tournaments
+        .where((item) => _isFutureOrToday(item.startAt))
+        .toList(growable: false);
+    final picked = future.isNotEmpty
+        ? _nearestByStartDate(future)
+        : _nearestByStartDate(tournaments);
+
+    return SpectatorFeaturedEvent.fromTournament(picked);
+  }
+
+  TournamentListItem _nearestByStartDate(List<TournamentListItem> items) {
+    final sorted = [...items]
       ..sort((a, b) {
         final aDate = a.startAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         final bDate = b.startAt ?? DateTime.fromMillisecondsSinceEpoch(0);
         return aDate.compareTo(bDate);
       });
+    return sorted.first;
+  }
 
-    final picked = sorted.firstWhere(
-      (item) =>
-          item.status == 'OPEN_REGISTRATION' ||
-          item.status == 'PUBLISHED' ||
-          item.status == 'ONGOING',
-      orElse: () => sorted.first,
-    );
+  bool _isFutureOrToday(DateTime? date) {
+    if (date == null) return false;
+    final today = _dateOnly(_now());
+    return !_dateOnly(date).isBefore(today);
+  }
 
-    return SpectatorFeaturedEvent.fromTournament(picked);
+  DateTime _dateOnly(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
   }
 }

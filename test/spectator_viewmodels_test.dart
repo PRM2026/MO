@@ -59,6 +59,78 @@ void main() {
       expect(viewModel.errorMessage, contains('BE down'));
     });
 
+    test('home featured tournament follows status priority', () async {
+      final viewModel = SpectatorHomeViewModel(
+        now: () => DateTime(2026, 6, 25),
+        repository: _FakeSpectatorRepository(
+          tournaments: [
+            _tournament(
+              id: 20,
+              name: 'Published Cup',
+              status: 'PUBLISHED',
+              startAt: '2026-07-01T09:00:00',
+            ),
+            _tournament(
+              id: 21,
+              name: 'Open Cup',
+              status: 'OPEN_REGISTRATION',
+              startAt: '2026-08-01T09:00:00',
+            ),
+          ],
+          details: {
+            '20': _detail(id: 20, name: 'Published Cup'),
+            '21': _detail(id: 21, name: 'Open Cup'),
+          },
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.data?.featuredEvent?.id, '21');
+      expect(viewModel.data?.featuredEvent?.status, 'OPEN_REGISTRATION');
+    });
+
+    test(
+      'home featured tournament falls back to nearest future start date',
+      () async {
+        final viewModel = SpectatorHomeViewModel(
+          now: () => DateTime(2026, 6, 25),
+          repository: _FakeSpectatorRepository(
+            tournaments: [
+              _tournament(
+                id: 30,
+                name: 'Later Draft',
+                status: 'DRAFT',
+                startAt: '2026-09-01T09:00:00',
+              ),
+              _tournament(
+                id: 31,
+                name: 'Soon Draft',
+                status: 'DRAFT',
+                startAt: '2026-07-01T09:00:00',
+              ),
+              _tournament(
+                id: 32,
+                name: 'Past Draft',
+                status: 'DRAFT',
+                startAt: '2026-01-01T09:00:00',
+              ),
+            ],
+            details: {
+              '30': _detail(id: 30, name: 'Later Draft'),
+              '31': _detail(id: 31, name: 'Soon Draft'),
+              '32': _detail(id: 32, name: 'Past Draft'),
+            },
+          ),
+        );
+
+        await viewModel.load();
+
+        expect(viewModel.data?.featuredEvent?.id, '31');
+        expect(viewModel.data?.featuredEvent?.title, 'Soon Draft');
+      },
+    );
+
     test('races load filters upcoming finished and date', () async {
       final viewModel = SpectatorRacesViewModel(
         repository: _FakeSpectatorRepository(
@@ -212,21 +284,30 @@ class _FakeSpectatorRepository extends SpectatorRepository {
   }
 }
 
-TournamentListItem _tournament() {
-  return TournamentListItem.fromJson(const {
-    'id': 12,
-    'name': 'Summer Cup',
+TournamentListItem _tournament({
+  int id = 12,
+  String name = 'Summer Cup',
+  String status = 'OPEN_REGISTRATION',
+  String startAt = '2026-07-15T09:00:00',
+}) {
+  return TournamentListItem.fromJson({
+    'id': id,
+    'name': name,
     'provinceName': 'Phu Tho',
     'bannerUrl': '/uploads/tournaments/12.jpg',
-    'startAt': '2026-07-15T09:00:00',
-    'status': 'OPEN_REGISTRATION',
+    'startAt': startAt,
+    'status': status,
   });
 }
 
-OwnerTournamentDetail _detail({bool includeFinished = false}) {
+OwnerTournamentDetail _detail({
+  bool includeFinished = false,
+  int id = 12,
+  String name = 'Summer Cup',
+}) {
   return OwnerTournamentDetail.fromJson({
-    'id': 12,
-    'name': 'Summer Cup',
+    'id': id,
+    'name': name,
     'description': 'National race',
     'location': 'Phu Tho',
     'bannerUrl': '/uploads/tournaments/12.jpg',

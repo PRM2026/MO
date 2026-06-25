@@ -104,6 +104,9 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
           onViewDetails: widget.onViewAllRaces,
         ),
         const SizedBox(height: AppSpacing.section),
+      ] else ...[
+        const _HomeEmptyHeroState(),
+        const SizedBox(height: AppSpacing.section),
       ],
       SpectatorQuickActions(
         onScheduleTap: widget.onRacesTap,
@@ -179,6 +182,37 @@ class _HomeErrorState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           OutlinedButton(onPressed: onRetry, child: const Text('Thu lai')),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeEmptyHeroState extends StatelessWidget {
+  const _HomeEmptyHeroState();
+
+  @override
+  Widget build(BuildContext context) {
+    return SpectatorGlassCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.emoji_events_outlined,
+            color: RefereeColors.championshipGold.withValues(alpha: 0.8),
+            size: 32,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Chua co giai dau noi bat.',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Hay quay lai sau khi ban to chuc cong bo giai dau moi.',
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+          ),
         ],
       ),
     );

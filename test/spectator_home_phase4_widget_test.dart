@@ -38,6 +38,7 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('Khan gia'), findsOneWidget);
+    expect(find.text('Chua co giai dau noi bat.'), findsOneWidget);
   });
 }
 
