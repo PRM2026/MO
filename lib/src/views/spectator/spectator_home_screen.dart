@@ -13,6 +13,7 @@ class SpectatorHomeScreen extends StatefulWidget {
     super.key,
     this.onProfileTap,
     this.onRacesTap,
+    this.onHorsesTap,
     this.onResultsTap,
     this.onViewAllRaces,
     this.onRaceTap,
@@ -22,6 +23,7 @@ class SpectatorHomeScreen extends StatefulWidget {
 
   final VoidCallback? onProfileTap;
   final VoidCallback? onRacesTap;
+  final VoidCallback? onHorsesTap;
   final VoidCallback? onResultsTap;
   final VoidCallback? onViewAllRaces;
   final ValueChanged<SpectatorRaceItem>? onRaceTap;
@@ -116,7 +118,7 @@ class _SpectatorHomeScreenState extends State<SpectatorHomeScreen> {
       ],
       SpectatorQuickActions(
         onScheduleTap: widget.onRacesTap,
-        onHorsesTap: widget.onRacesTap,
+        onHorsesTap: widget.onHorsesTap,
         onResultsTap: widget.onResultsTap,
       ),
       const SizedBox(height: AppSpacing.section),

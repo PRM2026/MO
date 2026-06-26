@@ -53,6 +53,7 @@ class _SpectatorShellState extends State<SpectatorShell> {
           SpectatorHomeScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
             onRacesTap: () => _selectTab(SpectatorTab.races),
+            onHorsesTap: () => AppRoutes.openSpectatorHorseRanking(context),
             onResultsTap: () => _selectTab(SpectatorTab.results),
             onViewAllRaces: () => _selectTab(SpectatorTab.races),
             onRaceTap: _openRaceDetail,

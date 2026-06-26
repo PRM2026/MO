@@ -27,6 +27,7 @@ import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
+import '../views/spectator/spectator_horse_ranking_screen.dart';
 import '../views/spectator/spectator_race_detail_screen.dart';
 import '../views/spectator/spectator_race_results_screen.dart';
 import '../views/spectator/spectator_shell.dart';
@@ -203,6 +204,12 @@ abstract final class AppRoutes {
     return MaterialPageRoute<void>(
       builder: (_) =>
           SpectatorTournamentDetailScreen(tournamentId: tournamentId),
+    );
+  }
+
+  static Route<void> spectatorHorseRanking() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const SpectatorHorseRankingScreen(),
     );
   }
 
@@ -440,6 +447,10 @@ abstract final class AppRoutes {
     Navigator.of(
       context,
     ).push(spectatorTournamentDetail(tournamentId: tournamentId));
+  }
+
+  static void openSpectatorHorseRanking(BuildContext context) {
+    Navigator.of(context).push(spectatorHorseRanking());
   }
 
   static void openHome(BuildContext context) {

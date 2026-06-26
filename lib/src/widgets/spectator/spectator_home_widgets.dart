@@ -152,7 +152,7 @@ class SpectatorQuickActions extends StatelessWidget {
         Expanded(
           child: _QuickActionTile(
             icon: Icons.calendar_month_outlined,
-            label: 'Lịch đua',
+            label: 'Lich dua',
             onTap: onScheduleTap,
           ),
         ),
@@ -160,7 +160,7 @@ class SpectatorQuickActions extends StatelessWidget {
         Expanded(
           child: _QuickActionTile(
             icon: Icons.pets_outlined,
-            label: 'Danh sách ngựa',
+            label: 'Danh sach ngua',
             onTap: onHorsesTap,
           ),
         ),
@@ -168,7 +168,7 @@ class SpectatorQuickActions extends StatelessWidget {
         Expanded(
           child: _QuickActionTile(
             icon: Icons.emoji_events_outlined,
-            label: 'Kết quả',
+            label: 'Ket qua',
             onTap: onResultsTap,
           ),
         ),
