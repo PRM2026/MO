@@ -133,6 +133,8 @@ class _RaceDetailContent extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 race.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
@@ -142,6 +144,8 @@ class _RaceDetailContent extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 race.tournamentName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.65)),
               ),
               const SizedBox(height: 20),
@@ -266,6 +270,8 @@ class _DetailInfoRow extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

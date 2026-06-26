@@ -146,12 +146,17 @@ class _ProfileContent extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 profile?.displayName ?? 'Khan gia',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: AppTypography.headlineSm(Colors.white),
               ),
               if (email.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text(
                   email,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(
                     Colors.white.withValues(alpha: 0.6),
                   ),

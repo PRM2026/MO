@@ -58,6 +58,8 @@ class SpectatorScheduleHero extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     featured.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.headlineSm(
                       Colors.white,
                     ).copyWith(fontSize: 24, height: 32 / 24),
@@ -247,6 +249,8 @@ class SpectatorScheduleRaceCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           race.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: AppTypography.headlineSm(
                             RefereeColors.onSurface,
                           ).copyWith(fontSize: 24, height: 32 / 24),

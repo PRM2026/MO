@@ -185,6 +185,8 @@ class _HorseRankingCard extends StatelessWidget {
               children: [
                 Text(
                   horse.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 17,
@@ -217,6 +219,8 @@ class _MetaLine extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2),
       child: Text(
         '$label: $display',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(color: Colors.white.withValues(alpha: 0.62)),
       ),
     );

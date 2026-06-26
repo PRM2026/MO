@@ -83,6 +83,8 @@ class SpectatorHeroBanner extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     event.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.displayLg(Colors.white),
                   ),
                   const SizedBox(height: 4),
@@ -213,6 +215,8 @@ class _QuickActionTile extends StatelessWidget {
               Text(
                 label,
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.bodySm(
                   Colors.white.withValues(alpha: 0.8),
                 ).copyWith(fontSize: 12, fontWeight: FontWeight.w500),
@@ -296,6 +300,8 @@ class SpectatorRaceListTile extends StatelessWidget {
                   children: [
                     Text(
                       race.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodyMd(
                         Colors.white,
                       ).copyWith(fontSize: 18, fontWeight: FontWeight.w700),
@@ -442,6 +448,8 @@ class SpectatorFeaturedHorseCard extends StatelessWidget {
                 children: [
                   Text(
                     horse.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.headlineSm(Colors.white),
                   ),
                   const SizedBox(height: 4),
@@ -455,6 +463,8 @@ class SpectatorFeaturedHorseCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         'Rider: ${horse.rider}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.bodySm(
                           Colors.white.withValues(alpha: 0.6),
                         ).copyWith(fontSize: 12),
@@ -532,6 +542,8 @@ class SpectatorRecentResultTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         result.horseName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.bodyMd(
                           Colors.white,
                         ).copyWith(fontWeight: FontWeight.w700),
@@ -551,6 +563,8 @@ class SpectatorRecentResultTile extends StatelessWidget {
                 ),
                 Text(
                   result.eventName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(
                     Colors.white.withValues(alpha: 0.4),
                   ).copyWith(fontSize: 12),

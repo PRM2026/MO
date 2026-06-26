@@ -234,6 +234,8 @@ class _TournamentHero extends StatelessWidget {
                       Expanded(
                         child: Text(
                           detail.location,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.85),
                             fontWeight: FontWeight.w600,
@@ -313,6 +315,8 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -391,6 +395,8 @@ class _TournamentRaceCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       race.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -410,6 +416,8 @@ class _TournamentRaceCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 _fallback(race.trackInfo),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.62)),
               ),
               const SizedBox(height: 8),

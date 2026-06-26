@@ -160,6 +160,8 @@ class SpectatorRaceResultCard extends StatelessWidget {
                           children: [
                             Text(
                               group.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: AppTypography.headlineSm(
                                 Colors.white,
                               ).copyWith(fontSize: 24, height: 32 / 24),
@@ -264,12 +266,16 @@ class _FinisherRow extends StatelessWidget {
               children: [
                 Text(
                   finisher.horseName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(
                     isFirst ? Colors.white : RefereeColors.onSurface,
                   ).copyWith(fontWeight: FontWeight.w600, fontSize: 14),
                 ),
                 Text(
                   'Jockey: ${finisher.jockeyName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(
                     RefereeColors.onSurfaceVariant,
                   ).copyWith(fontSize: 12),

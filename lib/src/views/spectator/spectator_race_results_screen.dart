@@ -133,6 +133,8 @@ class _LeaderboardContent extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 group.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
@@ -143,6 +145,8 @@ class _LeaderboardContent extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   group.meta,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: Colors.white.withValues(alpha: 0.65)),
                 ),
               ],
@@ -204,6 +208,8 @@ class _LeaderboardRow extends StatelessWidget {
               children: [
                 Text(
                   _fallback(finisher.horseName),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -227,6 +233,8 @@ class _LeaderboardRow extends StatelessWidget {
           Text(
             _fallback(finisher.time),
             textAlign: TextAlign.right,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: isWinner
                   ? RefereeColors.championshipGold
@@ -252,6 +260,8 @@ class _MetaLine extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2),
       child: Text(
         '$label: $value',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
       ),
     );
