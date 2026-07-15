@@ -49,12 +49,7 @@ class SpectatorBottomNav extends StatelessWidget {
 }
 
 class _NavItemData {
-  const _NavItemData(
-    this.tab,
-    this.icon,
-    this.selectedIcon,
-    this.label,
-  );
+  const _NavItemData(this.tab, this.icon, this.selectedIcon, this.label);
 
   final SpectatorTab tab;
   final IconData icon;
@@ -63,29 +58,24 @@ class _NavItemData {
 }
 
 const _items = [
-  _NavItemData(
-    SpectatorTab.home,
-    Icons.home_outlined,
-    Icons.home,
-    'Trang chủ',
-  ),
+  _NavItemData(SpectatorTab.home, Icons.home_outlined, Icons.home, 'Trang chu'),
   _NavItemData(
     SpectatorTab.races,
     Icons.sports_score_outlined,
     Icons.sports_score,
-    'Cuộc đua',
+    'Cuoc dua',
   ),
   _NavItemData(
     SpectatorTab.results,
     Icons.leaderboard_outlined,
     Icons.leaderboard,
-    'Kết quả',
+    'Ket qua',
   ),
   _NavItemData(
     SpectatorTab.profile,
     Icons.person_outline,
     Icons.person,
-    'Hồ sơ',
+    'Ho so',
   ),
 ];
 
@@ -119,25 +109,28 @@ class _NavItem extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           decoration: selected
               ? BoxDecoration(
-                  color: RefereeColors.secondaryContainer.withValues(alpha: 0.3),
+                  color: RefereeColors.secondaryContainer.withValues(
+                    alpha: 0.3,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 )
               : null,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                selected ? selectedIcon : icon,
-                color: color,
-                size: 22,
-              ),
+              Icon(selected ? selectedIcon : icon, color: color, size: 22),
               const SizedBox(height: 2),
-              Text(
-                label,
-                style: AppTypography.labelCaps(color).copyWith(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 0,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.labelCaps(color).copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0,
+                  ),
                 ),
               ),
             ],

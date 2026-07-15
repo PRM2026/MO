@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
-import '../../data/spectator_home_mock.dart';
+import '../../models/spectator_models.dart';
 import '../news/news_network_image.dart';
 import 'spectator_glass_card.dart';
 
@@ -83,6 +83,8 @@ class SpectatorHeroBanner extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     event.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.displayLg(Colors.white),
                   ),
                   const SizedBox(height: 4),
@@ -118,7 +120,7 @@ class SpectatorHeroBanner extends StatelessWidget {
                         ),
                       ),
                       child: const Text(
-                        'Xem chi tiết',
+                        'Xem chi tiet',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -152,7 +154,7 @@ class SpectatorQuickActions extends StatelessWidget {
         Expanded(
           child: _QuickActionTile(
             icon: Icons.calendar_month_outlined,
-            label: 'Lịch đua',
+            label: 'Lich dua',
             onTap: onScheduleTap,
           ),
         ),
@@ -160,7 +162,7 @@ class SpectatorQuickActions extends StatelessWidget {
         Expanded(
           child: _QuickActionTile(
             icon: Icons.pets_outlined,
-            label: 'Danh sách ngựa',
+            label: 'Danh sach ngua',
             onTap: onHorsesTap,
           ),
         ),
@@ -168,7 +170,7 @@ class SpectatorQuickActions extends StatelessWidget {
         Expanded(
           child: _QuickActionTile(
             icon: Icons.emoji_events_outlined,
-            label: 'Kết quả',
+            label: 'Ket qua',
             onTap: onResultsTap,
           ),
         ),
@@ -178,11 +180,7 @@ class SpectatorQuickActions extends StatelessWidget {
 }
 
 class _QuickActionTile extends StatelessWidget {
-  const _QuickActionTile({
-    required this.icon,
-    required this.label,
-    this.onTap,
-  });
+  const _QuickActionTile({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
@@ -206,7 +204,9 @@ class _QuickActionTile extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: RefereeColors.championshipGold.withValues(alpha: 0.1),
                   border: Border.all(
-                    color: RefereeColors.championshipGold.withValues(alpha: 0.2),
+                    color: RefereeColors.championshipGold.withValues(
+                      alpha: 0.2,
+                    ),
                   ),
                 ),
                 child: Icon(icon, color: RefereeColors.championshipGold),
@@ -215,6 +215,8 @@ class _QuickActionTile extends StatelessWidget {
               Text(
                 label,
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.bodySm(
                   Colors.white.withValues(alpha: 0.8),
                 ).copyWith(fontSize: 12, fontWeight: FontWeight.w500),
@@ -258,8 +260,9 @@ class SpectatorSectionHeader extends StatelessWidget {
             onTap: onActionTap,
             child: Text(
               actionLabel!,
-              style: AppTypography.bodySm(RefereeColors.championshipGold)
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: AppTypography.bodySm(
+                RefereeColors.championshipGold,
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
       ],
@@ -268,9 +271,10 @@ class SpectatorSectionHeader extends StatelessWidget {
 }
 
 class SpectatorRaceListTile extends StatelessWidget {
-  const SpectatorRaceListTile({super.key, required this.race});
+  const SpectatorRaceListTile({super.key, required this.race, this.onTap});
 
   final SpectatorRaceItem race;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -279,36 +283,44 @@ class SpectatorRaceListTile extends StatelessWidget {
         ? RefereeColors.championshipGold
         : RefereeColors.championshipGold.withValues(alpha: 0.4);
 
-    return SpectatorGlassCard(
-      accentBorder: true,
-      accentColor: accentColor,
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  race.name,
-                  style: AppTypography.bodyMd(Colors.white).copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: SpectatorGlassCard(
+          accentBorder: true,
+          accentColor: accentColor,
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _MetaChip(icon: Icons.schedule, label: race.time),
-                    const SizedBox(width: 12),
-                    _MetaChip(icon: Icons.straighten, label: race.distance),
+                    Text(
+                      race.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodyMd(
+                        Colors.white,
+                      ).copyWith(fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        _MetaChip(icon: Icons.schedule, label: race.time),
+                        const SizedBox(width: 12),
+                        _MetaChip(icon: Icons.straighten, label: race.distance),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              _StatusBadge(isOpen: isOpen),
+            ],
           ),
-          _StatusBadge(isOpen: isOpen),
-        ],
+        ),
       ),
     );
   }
@@ -329,8 +341,9 @@ class _MetaChip extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: AppTypography.bodySm(Colors.white.withValues(alpha: 0.5))
-              .copyWith(fontSize: 12),
+          style: AppTypography.bodySm(
+            Colors.white.withValues(alpha: 0.5),
+          ).copyWith(fontSize: 12),
         ),
       ],
     );
@@ -435,6 +448,8 @@ class SpectatorFeaturedHorseCard extends StatelessWidget {
                 children: [
                   Text(
                     horse.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.headlineSm(Colors.white),
                   ),
                   const SizedBox(height: 4),
@@ -448,6 +463,8 @@ class SpectatorFeaturedHorseCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         'Rider: ${horse.rider}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.bodySm(
                           Colors.white.withValues(alpha: 0.6),
                         ).copyWith(fontSize: 12),
@@ -476,10 +493,7 @@ class SpectatorRecentResultsPanel extends StatelessWidget {
         children: [
           for (var i = 0; i < results.length; i++) ...[
             if (i > 0)
-              Divider(
-                height: 1,
-                color: Colors.white.withValues(alpha: 0.05),
-              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
             SpectatorRecentResultTile(result: results[i]),
           ],
         ],
@@ -528,24 +542,29 @@ class SpectatorRecentResultTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         result.horseName,
-                        style: AppTypography.bodyMd(Colors.white).copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodyMd(
+                          Colors.white,
+                        ).copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                     Text(
                       result.time,
-                      style: AppTypography.bodySm(
-                        RefereeColors.championshipGold,
-                      ).copyWith(
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: -0.14,
-                      ),
+                      style:
+                          AppTypography.bodySm(
+                            RefereeColors.championshipGold,
+                          ).copyWith(
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: -0.14,
+                          ),
                     ),
                   ],
                 ),
                 Text(
                   result.eventName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(
                     Colors.white.withValues(alpha: 0.4),
                   ).copyWith(fontSize: 12),
@@ -575,7 +594,9 @@ class SpectatorHorizontalList extends StatelessWidget {
       height: 280,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenPadding,
+        ),
         itemCount: itemCount,
         separatorBuilder: (_, index) => const SizedBox(width: 16),
         itemBuilder: itemBuilder,

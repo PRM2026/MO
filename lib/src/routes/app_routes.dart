@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/jockey_profile_response.dart';
+import '../models/spectator_models.dart';
 import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../views/account_screen.dart';
@@ -26,7 +27,11 @@ import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
+import '../views/spectator/spectator_horse_ranking_screen.dart';
+import '../views/spectator/spectator_race_detail_screen.dart';
+import '../views/spectator/spectator_race_results_screen.dart';
 import '../views/spectator/spectator_shell.dart';
+import '../views/spectator/spectator_tournament_detail_screen.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
 abstract final class AppRoutes {
@@ -169,6 +174,43 @@ abstract final class AppRoutes {
 
   static Route<void> spectatorPortal() {
     return MaterialPageRoute<void>(builder: (_) => const SpectatorShell());
+  }
+
+  static Route<void> spectatorRaceDetail({
+    required String raceId,
+    String? tournamentId,
+  }) {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          SpectatorRaceDetailScreen(raceId: raceId, tournamentId: tournamentId),
+    );
+  }
+
+  static Route<void> spectatorRaceResults({
+    required String raceId,
+    SpectatorRaceItem? race,
+    SpectatorResultGroup? initialGroup,
+  }) {
+    return MaterialPageRoute<void>(
+      builder: (_) => SpectatorRaceResultsScreen(
+        raceId: raceId,
+        race: race,
+        initialGroup: initialGroup,
+      ),
+    );
+  }
+
+  static Route<void> spectatorTournamentDetail({required String tournamentId}) {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          SpectatorTournamentDetailScreen(tournamentId: tournamentId),
+    );
+  }
+
+  static Route<void> spectatorHorseRanking() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const SpectatorHorseRankingScreen(),
+    );
   }
 
   static Route<void> main({HomeTab initialTab = HomeTab.home}) {
@@ -371,6 +413,44 @@ abstract final class AppRoutes {
     Navigator.of(
       context,
     ).push(refereeChangePassword(profileImageUrl: profileImageUrl));
+  }
+
+  static void openSpectatorRaceDetail(
+    BuildContext context, {
+    required String raceId,
+    String? tournamentId,
+  }) {
+    Navigator.of(
+      context,
+    ).push(spectatorRaceDetail(raceId: raceId, tournamentId: tournamentId));
+  }
+
+  static void openSpectatorRaceResults(
+    BuildContext context, {
+    required String raceId,
+    SpectatorRaceItem? race,
+    SpectatorResultGroup? initialGroup,
+  }) {
+    Navigator.of(context).push(
+      spectatorRaceResults(
+        raceId: raceId,
+        race: race,
+        initialGroup: initialGroup,
+      ),
+    );
+  }
+
+  static void openSpectatorTournamentDetail(
+    BuildContext context, {
+    required String tournamentId,
+  }) {
+    Navigator.of(
+      context,
+    ).push(spectatorTournamentDetail(tournamentId: tournamentId));
+  }
+
+  static void openSpectatorHorseRanking(BuildContext context) {
+    Navigator.of(context).push(spectatorHorseRanking());
   }
 
   static void openHome(BuildContext context) {

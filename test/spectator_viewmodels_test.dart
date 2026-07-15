@@ -1,0 +1,474 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:horse_racing/src/models/jockey_race_result_response.dart';
+import 'package:horse_racing/src/models/owner_tournament_detail.dart';
+import 'package:horse_racing/src/models/spectator_models.dart';
+import 'package:horse_racing/src/models/tournament_list_item.dart';
+import 'package:horse_racing/src/models/user_profile.dart';
+import 'package:horse_racing/src/repositories/spectator_repository.dart';
+import 'package:horse_racing/src/services/spectator_api_service.dart';
+import 'package:horse_racing/src/viewmodels/spectator_home_viewmodel.dart';
+import 'package:horse_racing/src/viewmodels/spectator_profile_viewmodel.dart';
+import 'package:horse_racing/src/viewmodels/spectator_race_detail_viewmodel.dart';
+import 'package:horse_racing/src/viewmodels/spectator_race_results_viewmodel.dart';
+import 'package:horse_racing/src/viewmodels/spectator_races_viewmodel.dart';
+import 'package:horse_racing/src/viewmodels/spectator_results_viewmodel.dart';
+
+void main() {
+  group('Spectator ViewModels', () {
+    test('home load maps API data and retry calls repository again', () async {
+      final repository = _FakeSpectatorRepository(
+        tournaments: [_tournament()],
+        details: {'12': _detail()},
+        user: const UserProfile(fullName: 'Spectator One', role: 'SPECTATOR'),
+      );
+      final viewModel = SpectatorHomeViewModel(repository: repository);
+
+      await viewModel.load();
+
+      expect(viewModel.isLoading, isFalse);
+      expect(viewModel.errorMessage, isNull);
+      expect(viewModel.data?.featuredEvent?.id, '12');
+      expect(viewModel.data?.profile?.displayName, 'Spectator One');
+      expect(viewModel.data?.upcomingRaces, hasLength(1));
+      expect(repository.tournamentCalls, 1);
+
+      await viewModel.retry();
+
+      expect(repository.tournamentCalls, 2);
+    });
+
+    test('home keeps empty API data empty', () async {
+      final viewModel = SpectatorHomeViewModel(
+        repository: _FakeSpectatorRepository(tournaments: const []),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.errorMessage, isNull);
+      expect(viewModel.profileErrorMessage, contains('No user'));
+      expect(viewModel.data?.isEmpty, isTrue);
+    });
+
+    test('home exposes API error without mock fallback', () async {
+      final viewModel = SpectatorHomeViewModel(
+        repository: _FakeSpectatorRepository(error: 'BE down'),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.data, isNull);
+      expect(viewModel.errorMessage, contains('BE down'));
+    });
+
+    test('home featured tournament follows status priority', () async {
+      final viewModel = SpectatorHomeViewModel(
+        now: () => DateTime(2026, 6, 25),
+        repository: _FakeSpectatorRepository(
+          tournaments: [
+            _tournament(
+              id: 20,
+              name: 'Published Cup',
+              status: 'PUBLISHED',
+              startAt: '2026-07-01T09:00:00',
+            ),
+            _tournament(
+              id: 21,
+              name: 'Open Cup',
+              status: 'OPEN_REGISTRATION',
+              startAt: '2026-08-01T09:00:00',
+            ),
+          ],
+          details: {
+            '20': _detail(id: 20, name: 'Published Cup'),
+            '21': _detail(id: 21, name: 'Open Cup'),
+          },
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.data?.featuredEvent?.id, '21');
+      expect(viewModel.data?.featuredEvent?.status, 'OPEN_REGISTRATION');
+    });
+
+    test(
+      'home featured tournament falls back to nearest future start date',
+      () async {
+        final viewModel = SpectatorHomeViewModel(
+          now: () => DateTime(2026, 6, 25),
+          repository: _FakeSpectatorRepository(
+            tournaments: [
+              _tournament(
+                id: 30,
+                name: 'Later Draft',
+                status: 'DRAFT',
+                startAt: '2026-09-01T09:00:00',
+              ),
+              _tournament(
+                id: 31,
+                name: 'Soon Draft',
+                status: 'DRAFT',
+                startAt: '2026-07-01T09:00:00',
+              ),
+              _tournament(
+                id: 32,
+                name: 'Past Draft',
+                status: 'DRAFT',
+                startAt: '2026-01-01T09:00:00',
+              ),
+            ],
+            details: {
+              '30': _detail(id: 30, name: 'Later Draft'),
+              '31': _detail(id: 31, name: 'Soon Draft'),
+              '32': _detail(id: 32, name: 'Past Draft'),
+            },
+          ),
+        );
+
+        await viewModel.load();
+
+        expect(viewModel.data?.featuredEvent?.id, '31');
+        expect(viewModel.data?.featuredEvent?.title, 'Soon Draft');
+      },
+    );
+
+    test(
+      'home upcoming races are sorted across tournaments and limited to 3',
+      () async {
+        final viewModel = SpectatorHomeViewModel(
+          repository: _FakeSpectatorRepository(
+            tournaments: [
+              _tournament(id: 40, name: 'Cup A'),
+              _tournament(id: 41, name: 'Cup B'),
+            ],
+            details: {
+              '40': _detail(
+                id: 40,
+                name: 'Cup A',
+                races: [
+                  _raceJson(
+                    id: 10,
+                    name: 'Race 10',
+                    startAt: '2026-08-10T09:00:00',
+                  ),
+                  _raceJson(
+                    id: 11,
+                    name: 'Race 11',
+                    startAt: '2026-08-01T09:00:00',
+                  ),
+                ],
+              ),
+              '41': _detail(
+                id: 41,
+                name: 'Cup B',
+                races: [
+                  _raceJson(
+                    id: 12,
+                    name: 'Race 12',
+                    startAt: '2026-07-20T09:00:00',
+                  ),
+                  _raceJson(
+                    id: 13,
+                    name: 'Race 13',
+                    startAt: '2026-07-25T09:00:00',
+                  ),
+                ],
+              ),
+            },
+          ),
+        );
+
+        await viewModel.load();
+
+        expect(viewModel.data?.upcomingRaces.map((race) => race.id), [
+          '12',
+          '13',
+          '11',
+        ]);
+      },
+    );
+
+    test('home loads featured horses and recent race results', () async {
+      final viewModel = SpectatorHomeViewModel(
+        repository: _FakeSpectatorRepository(
+          tournaments: [_tournament(id: 50, name: 'Result Cup')],
+          details: {
+            '50': _detail(
+              id: 50,
+              name: 'Result Cup',
+              races: [
+                _raceJson(
+                  id: 20,
+                  name: 'Completed Race',
+                  startAt: '2026-06-20T09:00:00',
+                  status: 'RESULT_CONFIRMED',
+                ),
+              ],
+            ),
+          },
+          horses: const [
+            SpectatorFeaturedHorse(
+              id: '8',
+              name: 'Night Wind',
+              rider: 'jockey01',
+              rank: 1,
+              imageUrl: '/uploads/horses/8.jpg',
+            ),
+          ],
+          results: {
+            '20': [_result()],
+          },
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.data?.featuredHorses, hasLength(1));
+      expect(viewModel.data?.featuredHorses.single.name, 'Night Wind');
+      expect(viewModel.data?.recentResults, hasLength(1));
+      expect(viewModel.data?.recentResults.single.eventName, 'Completed Race');
+      expect(viewModel.data?.recentResults.single.horseName, 'Night Wind');
+    });
+
+    test('races load filters upcoming finished and date', () async {
+      final viewModel = SpectatorRacesViewModel(
+        repository: _FakeSpectatorRepository(
+          tournaments: [_tournament()],
+          details: {'12': _detail(includeFinished: true)},
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.allRaces, hasLength(2));
+      expect(viewModel.races, hasLength(1));
+      expect(viewModel.races.single.id, '5');
+
+      viewModel.selectFilter(SpectatorRaceListFilter.finished);
+      expect(viewModel.races, hasLength(1));
+      expect(viewModel.races.single.id, '6');
+
+      viewModel.selectDate(DateTime(2026, 7, 15));
+      expect(viewModel.races, hasLength(1));
+      expect(viewModel.races.single.id, '5');
+    });
+
+    test('race detail load maps race and results', () async {
+      final viewModel = SpectatorRaceDetailViewModel(
+        raceId: '5',
+        tournamentId: '12',
+        repository: _FakeSpectatorRepository(
+          details: {'12': _detail()},
+          results: {
+            '5': [_result()],
+          },
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.errorMessage, isNull);
+      expect(viewModel.data?.race.id, '5');
+      expect(viewModel.data?.hasResults, isTrue);
+      expect(viewModel.data?.results.single.horseName, 'Night Wind');
+    });
+
+    test('results load keeps empty results empty', () async {
+      final viewModel = SpectatorResultsViewModel(
+        repository: _FakeSpectatorRepository(
+          tournaments: [_tournament()],
+          details: {'12': _detail(includeFinished: true)},
+          results: const {'6': []},
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.errorMessage, isNull);
+      expect(viewModel.groups, isEmpty);
+    });
+
+    test('race results load maps leaderboard group', () async {
+      final viewModel = SpectatorRaceResultsViewModel(
+        raceId: '5',
+        repository: _FakeSpectatorRepository(
+          results: {
+            '5': [_result()],
+          },
+        ),
+      );
+
+      await viewModel.load();
+
+      expect(viewModel.errorMessage, isNull);
+      expect(viewModel.data?.raceId, '5');
+      expect(viewModel.data?.finishers.single.rank, 1);
+    });
+
+    test('profile load maps user and exposes error', () async {
+      final success = SpectatorProfileViewModel(
+        repository: _FakeSpectatorRepository(
+          user: const UserProfile(
+            username: 'spectator01',
+            fullName: 'Spectator One',
+            role: 'SPECTATOR',
+          ),
+        ),
+      );
+
+      await success.load();
+
+      expect(success.data?.displayName, 'Spectator One');
+      expect(success.errorMessage, isNull);
+
+      final failure = SpectatorProfileViewModel(
+        repository: _FakeSpectatorRepository(error: 'Unauthorized'),
+      );
+
+      await failure.load();
+
+      expect(failure.data, isNull);
+      expect(failure.errorMessage, contains('Unauthorized'));
+    });
+  });
+}
+
+class _FakeSpectatorRepository extends SpectatorRepository {
+  _FakeSpectatorRepository({
+    this.tournaments = const [],
+    this.details = const {},
+    this.results = const {},
+    this.horses = const [],
+    this.user,
+    this.error,
+  }) : super();
+
+  final List<TournamentListItem> tournaments;
+  final Map<String, OwnerTournamentDetail> details;
+  final Map<String, List<JockeyRaceResultResponse>> results;
+  final List<SpectatorFeaturedHorse> horses;
+  final UserProfile? user;
+  final String? error;
+  int tournamentCalls = 0;
+
+  void _throwIfNeeded() {
+    if (error != null) throw SpectatorApiException(error!);
+  }
+
+  @override
+  Future<List<TournamentListItem>> fetchTournaments() async {
+    _throwIfNeeded();
+    tournamentCalls++;
+    return tournaments;
+  }
+
+  @override
+  Future<OwnerTournamentDetail> fetchTournamentDetail(String id) async {
+    _throwIfNeeded();
+    final detail = details[id];
+    if (detail == null) throw SpectatorApiException('Missing detail $id');
+    return detail;
+  }
+
+  @override
+  Future<List<JockeyRaceResultResponse>> fetchRaceResults(String raceId) async {
+    _throwIfNeeded();
+    return results[raceId] ?? const [];
+  }
+
+  @override
+  Future<List<SpectatorFeaturedHorse>> fetchHorseRankings() async {
+    _throwIfNeeded();
+    return horses;
+  }
+
+  @override
+  Future<UserProfile> fetchCurrentUser() async {
+    _throwIfNeeded();
+    final current = user;
+    if (current == null) throw const SpectatorApiException('No user');
+    return current;
+  }
+}
+
+TournamentListItem _tournament({
+  int id = 12,
+  String name = 'Summer Cup',
+  String status = 'OPEN_REGISTRATION',
+  String startAt = '2026-07-15T09:00:00',
+}) {
+  return TournamentListItem.fromJson({
+    'id': id,
+    'name': name,
+    'provinceName': 'Phu Tho',
+    'bannerUrl': '/uploads/tournaments/12.jpg',
+    'startAt': startAt,
+    'status': status,
+  });
+}
+
+OwnerTournamentDetail _detail({
+  bool includeFinished = false,
+  int id = 12,
+  String name = 'Summer Cup',
+  List<Map<String, Object?>>? races,
+}) {
+  return OwnerTournamentDetail.fromJson({
+    'id': id,
+    'name': name,
+    'description': 'National race',
+    'location': 'Phu Tho',
+    'bannerUrl': '/uploads/tournaments/12.jpg',
+    'status': 'OPEN_REGISTRATION',
+    'races':
+        races ??
+        [
+          _raceJson(id: 5, name: 'Qualifier', startAt: '2026-07-15T09:00:00'),
+          if (includeFinished)
+            _raceJson(
+              id: 6,
+              name: 'Final',
+              startAt: '2026-07-16T09:00:00',
+              status: 'RESULT_CONFIRMED',
+            ),
+        ],
+  });
+}
+
+Map<String, Object?> _raceJson({
+  required int id,
+  required String name,
+  required String startAt,
+  String status = 'SCHEDULED',
+}) {
+  return {
+    'id': id,
+    'name': name,
+    'distance': '1200m',
+    'venueName': 'Track A',
+    'scheduledStartAt': startAt,
+    'participantCount': 4,
+    'maxParticipants': 12,
+    'entryFee': 500000,
+    'status': status,
+  };
+}
+
+JockeyRaceResultResponse _result() {
+  return JockeyRaceResultResponse.fromJson(const {
+    'id': 31,
+    'raceId': 5,
+    'participantId': 22,
+    'ownerId': 4,
+    'ownerUsername': 'owner01',
+    'horseId': 8,
+    'horseName': 'Night Wind',
+    'jockeyId': 9,
+    'jockeyUsername': 'jockey01',
+    'rank': 1,
+    'finishTimeMillis': 68123,
+    'status': 'FINISHED',
+    'jockeyChallengePoints': 10,
+    'jockeyPrizeAmount': 500000,
+  });
+}

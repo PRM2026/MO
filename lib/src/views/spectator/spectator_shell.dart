@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/referee_colors.dart';
+import '../../models/spectator_models.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/spectator/spectator_bottom_nav.dart';
 import 'spectator_home_screen.dart';
 import 'spectator_profile_screen.dart';
@@ -21,6 +23,26 @@ class _SpectatorShellState extends State<SpectatorShell> {
     setState(() => _currentTab = tab);
   }
 
+  void _openRaceDetail(SpectatorRaceItem race) {
+    AppRoutes.openSpectatorRaceDetail(
+      context,
+      raceId: race.id,
+      tournamentId: race.tournamentId,
+    );
+  }
+
+  void _openLeaderboard(SpectatorResultGroup group) {
+    AppRoutes.openSpectatorRaceResults(
+      context,
+      raceId: group.raceId,
+      initialGroup: group,
+    );
+  }
+
+  void _openTournamentDetail(SpectatorFeaturedEvent event) {
+    AppRoutes.openSpectatorTournamentDetail(context, tournamentId: event.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,14 +53,19 @@ class _SpectatorShellState extends State<SpectatorShell> {
           SpectatorHomeScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
             onRacesTap: () => _selectTab(SpectatorTab.races),
+            onHorsesTap: () => AppRoutes.openSpectatorHorseRanking(context),
             onResultsTap: () => _selectTab(SpectatorTab.results),
             onViewAllRaces: () => _selectTab(SpectatorTab.races),
+            onRaceTap: _openRaceDetail,
+            onTournamentTap: _openTournamentDetail,
           ),
           SpectatorRacesScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
+            onRaceTap: _openRaceDetail,
           ),
           SpectatorResultsScreen(
             onProfileTap: () => _selectTab(SpectatorTab.profile),
+            onLeaderboardTap: _openLeaderboard,
           ),
           const SpectatorProfileScreen(),
         ],
