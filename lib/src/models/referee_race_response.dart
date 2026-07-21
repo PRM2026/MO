@@ -35,6 +35,26 @@ class RefereeRaceResponse {
   final DateTime? resultFinalizedAt;
   final List<RefereeRacePrizeResponse> prizes;
 
+  RefereeRaceResponse copyWithParticipantCount(int value) {
+    return RefereeRaceResponse(
+      id: id,
+      tournamentId: tournamentId,
+      name: name,
+      distance: distance,
+      venueName: venueName,
+      venueAddress: venueAddress,
+      provinceName: provinceName,
+      refereeUsername: refereeUsername,
+      status: status,
+      scheduledStartAt: scheduledStartAt,
+      scheduledEndAt: scheduledEndAt,
+      maxParticipants: maxParticipants,
+      participantCount: value,
+      resultFinalizedAt: resultFinalizedAt,
+      prizes: prizes,
+    );
+  }
+
   factory RefereeRaceResponse.fromJson(Map<String, dynamic> json) {
     final rawPrizes = json['prizes'];
     return RefereeRaceResponse(

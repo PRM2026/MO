@@ -100,6 +100,7 @@ class RefereeDashboardData {
   factory RefereeDashboardData.fromApi({
     required RefereeDashboardResponse dashboard,
     required List<RefereeRaceResponse> assignedRaces,
+    required int violationCount,
     String? profileImageUrl,
   }) {
     final account = dashboard.account;
@@ -110,8 +111,7 @@ class RefereeDashboardData {
     ]);
 
     final todayCount = dashboard.summaryInt('todayRaceCount');
-    final checkInCount = dashboard.summaryInt('checkInRaceCount');
-    final resultEntryCount = dashboard.summaryInt('resultEntryRaceCount');
+    final checkInRaceCount = dashboard.summaryInt('checkInRaceCount');
     final walletBalance = dashboard.walletAvailableBalance;
 
     final welcomeMessage = todayCount > 0
@@ -149,13 +149,13 @@ class RefereeDashboardData {
           icon: Icons.sports_score_outlined,
           iconColor: RefereeStatColors.gold,
           label: 'Chờ check-in',
-          value: _formatCount(checkInCount),
+          value: _formatCount(checkInRaceCount),
         ),
         RefereeStatItem(
-          icon: Icons.flag_outlined,
+          icon: Icons.report_problem_outlined,
           iconColor: RefereeStatColors.red,
-          label: 'Chờ nhập kết quả',
-          value: _formatCount(resultEntryCount),
+          label: 'Vi phạm đã ghi',
+          value: _formatCount(violationCount),
         ),
         RefereeStatItem(
           icon: Icons.account_balance_wallet_outlined,
@@ -276,7 +276,9 @@ class _RefereeDashboardAlert {
   final String message;
 }
 
-_RefereeDashboardAlert? _primaryAlert(List<JockeyDashboardItemResponse> alerts) {
+_RefereeDashboardAlert? _primaryAlert(
+  List<JockeyDashboardItemResponse> alerts,
+) {
   if (alerts.isEmpty) return null;
 
   final alert = alerts.first;
@@ -291,7 +293,8 @@ _RefereeDashboardAlert? _primaryAlert(List<JockeyDashboardItemResponse> alerts) 
 
   final message = count > 0
       ? 'Hiện có $count cuộc đua cần xử lý.'
-      : (_readString(alert.title) ?? 'Vui lòng kiểm tra danh sách cuộc đua được giao.');
+      : (_readString(alert.title) ??
+            'Vui lòng kiểm tra danh sách cuộc đua được giao.');
 
   return _RefereeDashboardAlert(title: title, message: message);
 }
@@ -361,9 +364,7 @@ RefereeRaceItem _raceFromAssignedRace(RefereeRaceResponse race) {
       RefereeRaceDetailRow(
         label: status == 'ONGOING' ? 'Kết thúc dự kiến:' : 'Bắt đầu lúc:',
         value: formatDisplayDateTime(
-          (status == 'ONGOING'
-                  ? race.scheduledEndAt
-                  : race.scheduledStartAt)
+          (status == 'ONGOING' ? race.scheduledEndAt : race.scheduledStartAt)
               ?.toIso8601String(),
         ),
       ),

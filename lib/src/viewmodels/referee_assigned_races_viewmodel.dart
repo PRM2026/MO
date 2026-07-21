@@ -10,6 +10,7 @@ class RefereeAssignedRacesViewModel extends ChangeNotifier {
   final RefereeAssignedRacesRepository _repository;
 
   bool isLoading = false;
+  String? errorMessage;
   AssignedRacesData? _data;
   AssignedRaceFilter selectedFilter = AssignedRaceFilter.all;
   String searchQuery = '';
@@ -33,13 +34,14 @@ class RefereeAssignedRacesViewModel extends ChangeNotifier {
 
   Future<void> loadRaces() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
       _data = await _repository.fetchAssignedRaces();
     } catch (error) {
       if (kDebugMode) debugPrint('RefereeAssignedRacesViewModel: $error');
-      _data = AssignedRacesData.sample();
+      errorMessage = error.toString();
     } finally {
       isLoading = false;
       notifyListeners();

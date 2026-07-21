@@ -5,7 +5,7 @@ import '../repositories/referee_wallet_repository.dart';
 
 class RefereeWalletViewModel extends ChangeNotifier {
   RefereeWalletViewModel({RefereeWalletRepository? repository})
-      : _repository = repository ?? RefereeWalletRepository();
+    : _repository = repository ?? RefereeWalletRepository();
 
   final RefereeWalletRepository _repository;
 
@@ -22,8 +22,7 @@ class RefereeWalletViewModel extends ChangeNotifier {
       data = await _repository.fetchWallet();
     } catch (error) {
       if (kDebugMode) debugPrint('RefereeWalletViewModel: $error');
-      errorMessage = 'Không thể tải thông tin ví. Vui lòng thử lại.';
-      data = RefereeWalletData.empty(profileImageUrl: data?.profileImageUrl);
+      errorMessage = 'Không thể tải số dư ví. Vui lòng thử lại.';
     } finally {
       isLoading = false;
       notifyListeners();

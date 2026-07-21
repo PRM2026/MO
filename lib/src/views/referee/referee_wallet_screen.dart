@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_spacing.dart';
+import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../viewmodels/referee_wallet_viewmodel.dart';
 import '../../widgets/referee/referee_app_bar.dart';
@@ -50,6 +51,29 @@ class _RefereeWalletScreenState extends State<RefereeWalletScreen> {
           ? const Center(
               child: CircularProgressIndicator(color: RefereeColors.tertiary),
             )
+          : data == null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.screenPadding),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _viewModel.errorMessage ?? 'Không thể tải số dư ví.',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyMd(
+                        RefereeColors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    FilledButton(
+                      onPressed: _viewModel.loadData,
+                      child: const Text('Thử lại'),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : RefreshIndicator(
               color: RefereeColors.tertiary,
               onRefresh: _viewModel.loadData,
@@ -70,19 +94,14 @@ class _RefereeWalletScreenState extends State<RefereeWalletScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (_viewModel.errorMessage != null) ...[
-                                RefereeWalletInfoBanner(
-                                  message: _viewModel.errorMessage!,
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                              ],
-                              RefereeWalletBalanceCard(
-                                balance: data!.balance,
+                              Text(
+                                'Ví của tôi',
+                                style: AppTypography.headlineSm(
+                                  RefereeColors.onSurface,
+                                ).copyWith(fontSize: 24),
                               ),
                               const SizedBox(height: AppSpacing.lg),
-                              RefereeTransactionHistorySection(
-                                transactions: data.transactions,
-                              ),
+                              RefereeWalletBalanceCard(balance: data.balance),
                             ],
                           ),
                         ),

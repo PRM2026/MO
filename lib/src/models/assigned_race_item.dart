@@ -73,10 +73,7 @@ class AssignedRaceItem {
       if (race.provinceName?.trim().isNotEmpty == true) race.provinceName!.trim(),
     ];
     final participantCount = race.participantCount ?? 0;
-    final maxParticipants = race.maxParticipants;
-    final participantsLabel = maxParticipants != null && maxParticipants > 0
-        ? '$participantCount/$maxParticipants ngựa'
-        : '$participantCount ngựa';
+    final participantsLabel = '$participantCount ngựa';
 
     final action = _actionForStatus(beStatus);
 
@@ -100,32 +97,23 @@ class AssignedRaceItem {
       actionFilled: action.filled,
       actionEnabled: action.enabled,
       actionSecondary: action.secondary,
-      dimmed: !action.enabled &&
-          beStatus != 'RESULT_CONFIRMED' &&
-          beStatus != 'CANCELLED',
+      dimmed: false,
     );
   }
 
   static AssignedRaceStatus _mapUiStatus(String status) {
     return switch (status) {
       'ONGOING' => AssignedRaceStatus.live,
-      'SCHEDULED' => AssignedRaceStatus.ready,
-      'RESULT_CONFIRMED' => AssignedRaceStatus.pendingResults,
-      'CANCELLED' => AssignedRaceStatus.pendingResults,
+      'RESULT_CONFIRMED' || 'CANCELLED' =>
+        AssignedRaceStatus.pendingResults,
       _ => AssignedRaceStatus.upcoming,
     };
   }
 
   static String _statusLabel(String status) {
     return switch (status) {
-      'ONGOING' => 'Đang đua',
-      'SCHEDULED' => 'Chờ check-in',
-      'RESULT_CONFIRMED' => 'Đã kết thúc',
-      'CANCELLED' => 'Đã hủy',
-      'REGISTRATION_CLOSED' => 'Đóng đăng ký',
-      'OPEN_REGISTRATION' => 'Mở đăng ký',
-      'PUBLISHED' => 'Đã công bố',
-      'DRAFT' => 'Nháp',
+      'ONGOING' => 'Đang diễn ra',
+      'RESULT_CONFIRMED' || 'CANCELLED' => 'Đã kết thúc',
       _ => 'Sắp diễn ra',
     };
   }

@@ -7,8 +7,8 @@ class RefereeRepository {
   RefereeRepository({
     RefereeDashboardService? dashboardService,
     AuthRepository? authRepository,
-  })  : _dashboardService = dashboardService ?? RefereeDashboardService(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _dashboardService = dashboardService ?? RefereeDashboardService(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final RefereeDashboardService _dashboardService;
   final AuthRepository _authRepository;
@@ -17,15 +17,30 @@ class RefereeRepository {
     final dashboard = await _dashboardService.getDashboard();
 
     var assignedRaces = const <RefereeRaceResponse>[];
-    try {
-      assignedRaces = await _dashboardService.getAssignedRaces();
-    } catch (_) {}
+    var violationCount = 0;
+    String? profileImageUrl;
 
-    final profileImageUrl = await _loadProfileImageUrl();
+    await Future.wait([
+      (() async {
+        try {
+          assignedRaces =
+              await _dashboardService.getAssignedRacesWithParticipantCounts();
+        } catch (_) {}
+      })(),
+      (() async {
+        try {
+          violationCount = await _dashboardService.getViolationCount();
+        } catch (_) {}
+      })(),
+      (() async {
+        profileImageUrl = await _loadProfileImageUrl();
+      })(),
+    ]);
 
     return RefereeDashboardData.fromApi(
       dashboard: dashboard,
       assignedRaces: assignedRaces,
+      violationCount: violationCount,
       profileImageUrl: profileImageUrl,
     );
   }

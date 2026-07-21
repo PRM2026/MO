@@ -37,39 +37,13 @@ class RefereeWalletBalanceCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Số dư khả dụng',
-                        style: AppTypography.labelCaps(
-                          RefereeColors.onSurfaceVariant,
-                        ).copyWith(fontWeight: FontWeight.w500),
-                      ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: RefereeColors.successEmerald
-                              .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: RefereeColors.successEmerald
-                                .withValues(alpha: 0.25),
-                          ),
-                        ),
-                        child: Text(
-                          balance.statusLabel.toUpperCase(),
-                          style: AppTypography.labelCaps(
-                            RefereeColors.successEmerald,
-                          ).copyWith(fontSize: 10),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Số dư hiện tại',
+                    style: AppTypography.labelCaps(
+                      RefereeColors.onSurfaceVariant,
+                    ).copyWith(fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   RichText(
                     text: TextSpan(
                       style: AppTypography.displayLg(RefereeColors.tertiary),
@@ -84,71 +58,8 @@ class RefereeWalletBalanceCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _BalanceStat(
-                          label: 'Đang giữ',
-                          value: balance.holdBalance,
-                          currency: balance.currency,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _BalanceStat(
-                          label: 'Tổng số dư',
-                          value: balance.totalBalance,
-                          currency: balance.currency,
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BalanceStat extends StatelessWidget {
-  const _BalanceStat({
-    required this.label,
-    required this.value,
-    required this.currency,
-  });
-
-  final String label;
-  final String value;
-  final String currency;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTypography.labelCaps(
-              RefereeColors.onSurfaceVariant,
-            ).copyWith(fontSize: 10),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '$value $currency',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.bodyMd(RefereeColors.onSurface).copyWith(
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -217,8 +128,9 @@ class RefereeTransactionHistorySection extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               'Lịch sử giao dịch',
-              style: AppTypography.headlineSm(RefereeColors.onSurface)
-                  .copyWith(fontSize: 22),
+              style: AppTypography.headlineSm(
+                RefereeColors.onSurface,
+              ).copyWith(fontSize: 22),
             ),
           ],
         ),
@@ -265,8 +177,9 @@ class _TransactionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amountColor =
-        item.isCredit ? RefereeColors.tertiary : RefereeColors.onSurface;
+    final amountColor = item.isCredit
+        ? RefereeColors.tertiary
+        : RefereeColors.onSurface;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -278,10 +191,11 @@ class _TransactionRow extends StatelessWidget {
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: (item.isCredit
-                      ? RefereeColors.tertiary
-                      : RefereeColors.onSurfaceVariant)
-                  .withValues(alpha: 0.12),
+              color:
+                  (item.isCredit
+                          ? RefereeColors.tertiary
+                          : RefereeColors.onSurfaceVariant)
+                      .withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -299,8 +213,9 @@ class _TransactionRow extends StatelessWidget {
               children: [
                 Text(
                   item.title,
-                  style: AppTypography.bodyMd(RefereeColors.onSurface)
-                      .copyWith(fontWeight: FontWeight.w600),
+                  style: AppTypography.bodyMd(
+                    RefereeColors.onSurface,
+                  ).copyWith(fontWeight: FontWeight.w600),
                 ),
                 if (item.note != null) ...[
                   const SizedBox(height: 2),
@@ -329,8 +244,9 @@ class _TransactionRow extends StatelessWidget {
             children: [
               Text(
                 item.amountLabel,
-                style: AppTypography.bodySm(amountColor)
-                    .copyWith(fontWeight: FontWeight.w700),
+                style: AppTypography.bodySm(
+                  amountColor,
+                ).copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 4),
               Text(

@@ -61,9 +61,9 @@ class RefereeFilterChips extends StatelessWidget {
 
   static const _filters = [
     (AssignedRaceFilter.all, 'Tất cả'),
-    (AssignedRaceFilter.upcoming, 'Sắp tới'),
+    (AssignedRaceFilter.upcoming, 'Sắp diễn ra'),
     (AssignedRaceFilter.live, 'Đang diễn ra'),
-    (AssignedRaceFilter.finished, 'Đã xong'),
+    (AssignedRaceFilter.finished, 'Đã kết thúc'),
   ];
 
   @override

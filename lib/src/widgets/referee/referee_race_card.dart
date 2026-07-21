@@ -7,14 +7,9 @@ import '../news/news_network_image.dart';
 import 'referee_glass_card.dart';
 
 class RefereeRaceCard extends StatelessWidget {
-  const RefereeRaceCard({
-    super.key,
-    required this.race,
-    this.onAction,
-  });
+  const RefereeRaceCard({super.key, required this.race});
 
   final RefereeRaceItem race;
-  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +26,36 @@ class RefereeRaceCard extends StatelessWidget {
               children: [
                 ColorFiltered(
                   colorFilter: const ColorFilter.matrix(<double>[
-                    0.7, 0, 0, 0, 0,
-                    0, 0.7, 0, 0, 0,
-                    0, 0, 0.7, 0, 0,
-                    0, 0, 0, 1, 0,
+                    0.7,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0.7,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0.7,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
                   ]),
                   child: NewsNetworkImage(imageUrl: race.imageUrl),
                 ),
                 Positioned(
                   top: 16,
                   left: 16,
-                  child: _StatusBadge(status: race.status, label: race.statusLabel),
+                  child: _StatusBadge(
+                    status: race.status,
+                    label: race.statusLabel,
+                  ),
                 ),
               ],
             ),
@@ -105,13 +119,6 @@ class RefereeRaceCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                 ],
-                const SizedBox(height: 8),
-                _ActionButton(
-                  label: race.actionLabel,
-                  filled: race.actionFilled,
-                  enabled: race.actionEnabled,
-                  onPressed: onAction,
-                ),
               ],
             ),
           ),
@@ -141,21 +148,17 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = switch (status) {
-      RefereeRaceStatus.live => (
-          RefereeColors.statusRed,
-          Colors.white,
-          true,
-        ),
+      RefereeRaceStatus.live => (RefereeColors.statusRed, Colors.white, true),
       RefereeRaceStatus.pending => (
-          RefereeColors.tertiary,
-          RefereeColors.onTertiary,
-          false,
-        ),
+        RefereeColors.tertiary,
+        RefereeColors.onTertiary,
+        false,
+      ),
       RefereeRaceStatus.scheduled => (
-          RefereeColors.secondaryContainer,
-          RefereeColors.onSecondaryContainer,
-          false,
-        ),
+        RefereeColors.secondaryContainer,
+        RefereeColors.onSecondaryContainer,
+        false,
+      ),
     };
 
     return Container(
@@ -183,70 +186,6 @@ class _StatusBadge extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.label,
-    required this.filled,
-    required this.enabled,
-    this.onPressed,
-  });
-
-  final String label;
-  final bool filled;
-  final bool enabled;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final style = filled
-        ? FilledButton.styleFrom(
-            backgroundColor: RefereeColors.tertiary,
-            foregroundColor: RefereeColors.onTertiary,
-            disabledBackgroundColor:
-                RefereeColors.tertiary.withValues(alpha: 0.4),
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          )
-        : OutlinedButton.styleFrom(
-            foregroundColor: enabled
-                ? RefereeColors.tertiary
-                : RefereeColors.onSurfaceVariant,
-            side: BorderSide(
-              color: enabled
-                  ? RefereeColors.tertiary
-                  : RefereeColors.outlineVariant,
-            ),
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          );
-
-    final child = Text(
-      label,
-      style: AppTypography.labelCaps(
-        filled ? RefereeColors.onTertiary : RefereeColors.tertiary,
-      ).copyWith(fontSize: 13, letterSpacing: 0.3),
-    );
-
-    if (filled) {
-      return FilledButton(
-        onPressed: enabled ? onPressed : null,
-        style: style,
-        child: child,
-      );
-    }
-
-    return OutlinedButton(
-      onPressed: enabled ? onPressed : null,
-      style: style,
-      child: child,
     );
   }
 }

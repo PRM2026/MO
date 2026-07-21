@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/referee_dashboard_response.dart';
 import '../models/referee_race_participant_response.dart';
 import '../models/referee_race_response.dart';
 import '../models/referee_race_result_response.dart';
+import '../models/referee_violation_response.dart';
 import 'api_client.dart';
 import 'auth_storage.dart';
 
@@ -27,10 +29,47 @@ class RefereeDashboardService {
   }
 
   Future<List<RefereeRaceResponse>> getAssignedRaces() {
-    return _apiClient.getList(
-      '/referee/races',
-      RefereeRaceResponse.fromJson,
+    return _apiClient.getList('/referee/races', RefereeRaceResponse.fromJson);
+  }
+
+  Future<List<RefereeRaceResponse>>
+  getAssignedRacesWithParticipantCounts() async {
+    final races = await getAssignedRaces();
+    return Future.wait(
+      races.map((race) async {
+        final raceId = race.id;
+        if (raceId == null) return race;
+        try {
+          final participants = await getRaceParticipants(raceId);
+          return race.copyWithParticipantCount(participants.length);
+        } catch (_) {
+          return race;
+        }
+      }),
     );
+  }
+
+  Future<int> getPendingCheckInCount() {
+    return _apiClient.getObject(
+      '/referee/dashboard/pending-check-in-count',
+      (json) => _readInt(json['count']),
+    );
+  }
+
+  Future<int> getViolationCount() async {
+    final violations = await getViolations();
+    return violations.length;
+  }
+
+  Future<List<RefereeViolationResponse>> getViolations() async {
+    final violations = await _apiClient.getList(
+      '/referee/violations',
+      RefereeViolationResponse.fromJson,
+    );
+    if (kDebugMode) {
+      debugPrint('GET /referee/violations: ${violations.length} violation(s)');
+    }
+    return violations;
   }
 
   Future<List<RefereeRaceParticipantResponse>> getRaceParticipants(int raceId) {
@@ -58,4 +97,11 @@ class RefereeDashboardService {
       RefereeRaceResultResponse.fromJson,
     );
   }
+}
+
+int _readInt(Object? value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
 }

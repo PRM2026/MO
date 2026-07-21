@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 
-enum RefereeTab { overview, races, violations, history, wallet }
+enum RefereeTab { overview, races, history, wallet }
 
 class RefereeBottomNav extends StatelessWidget {
   const RefereeBottomNav({
@@ -66,7 +66,6 @@ class _NavItemData {
 const _items = [
   _NavItemData(RefereeTab.overview, Icons.dashboard_outlined, 'Tổng quan'),
   _NavItemData(RefereeTab.races, Icons.sports_score_outlined, 'Cuộc đua'),
-  _NavItemData(RefereeTab.violations, Icons.report_problem_outlined, 'Vi phạm'),
   _NavItemData(RefereeTab.history, Icons.history, 'Lịch sử'),
   _NavItemData(RefereeTab.wallet, Icons.account_balance_wallet_outlined, 'Ví'),
 ];

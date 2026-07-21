@@ -18,7 +18,8 @@ class RefereeAssignedRacesScreen extends StatefulWidget {
       _RefereeAssignedRacesScreenState();
 }
 
-class _RefereeAssignedRacesScreenState extends State<RefereeAssignedRacesScreen> {
+class _RefereeAssignedRacesScreenState
+    extends State<RefereeAssignedRacesScreen> {
   late final RefereeAssignedRacesViewModel _viewModel;
   late final TextEditingController _searchController;
   late final bool _ownsViewModel;
@@ -53,6 +54,29 @@ class _RefereeAssignedRacesScreenState extends State<RefereeAssignedRacesScreen>
       body: _viewModel.isLoading && _viewModel.data == null
           ? const Center(
               child: CircularProgressIndicator(color: RefereeColors.tertiary),
+            )
+          : _viewModel.errorMessage != null && _viewModel.data == null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.screenPadding),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Không thể tải danh sách cuộc đua từ máy chủ.',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyMd(
+                        RefereeColors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    FilledButton(
+                      onPressed: _viewModel.loadRaces,
+                      child: const Text('Thử lại'),
+                    ),
+                  ],
+                ),
+              ),
             )
           : RefreshIndicator(
               color: RefereeColors.tertiary,
@@ -115,16 +139,15 @@ class _RefereeAssignedRacesScreenState extends State<RefereeAssignedRacesScreen>
                                   itemCount: _viewModel.filteredRaces.length,
                                   gridDelegate:
                                       const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 24,
-                                    mainAxisSpacing: 24,
-                                    childAspectRatio: 0.68,
-                                  ),
+                                        crossAxisCount: 3,
+                                        crossAxisSpacing: 24,
+                                        mainAxisSpacing: 24,
+                                        childAspectRatio: 0.68,
+                                      ),
                                   itemBuilder: (context, index) =>
                                       RefereeAssignedRaceCard(
-                                    race: _viewModel.filteredRaces[index],
-                                    onAction: () {},
-                                  ),
+                                        race: _viewModel.filteredRaces[index],
+                                      ),
                                 );
                               }
 
@@ -135,27 +158,27 @@ class _RefereeAssignedRacesScreenState extends State<RefereeAssignedRacesScreen>
                                   itemCount: _viewModel.filteredRaces.length,
                                   gridDelegate:
                                       const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 16,
-                                    mainAxisSpacing: 16,
-                                    childAspectRatio: 0.72,
-                                  ),
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 16,
+                                        mainAxisSpacing: 16,
+                                        childAspectRatio: 0.72,
+                                      ),
                                   itemBuilder: (context, index) =>
                                       RefereeAssignedRaceCard(
-                                    race: _viewModel.filteredRaces[index],
-                                    onAction: () {},
-                                  ),
+                                        race: _viewModel.filteredRaces[index],
+                                      ),
                                 );
                               }
 
                               return Column(
                                 children: [
-                                  for (var i = 0;
-                                      i < _viewModel.filteredRaces.length;
-                                      i++) ...[
+                                  for (
+                                    var i = 0;
+                                    i < _viewModel.filteredRaces.length;
+                                    i++
+                                  ) ...[
                                     RefereeAssignedRaceCard(
                                       race: _viewModel.filteredRaces[i],
-                                      onAction: () {},
                                     ),
                                     if (i < _viewModel.filteredRaces.length - 1)
                                       const SizedBox(height: 24),

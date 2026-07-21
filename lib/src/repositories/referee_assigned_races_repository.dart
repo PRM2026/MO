@@ -13,7 +13,7 @@ class RefereeAssignedRacesRepository {
   final AuthRepository _authRepository;
 
   Future<AssignedRacesData> fetchAssignedRaces() async {
-    final races = await _dashboardService.getAssignedRaces();
+    final races = await _dashboardService.getAssignedRacesWithParticipantCounts();
     final profileImageUrl = await _loadProfileImageUrl();
 
     return AssignedRacesData.fromApi(

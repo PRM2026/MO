@@ -6,8 +6,8 @@ class RefereeWalletRepository {
   RefereeWalletRepository({
     RefereeWalletService? walletService,
     AuthRepository? authRepository,
-  })  : _walletService = walletService ?? RefereeWalletService(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _walletService = walletService ?? RefereeWalletService(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final RefereeWalletService _walletService;
   final AuthRepository _authRepository;
@@ -15,11 +15,10 @@ class RefereeWalletRepository {
   Future<RefereeWalletData> fetchWallet() async {
     final profileImageUrl = await _loadProfileImageUrl();
     final wallet = await _walletService.getWallet();
-    final transactions = await _walletService.getTransactions();
 
     return RefereeWalletData.fromApi(
       wallet: wallet,
-      transactions: transactions,
+      transactions: const [],
       profileImageUrl: profileImageUrl,
     );
   }

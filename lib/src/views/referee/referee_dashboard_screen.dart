@@ -5,9 +5,7 @@ import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/referee_dashboard_data.dart';
 import '../../viewmodels/referee_dashboard_viewmodel.dart';
-import '../../widgets/referee/referee_alert_banner.dart';
 import '../../widgets/referee/referee_app_bar.dart';
-import '../../widgets/referee/referee_race_card.dart';
 import '../../widgets/referee/referee_stat_card.dart';
 
 class RefereeDashboardScreen extends StatefulWidget {
@@ -54,6 +52,12 @@ class _RefereeDashboardScreenState extends State<RefereeDashboardScreen> {
           ? const Center(
               child: CircularProgressIndicator(color: RefereeColors.tertiary),
             )
+          : data == null
+          ? _DashboardErrorState(
+              message:
+                  _viewModel.errorMessage ?? 'Không thể tải dữ liệu tổng quan.',
+              onRetry: _viewModel.loadDashboard,
+            )
           : RefreshIndicator(
               color: RefereeColors.tertiary,
               onRefresh: _viewModel.loadDashboard,
@@ -70,32 +74,11 @@ class _RefereeDashboardScreenState extends State<RefereeDashboardScreen> {
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
                         _WelcomeSection(
-                          name: data!.refereeName,
+                          name: data.refereeName,
                           message: data.welcomeMessage,
                         ),
                         const SizedBox(height: AppSpacing.section),
                         _StatsGrid(stats: data.stats),
-                        if (data.showAlert) ...[
-                          const SizedBox(height: AppSpacing.section),
-                          RefereeAlertBanner(
-                            title: data.alertTitle,
-                            message: data.alertMessage,
-                            onAction: () {},
-                          ),
-                        ],
-                        if (data.races.isNotEmpty) ...[
-                          const SizedBox(height: AppSpacing.section),
-                          _RecentRacesSection(races: data.races),
-                        ] else
-                          Padding(
-                            padding: const EdgeInsets.only(top: AppSpacing.section),
-                            child: Text(
-                              'Chưa có cuộc đua sắp tới được giao.',
-                              style: AppTypography.bodyMd(
-                                RefereeColors.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
                       ]),
                     ),
                   ),
@@ -139,8 +122,9 @@ class _WelcomeSection extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           message,
-          style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant)
-              .copyWith(fontSize: 18, height: 28 / 18),
+          style: AppTypography.bodyMd(
+            RefereeColors.onSurfaceVariant,
+          ).copyWith(fontSize: 18, height: 28 / 18),
         ),
       ],
     );
@@ -168,80 +152,53 @@ class _StatsGrid extends StatelessWidget {
             mainAxisSpacing: 16,
             childAspectRatio: crossAxisCount == 4 ? 1.35 : 0.92,
           ),
-          itemBuilder: (context, index) =>
-              RefereeStatCard(stat: stats[index]),
+          itemBuilder: (context, index) => RefereeStatCard(stat: stats[index]),
         );
       },
     );
   }
 }
 
-class _RecentRacesSection extends StatelessWidget {
-  const _RecentRacesSection({required this.races});
+class _DashboardErrorState extends StatelessWidget {
+  const _DashboardErrorState({required this.message, required this.onRetry});
 
-  final List<RefereeRaceItem> races;
+  final String message;
+  final Future<void> Function() onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.screenPadding),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Text(
-                'Các lượt đua gần đây',
-                style: AppTypography.headlineSm(RefereeColors.onSurface)
-                    .copyWith(fontSize: 24, height: 32 / 24),
-              ),
+            const Icon(
+              Icons.cloud_off_outlined,
+              size: 52,
+              color: RefereeColors.tertiary,
             ),
-            TextButton.icon(
-              onPressed: () {},
-              iconAlignment: IconAlignment.end,
-              icon: const Icon(
-                Icons.chevron_right,
-                size: 18,
-                color: RefereeColors.tertiary,
-              ),
-              label: Text(
-                'XEM TẤT CẢ',
-                style: AppTypography.labelCaps(RefereeColors.tertiary),
-              ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'Không tải được Tổng quan',
+              textAlign: TextAlign.center,
+              style: AppTypography.headlineSm(RefereeColors.onSurface),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Thử lại'),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.lg),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth >= 900) {
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: races.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 24,
-                  mainAxisSpacing: 24,
-                  childAspectRatio: 0.72,
-                ),
-                itemBuilder: (context, index) => RefereeRaceCard(
-                  race: races[index],
-                  onAction: () {},
-                ),
-              );
-            }
-
-            return Column(
-              children: [
-                for (var i = 0; i < races.length; i++) ...[
-                  RefereeRaceCard(race: races[i], onAction: () {}),
-                  if (i < races.length - 1) const SizedBox(height: 24),
-                ],
-              ],
-            );
-          },
-        ),
-      ],
+      ),
     );
   }
 }

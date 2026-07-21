@@ -5,25 +5,36 @@ import '../repositories/referee_repository.dart';
 
 class RefereeDashboardViewModel extends ChangeNotifier {
   RefereeDashboardViewModel({RefereeRepository? repository})
-      : _repository = repository ?? RefereeRepository();
+    : _repository = repository ?? RefereeRepository();
 
   final RefereeRepository _repository;
 
   bool isLoading = false;
   RefereeDashboardData? data;
+  String? errorMessage;
 
   Future<void> loadDashboard() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
       data = await _repository.fetchDashboard();
     } catch (error) {
       if (kDebugMode) debugPrint('RefereeDashboardViewModel: $error');
-      data = RefereeDashboardData.sample();
+      errorMessage = _readableError(error);
     } finally {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  String _readableError(Object error) {
+    final message = error.toString().replaceFirst(
+      RegExp(r'^.*Exception:\s*'),
+      '',
+    );
+    if (message.trim().isNotEmpty) return message.trim();
+    return 'Không thể tải dữ liệu tổng quan. Vui lòng thử lại.';
   }
 }

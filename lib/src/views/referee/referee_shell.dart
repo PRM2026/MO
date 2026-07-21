@@ -5,7 +5,6 @@ import '../../widgets/referee/referee_bottom_nav.dart';
 import 'referee_assigned_races_screen.dart';
 import 'referee_dashboard_screen.dart';
 import 'referee_history_screen.dart';
-import 'referee_violations_screen.dart';
 import 'referee_wallet_screen.dart';
 
 class RefereeShell extends StatefulWidget {
@@ -24,12 +23,11 @@ class _RefereeShellState extends State<RefereeShell> {
       backgroundColor: RefereeColors.background,
       body: IndexedStack(
         index: _currentTab.index,
-        children: const [
-          RefereeDashboardScreen(),
-          RefereeAssignedRacesScreen(),
-          RefereeViolationsScreen(),
-          RefereeHistoryScreen(),
-          RefereeWalletScreen(),
+        children: [
+          const RefereeDashboardScreen(),
+          const RefereeAssignedRacesScreen(),
+          const RefereeHistoryScreen(),
+          const RefereeWalletScreen(),
         ],
       ),
       bottomNavigationBar: RefereeBottomNav(

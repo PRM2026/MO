@@ -1,95 +1,117 @@
-enum ViolationReviewStatus { confirmed, pending }
+import '../utils/date_format.dart';
+import 'referee_violation_response.dart';
 
 class ViolationRecordItem {
   const ViolationRecordItem({
+    required this.id,
+    required this.raceLabel,
     required this.horseLabel,
     required this.violationType,
     required this.note,
     required this.timeLabel,
-    required this.status,
-    this.severityHigh = false,
+    required this.severity,
+    this.penaltyText,
+    this.evidenceUrl,
   });
 
+  final int id;
+  final String raceLabel;
   final String horseLabel;
   final String violationType;
   final String note;
   final String timeLabel;
-  final ViolationReviewStatus status;
-  final bool severityHigh;
+  final String severity;
+  final String? penaltyText;
+  final String? evidenceUrl;
 
-  String get statusLabel {
-    switch (status) {
-      case ViolationReviewStatus.confirmed:
-        return 'Đã xác nhận';
-      case ViolationReviewStatus.pending:
-        return 'Đang xem xét';
-    }
+  bool get severityHigh {
+    final value = severity.toUpperCase();
+    return value == 'MAJOR' || value == 'DISQUALIFICATION';
   }
-}
 
-class ViolationFormOptions {
-  const ViolationFormOptions({
-    required this.horses,
-    required this.violationTypes,
-  });
+  String get severityLabel => switch (severity.toUpperCase()) {
+    'WARNING' => 'Cảnh cáo',
+    'MINOR' => 'Phạt nhẹ',
+    'MAJOR' => 'Phạt nặng',
+    'DISQUALIFICATION' => 'Loại',
+    _ => severity.isEmpty ? 'Chưa xác định' : severity,
+  };
 
-  final List<String> horses;
-  final List<String> violationTypes;
+  factory ViolationRecordItem.fromApi(RefereeViolationResponse violation) {
+    final horseName = violation.horseName?.trim();
+    final horseId = violation.horseId;
+    final raceName = violation.raceName?.trim();
+    final raceId = violation.raceId;
 
-  static ViolationFormOptions sample() => const ViolationFormOptions(
-        horses: [
-          'H042 - Crimson Blaze',
-          'H089 - Silver Wind',
-          'H112 - Midnight Shadow',
-        ],
-        violationTypes: [
-          'Lấn làn (Track Interference)',
-          'Xuất phát sớm (False Start)',
-          'Sử dụng roi quá mức',
-          'Cản trở đối thủ trái phép',
-        ],
-      );
+    return ViolationRecordItem(
+      id: violation.id ?? 0,
+      raceLabel: raceName?.isNotEmpty == true
+          ? raceName!
+          : raceId == null
+          ? 'Cuộc đua'
+          : 'Cuộc đua #$raceId',
+      horseLabel: horseName?.isNotEmpty == true
+          ? horseId == null
+                ? horseName!
+                : 'H$horseId - $horseName'
+          : horseId == null
+          ? 'Không rõ ngựa'
+          : 'Ngựa #$horseId',
+      violationType: _firstNonEmpty([
+        violation.typeLabel,
+        violation.type,
+        'Vi phạm',
+      ]),
+      note: _firstNonEmpty([violation.description, 'Không có mô tả.']),
+      timeLabel: formatDisplayDateTime(
+        (violation.occurredAt ?? violation.createdAt)?.toIso8601String(),
+        fallback: '—',
+      ),
+      severity: violation.severity?.trim() ?? '',
+      penaltyText: _nullableText(violation.penaltyText),
+      evidenceUrl: _nullableText(violation.evidenceUrl),
+    );
+  }
 }
 
 class ViolationsPageData {
-  const ViolationsPageData({
-    required this.options,
-    required this.records,
-    required this.totalViolations,
-    required this.pendingCount,
-    this.profileImageUrl,
-  });
+  const ViolationsPageData({required this.records, this.profileImageUrl});
 
-  final ViolationFormOptions options;
   final List<ViolationRecordItem> records;
-  final int totalViolations;
-  final int pendingCount;
   final String? profileImageUrl;
 
-  static ViolationsPageData sample() {
+  int get totalViolations => records.length;
+
+  factory ViolationsPageData.fromApi({
+    required List<RefereeViolationResponse> violations,
+    String? profileImageUrl,
+  }) {
+    final sorted = [...violations]
+      ..sort((a, b) {
+        final aDate = a.occurredAt ?? a.createdAt;
+        final bDate = b.occurredAt ?? b.createdAt;
+        if (aDate == null && bDate == null) return 0;
+        if (aDate == null) return 1;
+        if (bDate == null) return -1;
+        return bDate.compareTo(aDate);
+      });
+
     return ViolationsPageData(
-      profileImageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBBx94VMpBIgDLPM0ihsFtUzIMVzqFWul2y8Z3P-UOcHZGJ4UH1jpyyW0m36cdhemVrvGvKaQ0TK7AmBn0bueNgyJ2YQyXkSSLG7zhIG0ng1CoPnAg6j7gqYZqG2MC9PHZ0e4s4VafhUgpYqEc8kaIOnL1JAFw5R36o9K0JUKkQ7-REpqYjDXzN93moOEelYoFfhjtyjrcMRWhUjF_81-F-FQ6J05gmFD-9RB4B0GK7UuBZj5zAoW-Ro97HjnQ9F1LY0H_X70gz3DM',
-      options: ViolationFormOptions.sample(),
-      totalViolations: 3,
-      pendingCount: 1,
-      records: const [
-        ViolationRecordItem(
-          horseLabel: 'H112 - Midnight Shadow',
-          violationType: 'Lấn làn nghiêm trọng',
-          note: 'Cố tình ép làn 02 tại khúc cua thứ 3, gây nguy hiểm...',
-          timeLabel: '14:25:02',
-          status: ViolationReviewStatus.confirmed,
-          severityHigh: true,
-        ),
-        ViolationRecordItem(
-          horseLabel: 'H042 - Crimson Blaze',
-          violationType: 'Xuất phát sớm',
-          note: 'Rời lồng trước hiệu lệnh 0.15s.',
-          timeLabel: '14:10:15',
-          status: ViolationReviewStatus.pending,
-        ),
-      ],
+      records: sorted.map(ViolationRecordItem.fromApi).toList(growable: false),
+      profileImageUrl: profileImageUrl,
     );
   }
+}
+
+String _firstNonEmpty(List<String?> values) {
+  for (final value in values) {
+    final trimmed = value?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+  }
+  return '—';
+}
+
+String? _nullableText(String? value) {
+  final trimmed = value?.trim();
+  return trimmed == null || trimmed.isEmpty ? null : trimmed;
 }

@@ -6,14 +6,9 @@ import '../../models/violation_record.dart';
 import 'referee_glass_card.dart';
 
 class RefereeViolationSummaryCard extends StatelessWidget {
-  const RefereeViolationSummaryCard({
-    super.key,
-    required this.totalViolations,
-    required this.pendingCount,
-  });
+  const RefereeViolationSummaryCard({super.key, required this.totalViolations});
 
   final int totalViolations;
-  final int pendingCount;
 
   @override
   Widget build(BuildContext context) {
@@ -35,28 +30,15 @@ class RefereeViolationSummaryCard extends StatelessWidget {
           children: [
             Text(
               'TÓM TẮT CHẶNG ĐUA',
-              style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-                  .copyWith(letterSpacing: 1.2),
+              style: AppTypography.labelCaps(
+                RefereeColors.onSurfaceVariant,
+              ).copyWith(letterSpacing: 1.2),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _StatBox(
-                    label: 'Tổng vi phạm',
-                    value: '$totalViolations',
-                    valueColor: RefereeColors.statusRed,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _StatBox(
-                    label: 'Đang chờ xử lý',
-                    value: '$pendingCount',
-                    valueColor: RefereeColors.tertiary,
-                  ),
-                ),
-              ],
+            _StatBox(
+              label: 'Tổng vi phạm đã ghi',
+              value: '$totalViolations',
+              valueColor: RefereeColors.statusRed,
             ),
           ],
         ),
@@ -89,14 +71,16 @@ class _StatBox extends StatelessWidget {
         children: [
           Text(
             label,
-            style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-                .copyWith(fontWeight: FontWeight.w500),
+            style: AppTypography.labelCaps(
+              RefereeColors.onSurfaceVariant,
+            ).copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: AppTypography.displayMd(valueColor)
-                .copyWith(fontSize: 28, height: 1.1),
+            style: AppTypography.displayMd(
+              valueColor,
+            ).copyWith(fontSize: 28, height: 1.1),
           ),
         ],
       ),
@@ -105,14 +89,9 @@ class _StatBox extends StatelessWidget {
 }
 
 class RefereeViolationListPanel extends StatelessWidget {
-  const RefereeViolationListPanel({
-    super.key,
-    required this.records,
-    this.onViewAll,
-  });
+  const RefereeViolationListPanel({super.key, required this.records});
 
   final List<ViolationRecordItem> records;
-  final VoidCallback? onViewAll;
 
   @override
   Widget build(BuildContext context) {
@@ -127,23 +106,15 @@ class RefereeViolationListPanel extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Danh sách đã ghi nhận',
-                    style: AppTypography.bodyMd(RefereeColors.onSurface)
-                        .copyWith(fontWeight: FontWeight.w700, fontSize: 18),
+                    'Danh sách vi phạm',
+                    style: AppTypography.bodyMd(
+                      RefereeColors.onSurface,
+                    ).copyWith(fontWeight: FontWeight.w700, fontSize: 18),
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: RefereeColors.statusRed.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'THỬ NGHIỆM',
-                    style: AppTypography.labelCaps(RefereeColors.statusRed)
-                        .copyWith(fontSize: 10),
-                  ),
+                Text(
+                  '${records.length}',
+                  style: AppTypography.labelCaps(RefereeColors.tertiary),
                 ),
               ],
             ),
@@ -166,25 +137,8 @@ class RefereeViolationListPanel extends StatelessWidget {
             for (var i = 0; i < records.length; i++) ...[
               RefereeViolationListTile(record: records[i]),
               if (i < records.length - 1)
-                Divider(
-                  height: 1,
-                  color: Colors.white.withValues(alpha: 0.05),
-                ),
+                Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
             ],
-          Container(
-            color: Colors.white.withValues(alpha: 0.05),
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: TextButton(
-                onPressed: onViewAll,
-                child: Text(
-                  'XEM TẤT CẢ LỊCH SỬ',
-                  style: AppTypography.labelCaps(RefereeColors.tertiary)
-                      .copyWith(fontSize: 12),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -198,128 +152,131 @@ class RefereeViolationListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final typeColor =
-        record.severityHigh ? RefereeColors.statusRed : RefereeColors.tertiary;
-    final statusBg = record.status == ViolationReviewStatus.confirmed
-        ? Colors.white.withValues(alpha: 0.1)
-        : RefereeColors.tertiary.withValues(alpha: 0.2);
-    final statusFg = record.status == ViolationReviewStatus.confirmed
-        ? RefereeColors.onSurfaceVariant
+    final typeColor = record.severityHigh
+        ? RefereeColors.statusRed
         : RefereeColors.tertiary;
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: typeColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      record.severityHigh
-                          ? Icons.warning_rounded
-                          : Icons.report_outlined,
-                      color: typeColor,
-                      size: 22,
-                    ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: typeColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          record.horseLabel,
-                          style: AppTypography.labelCaps(
-                            RefereeColors.onSurface,
-                          ).copyWith(fontSize: 14, letterSpacing: 0.2),
-                        ),
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: BoxDecoration(
-                                color: typeColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                record.violationType,
-                                style: AppTypography.bodyMd(typeColor).copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  child: Icon(
+                    record.severityHigh
+                        ? Icons.warning_rounded
+                        : Icons.report_outlined,
+                    color: typeColor,
+                    size: 22,
                   ),
-                  Icon(
-                    Icons.visibility_outlined,
-                    color: RefereeColors.onSurfaceVariant,
-                    size: 20,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '"${record.note}"',
-                style: AppTypography.labelCaps(
-                  RefereeColors.onSurfaceVariant,
-                ).copyWith(
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w400,
-                  height: 1.4,
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    record.timeLabel,
-                    style: AppTypography.labelCaps(
-                      Colors.white.withValues(alpha: 0.4),
-                    ).copyWith(fontFeatures: const []),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        record.horseLabel,
+                        style: AppTypography.labelCaps(
+                          RefereeColors.onSurface,
+                        ).copyWith(fontSize: 14, letterSpacing: 0.2),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        record.raceLabel,
+                        style: AppTypography.bodyMd(
+                          RefereeColors.onSurfaceVariant,
+                        ).copyWith(fontSize: 11),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: typeColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              record.violationType,
+                              style: AppTypography.bodyMd(typeColor).copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusBg,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      record.statusLabel.toUpperCase(),
-                      style: AppTypography.labelCaps(statusFg)
-                          .copyWith(fontSize: 10),
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              record.note,
+              style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
+                  .copyWith(
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w400,
+                    height: 1.4,
                   ),
-                ],
+            ),
+            if (record.penaltyText != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Xử phạt: ${record.penaltyText}',
+                style: AppTypography.bodyMd(
+                  RefereeColors.tertiary,
+                ).copyWith(fontSize: 12),
               ),
             ],
-          ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  record.timeLabel,
+                  style: AppTypography.labelCaps(
+                    Colors.white.withValues(alpha: 0.4),
+                  ).copyWith(fontFeatures: const []),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: typeColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    record.severityLabel.toUpperCase(),
+                    style: AppTypography.labelCaps(
+                      typeColor,
+                    ).copyWith(fontSize: 10),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
