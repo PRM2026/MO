@@ -8,9 +8,10 @@ import '../models/auth_session.dart';
 import '../models/user_profile.dart';
 
 class AuthApiException implements Exception {
-  AuthApiException(this.message);
+  AuthApiException(this.message, {this.statusCode});
 
   final String message;
+  final int? statusCode;
 
   @override
   String toString() => message;
@@ -94,7 +95,10 @@ class AuthApiService {
       return UserProfile.fromJson(apiResponse.data!);
     }
 
-    throw AuthApiException(_resolveErrorMessage(apiResponse, decoded));
+    throw AuthApiException(
+      _resolveErrorMessage(apiResponse, decoded),
+      statusCode: response.statusCode,
+    );
   }
 
   Future<void> changePassword({

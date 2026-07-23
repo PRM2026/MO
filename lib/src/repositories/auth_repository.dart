@@ -127,6 +127,12 @@ class AuthRepository {
     try {
       final user = await refreshCurrentUser();
       return user.effectiveAppRole;
+    } on AuthApiException catch (error) {
+      if (error.statusCode == 401) {
+        await logout();
+        return 'USER';
+      }
+      return (await loadProfile()).effectiveAppRole;
     } catch (_) {
       return (await loadProfile()).effectiveAppRole;
     }

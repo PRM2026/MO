@@ -55,12 +55,13 @@ class MainShellState extends State<MainShell> {
   }
 
   Future<void> _refreshAuthState() async {
-    final loggedIn = await _authRepository.isLoggedIn();
+    var loggedIn = await _authRepository.isLoggedIn();
     if (!mounted) return;
 
     String? portalRole;
     if (loggedIn) {
       final role = await _authRepository.resolveNavigationRole();
+      loggedIn = await _authRepository.isLoggedIn();
       if (hasDedicatedPortal(role)) {
         portalRole = normalizePortalRole(role);
       }
