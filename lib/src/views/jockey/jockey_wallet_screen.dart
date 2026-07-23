@@ -20,11 +20,15 @@ class JockeyWalletScreen extends StatefulWidget {
     this.viewModel,
     this.onOpenDeposit,
     this.onOpenWithdrawal,
+    this.title = 'Ví jockey',
+    this.sectionTitle = 'Ví của tôi',
   });
 
   final JockeyWalletViewModel? viewModel;
   final Future<bool?> Function(BuildContext context)? onOpenDeposit;
   final Future<bool?> Function(BuildContext context)? onOpenWithdrawal;
+  final String title;
+  final String sectionTitle;
 
   @override
   State<JockeyWalletScreen> createState() => _JockeyWalletScreenState();
@@ -139,9 +143,9 @@ class _JockeyWalletScreenState extends State<JockeyWalletScreen> {
     final data = _viewModel.data;
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: const JockeyAppBar(
+      appBar: JockeyAppBar(
         showBack: true,
-        titleOverride: 'Ví jockey',
+        titleOverride: widget.title,
         showBrandTitle: false,
       ),
       body: JockeySpeedlineBackground(
@@ -187,7 +191,7 @@ class _JockeyWalletScreenState extends State<JockeyWalletScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Ví của tôi',
+                                        widget.sectionTitle,
                                         style: AppTypography.displayLg(
                                           RefereeColors.onSurface,
                                         ).copyWith(fontSize: 28),

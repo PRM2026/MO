@@ -62,6 +62,11 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
       return;
     }
 
+    if (title == 'Ví & thanh toán') {
+      AppRoutes.openOwnerWallet(context);
+      return;
+    }
+
     AppToast.showSuccess(context, 'Đang mở $title');
   }
 

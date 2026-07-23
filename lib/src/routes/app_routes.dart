@@ -81,6 +81,32 @@ abstract final class AppRoutes {
     return MaterialPageRoute<void>(builder: (_) => const JockeyWalletScreen());
   }
 
+  static Route<void> ownerWallet() {
+    return MaterialPageRoute<void>(
+      builder: (_) => JockeyWalletScreen(
+        title: 'Ví chủ ngựa',
+        sectionTitle: 'Tài chính chủ ngựa',
+        onOpenDeposit: (context) =>
+            Navigator.of(context).push<bool>(jockeyDeposit()),
+        onOpenWithdrawal: (context) =>
+            Navigator.of(context).push<bool>(jockeyWithdrawal()),
+      ),
+    );
+  }
+
+  static Route<void> spectatorWallet() {
+    return MaterialPageRoute<void>(
+      builder: (_) => JockeyWalletScreen(
+        title: 'Ví khán giả',
+        sectionTitle: 'Ví cược & thanh toán',
+        onOpenDeposit: (context) =>
+            Navigator.of(context).push<bool>(jockeyDeposit()),
+        onOpenWithdrawal: (context) =>
+            Navigator.of(context).push<bool>(jockeyWithdrawal()),
+      ),
+    );
+  }
+
   static Route<void> jockeyNotifications() {
     return MaterialPageRoute<void>(
       builder: (_) => const JockeyNotificationsScreen(),
@@ -384,6 +410,10 @@ abstract final class AppRoutes {
     ).push(ownerChangePassword(profileImageUrl: profileImageUrl));
   }
 
+  static Future<void> openOwnerWallet(BuildContext context) {
+    return Navigator.of(context).push(ownerWallet());
+  }
+
   static Future<bool?> openOwnerJockeyInvitations(BuildContext context) {
     return Navigator.of(context).push<bool>(ownerJockeyInvitations());
   }
@@ -434,6 +464,10 @@ abstract final class AppRoutes {
     Navigator.of(
       context,
     ).push(spectatorRaceDetail(raceId: raceId, tournamentId: tournamentId));
+  }
+
+  static Future<void> openSpectatorWallet(BuildContext context) {
+    return Navigator.of(context).push(spectatorWallet());
   }
 
   static void openSpectatorRaceResults(

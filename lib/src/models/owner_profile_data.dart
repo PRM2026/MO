@@ -65,6 +65,11 @@ class OwnerProfileData {
           iconColor: RefereeColors.successEmerald,
         ),
         OwnerProfileSettingItem(
+          title: 'Ví & thanh toán',
+          icon: Icons.account_balance_wallet_outlined,
+          iconColor: RefereeColors.championshipGold,
+        ),
+        OwnerProfileSettingItem(
           title: 'Bảo mật & Mật khẩu',
           icon: Icons.security_outlined,
           iconColor: RefereeColors.secondary,
