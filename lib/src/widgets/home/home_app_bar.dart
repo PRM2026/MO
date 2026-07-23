@@ -34,12 +34,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  title ?? AppConstants.appName.replaceFirst(' ', '\n'),
-                  maxLines: title == null ? 2 : 1,
+                  title ?? AppConstants.appName,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.headlineSm(AppColors.onSurface).copyWith(
-                    fontSize: title == null ? 16 : 18,
-                    height: title == null ? 1.05 : 1.2,
+                    fontSize: title == null ? 15 : 18,
+                    height: 1.2,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

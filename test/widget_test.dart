@@ -47,4 +47,26 @@ void main() {
 
     expect(loginTapped, isTrue);
   });
+
+  testWidgets('home wordmark stays fully inside the app bar on iPhone width', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1170, 2532);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      const MaterialApp(home: Scaffold(appBar: HomeAppBar())),
+    );
+
+    final wordmark = find.text('Grand Championship');
+    expect(wordmark, findsOneWidget);
+
+    final wordmarkRect = tester.getRect(wordmark);
+    final appBarRect = tester.getRect(find.byType(AppBar));
+
+    expect(wordmarkRect.top, greaterThanOrEqualTo(appBarRect.top));
+    expect(wordmarkRect.bottom, lessThanOrEqualTo(appBarRect.bottom - 8));
+  });
 }
