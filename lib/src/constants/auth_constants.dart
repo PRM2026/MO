@@ -1,9 +1,6 @@
 class AuthConstants {
   AuthConstants._();
 
-  static const String googleLogoUrl =
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBD9YCcG_VVo3ptglKl7H4ngoVvTkjqO9NjVJiMMMwI4aD7iojbQYb5KEL-Jg-DITatKcHN2gDvBUZIVZZwEocIDseP-D5kwpGxBTifCGp-Epkg0mFA6DJ_2V9OEtbPan8JR5nQrCh_BMZknOmKJJ8QbLxj2EhLRo9CIKfR6_7Yx6h0QnbQTHTnLJOAOvGyL78XgyTElWXqYx1PQdY3kdwaDDFB95XeTnpFR8XtpIvwAH0Jy3pS0c5YA6at1vHCB0G5iImGhIpcAj8';
-
   static const String decorationImageUrl =
       'https://lh3.googleusercontent.com/aida-public/AB6AXuCRmBGBMPRQqCcLchicIpQKksQecTenHGjyO0SIPSs1ZRf92BFkw9vka_PbtiEcxmzpTnDzN6y_LPXqHQJyX_Dy26TESRWxDuuaJYvOTVujs3o_H3UlEUTTr1p7xy2MDa6n4qmR3ogDLMA4AO32DqOMSKsfg6pskF6gAciHgG-VvNe2nxMe0aX7WZPAwQyJ6pjZo1PaYDmuWAbD8oD-0sCnp0cOGK-GTa6uA2-UwR7YzjoP2ti25-YhY5ti93NOS4Pu67Rxxm7J03c';
 }
