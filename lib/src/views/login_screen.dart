@@ -7,6 +7,7 @@ import '../constants/auth_colors.dart';
 import '../routes/app_routes.dart';
 import '../utils/app_toast.dart';
 import '../viewmodels/login_viewmodel.dart';
+import '../widgets/auth/auth_back_button.dart';
 import '../widgets/auth/auth_background.dart';
 import '../widgets/auth/auth_section_divider.dart';
 import '../widgets/auth/auth_text_field.dart';
@@ -94,6 +95,15 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       AppToast.showError(context, _viewModel.errorMessage!);
     }
+  }
+
+  void _handleBack() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    AppRoutes.openAfterLogout(context);
   }
 
   @override
@@ -247,6 +257,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       AppRoutes.openRegister(context, replace: true),
                 ),
               ],
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.screenPadding),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: AuthBackButton(onPressed: _handleBack),
+              ),
             ),
           ),
         ],

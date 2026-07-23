@@ -9,6 +9,7 @@ import '../constants/auth_colors.dart';
 import '../routes/app_routes.dart';
 import '../utils/app_toast.dart';
 import '../viewmodels/forgot_password_viewmodel.dart';
+import '../widgets/auth/auth_back_button.dart';
 import '../widgets/auth/auth_background.dart';
 import '../widgets/auth/auth_text_field.dart';
 import '../widgets/auth/gold_cta_button.dart';
@@ -100,6 +101,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     AppRoutes.openLogin(context, replace: true);
   }
 
+  void _handleBack() {
+    if (_step == _ResetStep.password) {
+      setState(() => _step = _ResetStep.otp);
+      return;
+    }
+    if (_step == _ResetStep.otp) {
+      setState(() => _step = _ResetStep.email);
+      return;
+    }
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    AppRoutes.openAfterLogout(context);
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -156,6 +175,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                 ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.screenPadding),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: AuthBackButton(onPressed: _handleBack),
               ),
             ),
           ),

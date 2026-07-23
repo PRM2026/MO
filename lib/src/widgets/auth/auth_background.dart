@@ -30,6 +30,7 @@ class AuthBackground extends StatelessWidget {
                 width: 600,
                 height: 600,
                 fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
           ),
