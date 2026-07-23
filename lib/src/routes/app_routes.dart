@@ -23,6 +23,7 @@ import '../views/jockey/jockey_withdrawal_screen.dart';
 import '../views/owner/owner_change_password_screen.dart';
 import '../views/owner/owner_create_jockey_invitation_screen.dart';
 import '../views/owner/owner_jockey_invitations_screen.dart';
+import '../views/owner/owner_race_registrations_screen.dart';
 import '../views/owner/owner_shell.dart';
 import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
@@ -92,6 +93,12 @@ abstract final class AppRoutes {
         onOpenWithdrawal: (context) =>
             Navigator.of(context).push<bool>(jockeyWithdrawal()),
       ),
+    );
+  }
+
+  static Route<void> ownerRaceRegistrations() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const OwnerRaceRegistrationsScreen(),
     );
   }
 
@@ -440,6 +447,10 @@ abstract final class AppRoutes {
 
   static Future<void> openOwnerWallet(BuildContext context) {
     return Navigator.of(context).push(ownerWallet());
+  }
+
+  static Future<void> openOwnerRaceRegistrations(BuildContext context) {
+    return Navigator.of(context).push(ownerRaceRegistrations());
   }
 
   static Future<void> openOwnerNotifications(BuildContext context) {

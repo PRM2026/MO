@@ -54,6 +54,11 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
       return;
     }
 
+    if (title == 'Đăng ký cuộc đua') {
+      AppRoutes.openOwnerRaceRegistrations(context);
+      return;
+    }
+
     if (title == 'Bảo mật & Mật khẩu') {
       AppRoutes.openOwnerChangePassword(
         context,

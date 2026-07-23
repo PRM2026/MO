@@ -4,6 +4,8 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../models/owner_tournament_detail.dart';
+import '../../models/owner_race_registration.dart';
+import '../../repositories/owner_race_registration_repository.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/app_toast.dart';
 import '../../viewmodels/owner_tournament_detail_viewmodel.dart';
@@ -59,6 +61,15 @@ class _OwnerTournamentDetailScreenState
     );
     if (!mounted || changed != true) return;
     AppToast.showSuccess(context, 'Đã tạo lời mời jockey.');
+  }
+
+  Future<void> _openRegisterRace(OwnerTournamentRace race) async {
+    final registered = await showDialog<bool>(
+      context: context,
+      builder: (_) => _RaceRegistrationDialog(race: race),
+    );
+    if (!mounted || registered != true) return;
+    AppToast.showSuccess(context, 'Đã gửi đăng ký cuộc đua.');
   }
 
   @override
@@ -142,6 +153,7 @@ class _OwnerTournamentDetailScreenState
                         onRefresh: _viewModel.refresh,
                         onInviteJockey: (race) =>
                             _openInviteJockey(detail, race),
+                        onRegisterRace: _openRegisterRace,
                       ),
                     ],
                   ),
@@ -204,11 +216,13 @@ class _RacesTab extends StatelessWidget {
     required this.detail,
     required this.onRefresh,
     required this.onInviteJockey,
+    required this.onRegisterRace,
   });
 
   final OwnerTournamentDetail detail;
   final Future<void> Function() onRefresh;
   final ValueChanged<OwnerTournamentRace> onInviteJockey;
+  final ValueChanged<OwnerTournamentRace> onRegisterRace;
 
   @override
   Widget build(BuildContext context) {
@@ -231,6 +245,7 @@ class _RacesTab extends StatelessWidget {
                 races: detail.races,
                 tournamentStatus: detail.status,
                 onInviteJockey: onInviteJockey,
+                onRegisterRace: onRegisterRace,
               ),
             ),
           ),
@@ -313,6 +328,156 @@ class _DetailError extends StatelessWidget {
           OutlinedButton(onPressed: onRetry, child: const Text('Thử lại')),
         ],
       ),
+    );
+  }
+}
+
+class _RaceRegistrationDialog extends StatefulWidget {
+  const _RaceRegistrationDialog({required this.race});
+
+  final OwnerTournamentRace race;
+
+  @override
+  State<_RaceRegistrationDialog> createState() =>
+      _RaceRegistrationDialogState();
+}
+
+class _RaceRegistrationDialogState extends State<_RaceRegistrationDialog> {
+  final _repository = OwnerRaceRegistrationRepository();
+  final _note = TextEditingController();
+  List<OwnerEligibleHorseTeam> _teams = const [];
+  int? _invitationId;
+  bool _loading = true;
+  bool _submitting = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTeams();
+  }
+
+  Future<void> _loadTeams() async {
+    try {
+      final teams = await _repository.fetchEligibleTeams();
+      if (!mounted) return;
+      setState(() {
+        _teams = teams;
+        _invitationId = teams.isEmpty ? null : teams.first.invitationId;
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = error.toString();
+      });
+    }
+  }
+
+  Future<void> _submit() async {
+    OwnerEligibleHorseTeam? selected;
+    for (final team in _teams) {
+      if (team.invitationId == _invitationId) selected = team;
+    }
+    if (selected?.horseId == null) {
+      setState(() => _error = 'Vui lòng chọn đội ngựa và jockey hợp lệ.');
+      return;
+    }
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      await _repository.registerRace(
+        widget.race.id,
+        OwnerRaceRegistrationFormData(
+          horseId: selected!.horseId,
+          jockeyInvitationId: selected.invitationId,
+          note: _note.text,
+        ),
+      );
+      if (mounted) Navigator.of(context).pop(true);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _submitting = false;
+        _error = error.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _note.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Đăng ký ${widget.race.name}'),
+      content: SizedBox(
+        width: 480,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_teams.isEmpty)
+                    const Text(
+                      'Chưa có đội hợp lệ. Hãy mời jockey và chờ họ chấp nhận.',
+                    )
+                  else
+                    DropdownButtonFormField<int>(
+                      initialValue: _invitationId,
+                      decoration: const InputDecoration(
+                        labelText: 'Đội ngựa – jockey',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        for (final team in _teams)
+                          DropdownMenuItem(
+                            value: team.invitationId,
+                            child: Text(
+                              '${team.horseName ?? 'Ngựa #${team.horseId}'} • '
+                              '${team.jockeyFullName ?? team.jockeyUsername ?? 'Jockey'}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                      onChanged: (value) =>
+                          setState(() => _invitationId = value),
+                    ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: _note,
+                    maxLength: 1000,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      labelText: 'Ghi chú (không bắt buộc)',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  if (_error != null)
+                    Text(
+                      _error!,
+                      style: const TextStyle(color: RefereeColors.statusRed),
+                    ),
+                ],
+              ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _submitting ? null : () => Navigator.of(context).pop(),
+          child: const Text('Hủy'),
+        ),
+        FilledButton(
+          onPressed: _submitting || _loading || _teams.isEmpty ? null : _submit,
+          child: Text(_submitting ? 'Đang gửi...' : 'Gửi đăng ký'),
+        ),
+      ],
     );
   }
 }

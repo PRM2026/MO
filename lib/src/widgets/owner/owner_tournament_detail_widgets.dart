@@ -161,11 +161,13 @@ class OwnerTournamentRacesSection extends StatelessWidget {
     required this.races,
     required this.tournamentStatus,
     this.onInviteJockey,
+    this.onRegisterRace,
   });
 
   final List<OwnerTournamentRace> races;
   final String tournamentStatus;
   final ValueChanged<OwnerTournamentRace>? onInviteJockey;
+  final ValueChanged<OwnerTournamentRace>? onRegisterRace;
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +200,9 @@ class OwnerTournamentRacesSection extends StatelessWidget {
                 onInviteJockey: onInviteJockey == null
                     ? null
                     : () => onInviteJockey!(race),
+                onRegisterRace: onRegisterRace == null
+                    ? null
+                    : () => onRegisterRace!(race),
               ),
             ),
           ),
@@ -211,11 +216,13 @@ class _RaceCard extends StatelessWidget {
     required this.race,
     required this.canInviteJockey,
     this.onInviteJockey,
+    this.onRegisterRace,
   });
 
   final OwnerTournamentRace race;
   final bool canInviteJockey;
   final VoidCallback? onInviteJockey;
+  final VoidCallback? onRegisterRace;
 
   @override
   Widget build(BuildContext context) {
@@ -284,11 +291,20 @@ class _RaceCard extends StatelessWidget {
                 label: const Text('Mời jockey'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: RefereeColors.championshipGold,
-                  side: const BorderSide(
-                    color: RefereeColors.championshipGold,
-                  ),
+                  side: const BorderSide(color: RefereeColors.championshipGold),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
+              ),
+            ),
+          ],
+          if (canInviteJockey && onRegisterRace != null) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onRegisterRace,
+                icon: const Icon(Icons.how_to_reg_outlined),
+                label: const Text('Đăng ký tham gia'),
               ),
             ),
           ],
