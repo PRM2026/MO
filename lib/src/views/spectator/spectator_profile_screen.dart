@@ -105,6 +105,8 @@ class _SpectatorProfileScreenState extends State<SpectatorProfileScreen> {
                   isLoggingOut: _isLoggingOut,
                   onLogout: _logout,
                   onWallet: () => AppRoutes.openSpectatorWallet(context),
+                  onNotifications: () =>
+                      AppRoutes.openSpectatorNotifications(context),
                 ),
             ],
           ),
@@ -120,12 +122,14 @@ class _ProfileContent extends StatelessWidget {
     required this.isLoggingOut,
     required this.onLogout,
     required this.onWallet,
+    required this.onNotifications,
   });
 
   final SpectatorProfileData? profile;
   final bool isLoggingOut;
   final VoidCallback onLogout;
   final VoidCallback onWallet;
+  final VoidCallback onNotifications;
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +199,12 @@ class _ProfileContent extends StatelessWidget {
                 icon: Icons.account_balance_wallet_outlined,
                 label: 'Ví & thanh toán',
                 onTap: onWallet,
+              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
+              _ProfileActionTile(
+                icon: Icons.notifications_outlined,
+                label: 'Thông báo',
+                onTap: onNotifications,
               ),
               Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
               _ProfileActionTile(

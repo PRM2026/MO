@@ -51,6 +51,10 @@ class _RefereeProfileScreenState extends State<RefereeProfileScreen> {
       );
       return;
     }
+    if (title == 'Thông báo') {
+      AppRoutes.openRefereeNotifications(context);
+      return;
+    }
     AppToast.showSuccess(context, 'Đang mở $title');
   }
 

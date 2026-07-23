@@ -113,6 +113,27 @@ abstract final class AppRoutes {
     );
   }
 
+  static Route<void> ownerNotifications() {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          const JockeyNotificationsScreen(title: 'Thông báo chủ ngựa'),
+    );
+  }
+
+  static Route<void> spectatorNotifications() {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          const JockeyNotificationsScreen(title: 'Thông báo khán giả'),
+    );
+  }
+
+  static Route<void> refereeNotifications() {
+    return MaterialPageRoute<void>(
+      builder: (_) =>
+          const JockeyNotificationsScreen(title: 'Thông báo trọng tài'),
+    );
+  }
+
   static Route<bool> jockeyDeposit() {
     return MaterialPageRoute<bool>(builder: (_) => const JockeyDepositScreen());
   }
@@ -414,6 +435,10 @@ abstract final class AppRoutes {
     return Navigator.of(context).push(ownerWallet());
   }
 
+  static Future<void> openOwnerNotifications(BuildContext context) {
+    return Navigator.of(context).push(ownerNotifications());
+  }
+
   static Future<bool?> openOwnerJockeyInvitations(BuildContext context) {
     return Navigator.of(context).push<bool>(ownerJockeyInvitations());
   }
@@ -456,6 +481,10 @@ abstract final class AppRoutes {
     ).push(refereeChangePassword(profileImageUrl: profileImageUrl));
   }
 
+  static Future<void> openRefereeNotifications(BuildContext context) {
+    return Navigator.of(context).push(refereeNotifications());
+  }
+
   static void openSpectatorRaceDetail(
     BuildContext context, {
     required String raceId,
@@ -468,6 +497,10 @@ abstract final class AppRoutes {
 
   static Future<void> openSpectatorWallet(BuildContext context) {
     return Navigator.of(context).push(spectatorWallet());
+  }
+
+  static Future<void> openSpectatorNotifications(BuildContext context) {
+    return Navigator.of(context).push(spectatorNotifications());
   }
 
   static void openSpectatorRaceResults(

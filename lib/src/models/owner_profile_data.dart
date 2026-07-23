@@ -70,6 +70,11 @@ class OwnerProfileData {
           iconColor: RefereeColors.championshipGold,
         ),
         OwnerProfileSettingItem(
+          title: 'Thông báo',
+          icon: Icons.notifications_outlined,
+          iconColor: RefereeColors.secondary,
+        ),
+        OwnerProfileSettingItem(
           title: 'Bảo mật & Mật khẩu',
           icon: Icons.security_outlined,
           iconColor: RefereeColors.secondary,

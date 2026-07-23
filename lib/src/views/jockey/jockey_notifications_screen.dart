@@ -10,9 +10,14 @@ import '../../widgets/jockey/jockey_notification_widgets.dart';
 import '../../widgets/jockey/jockey_state_widgets.dart';
 
 class JockeyNotificationsScreen extends StatefulWidget {
-  const JockeyNotificationsScreen({super.key, this.viewModel});
+  const JockeyNotificationsScreen({
+    super.key,
+    this.viewModel,
+    this.title = 'Thông báo',
+  });
 
   final JockeyNotificationsViewModel? viewModel;
+  final String title;
 
   @override
   State<JockeyNotificationsScreen> createState() =>
@@ -53,10 +58,10 @@ class _JockeyNotificationsScreenState extends State<JockeyNotificationsScreen> {
         _viewModel.isInitialLoading && _viewModel.notifications.isEmpty;
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: const JockeyAppBar(
+      appBar: JockeyAppBar(
         showBack: true,
         showBrandTitle: false,
-        titleOverride: 'Thông báo',
+        titleOverride: widget.title,
         showNotificationAction: false,
       ),
       body: JockeySpeedlineBackground(

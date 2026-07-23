@@ -67,6 +67,11 @@ class _OwnerProfileScreenState extends State<OwnerProfileScreen> {
       return;
     }
 
+    if (title == 'Thông báo') {
+      AppRoutes.openOwnerNotifications(context);
+      return;
+    }
+
     AppToast.showSuccess(context, 'Đang mở $title');
   }
 

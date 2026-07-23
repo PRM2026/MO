@@ -63,7 +63,8 @@ class RefereeProfileData {
       fullName: fullName,
       refereeId: 'REF-2024-001',
       rankLabel: 'Trọng tài cấp cao',
-      avatarUrl: avatarUrl ??
+      avatarUrl:
+          avatarUrl ??
           'https://lh3.googleusercontent.com/aida-public/AB6AXuCNNgHkDpyLfu9TuLH0RmMsfTtEWzP3IJHBdZUl3kkfBZj-x5l4ocUCUhsewyvk01nHsG3-df3viqyWb03eKJpR5DtOznmPgVGGcGr5jc-nqg3bdQnJfbtz-8xS7iJHgx6xxvFhav_LRMu9BAhJfmZuVoloGWyxu1KVoX0vWaQHjzymRwjavBjIoyTTBRL8j1rMXcHorJIXo0ojc2TA2GGm2g6axn15-oBVqjb4uF2dACGs06Z8J7CJPT0qjbTiu3045SvtPv5mhG4m',
       stats: const [
         RefereeProfileStat(
@@ -84,6 +85,11 @@ class RefereeProfileData {
         ),
       ],
       settings: const [
+        RefereeProfileSettingItem(
+          title: 'Thông báo',
+          icon: Icons.notifications_outlined,
+          iconColor: RefereeColors.tertiary,
+        ),
         RefereeProfileSettingItem(
           title: 'Bảo mật & Mật khẩu',
           icon: Icons.security_outlined,
