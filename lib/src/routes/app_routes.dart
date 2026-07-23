@@ -63,6 +63,15 @@ abstract final class AppRoutes {
     );
   }
 
+  static Route<void> spectatorChangePassword({String? profileImageUrl}) {
+    return MaterialPageRoute<void>(
+      builder: (_) => JockeyChangePasswordScreen(
+        profileImageUrl: profileImageUrl,
+        portalName: 'Khán giả',
+      ),
+    );
+  }
+
   static Route<void> jockeyProfile() {
     return MaterialPageRoute<void>(builder: (_) => const JockeyProfileScreen());
   }
@@ -523,6 +532,15 @@ abstract final class AppRoutes {
 
   static Future<void> openSpectatorBetting(BuildContext context) {
     return Navigator.of(context).push(spectatorBetting());
+  }
+
+  static Future<void> openSpectatorChangePassword(
+    BuildContext context, {
+    String? profileImageUrl,
+  }) {
+    return Navigator.of(
+      context,
+    ).push(spectatorChangePassword(profileImageUrl: profileImageUrl));
   }
 
   static void openSpectatorRaceResults(

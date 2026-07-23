@@ -108,6 +108,10 @@ class _SpectatorProfileScreenState extends State<SpectatorProfileScreen> {
                   onNotifications: () =>
                       AppRoutes.openSpectatorNotifications(context),
                   onBetting: () => AppRoutes.openSpectatorBetting(context),
+                  onChangePassword: () => AppRoutes.openSpectatorChangePassword(
+                    context,
+                    profileImageUrl: profile?.avatarUrl,
+                  ),
                 ),
             ],
           ),
@@ -125,6 +129,7 @@ class _ProfileContent extends StatelessWidget {
     required this.onWallet,
     required this.onNotifications,
     required this.onBetting,
+    required this.onChangePassword,
   });
 
   final SpectatorProfileData? profile;
@@ -133,6 +138,7 @@ class _ProfileContent extends StatelessWidget {
   final VoidCallback onWallet;
   final VoidCallback onNotifications;
   final VoidCallback onBetting;
+  final VoidCallback onChangePassword;
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +220,12 @@ class _ProfileContent extends StatelessWidget {
                 icon: Icons.notifications_outlined,
                 label: 'Thông báo',
                 onTap: onNotifications,
+              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
+              _ProfileActionTile(
+                icon: Icons.security_outlined,
+                label: 'Bảo mật & mật khẩu',
+                onTap: onChangePassword,
               ),
               Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
               _ProfileActionTile(

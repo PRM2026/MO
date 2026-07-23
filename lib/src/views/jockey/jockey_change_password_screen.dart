@@ -15,17 +15,20 @@ class JockeyChangePasswordScreen extends StatefulWidget {
     super.key,
     this.viewModel,
     this.profileImageUrl,
+    this.portalName = 'Jockey Portal',
   });
 
   final RefereeChangePasswordViewModel? viewModel;
   final String? profileImageUrl;
+  final String portalName;
 
   @override
   State<JockeyChangePasswordScreen> createState() =>
       _JockeyChangePasswordScreenState();
 }
 
-class _JockeyChangePasswordScreenState extends State<JockeyChangePasswordScreen> {
+class _JockeyChangePasswordScreenState
+    extends State<JockeyChangePasswordScreen> {
   late final RefereeChangePasswordViewModel _viewModel;
   late final bool _ownsViewModel;
   late final TextEditingController _currentController;
@@ -134,7 +137,7 @@ class _JockeyChangePasswordScreenState extends State<JockeyChangePasswordScreen>
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
-                              'Để đảm bảo an toàn cho tài khoản Jockey Portal, vui lòng không chia sẻ mật khẩu mới với bất kỳ ai.',
+                              'Để đảm bảo an toàn cho tài khoản ${widget.portalName}, vui lòng không chia sẻ mật khẩu mới với bất kỳ ai.',
                               textAlign: TextAlign.center,
                               style: AppTypography.bodyMd(
                                 RefereeColors.onSurfaceVariant,
@@ -167,12 +170,15 @@ class _JockeyChangePasswordScreenState extends State<JockeyChangePasswordScreen>
                             const PasswordSecurityRequirements(),
                             const SizedBox(height: 24),
                             FilledButton(
-                              onPressed:
-                                  _viewModel.isSubmitting ? null : _handleSubmit,
+                              onPressed: _viewModel.isSubmitting
+                                  ? null
+                                  : _handleSubmit,
                               style: FilledButton.styleFrom(
                                 backgroundColor: RefereeColors.championshipGold,
                                 foregroundColor: RefereeColors.portalSurface,
-                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -189,13 +195,14 @@ class _JockeyChangePasswordScreenState extends State<JockeyChangePasswordScreen>
                                     )
                                   : Text(
                                       'CẬP NHẬT MẬT KHẨU',
-                                      style: AppTypography.labelCaps(
-                                        RefereeColors.portalSurface,
-                                      ).copyWith(
-                                        fontSize: 14,
-                                        letterSpacing: 1.2,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                      style:
+                                          AppTypography.labelCaps(
+                                            RefereeColors.portalSurface,
+                                          ).copyWith(
+                                            fontSize: 14,
+                                            letterSpacing: 1.2,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                             ),
                           ],
@@ -211,16 +218,17 @@ class _JockeyChangePasswordScreenState extends State<JockeyChangePasswordScreen>
                         },
                         child: Text(
                           'Bạn quên mật khẩu hiện tại? Liên hệ ban quản lý',
-                          style: AppTypography.labelCaps(
-                            RefereeColors.championshipGold.withValues(alpha: 0.6),
-                          ).copyWith(
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.underline,
-                            decorationColor:
+                          style:
+                              AppTypography.labelCaps(
                                 RefereeColors.championshipGold.withValues(
-                              alpha: 0.6,
-                            ),
-                          ),
+                                  alpha: 0.6,
+                                ),
+                              ).copyWith(
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                                decorationColor: RefereeColors.championshipGold
+                                    .withValues(alpha: 0.6),
+                              ),
                         ),
                       ),
                     ],
