@@ -62,21 +62,38 @@ class HeroBanner extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _Badge(
-                              child: Text(
-                                '🏆 NỀN TẢNG CHUYÊN NGHIỆP',
-                                style: AppTypography.labelCaps(Colors.white),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.emoji_events_rounded,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Text(
+                                    'NỀN TẢNG CHUYÊN NGHIỆP',
+                                    style: AppTypography.labelCaps(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: compact ? AppSpacing.sm : AppSpacing.lg),
+                            SizedBox(
+                              height: compact ? AppSpacing.sm : AppSpacing.lg,
+                            ),
                             Text(
-                              'Trải nghiệm giải đua ngựa chuyên nghiệp',
-                              maxLines: 3,
+                              'Sống trọn từng đường đua',
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: (compact
-                                      ? AppTypography.headlineSm
-                                      : AppTypography.displayLg)(Colors.white),
+                                  ? AppTypography.headlineSm
+                                  : AppTypography.displayLg)(Colors.white),
                             ),
-                            SizedBox(height: compact ? AppSpacing.sm : AppSpacing.lg),
+                            SizedBox(
+                              height: compact ? AppSpacing.sm : AppSpacing.lg,
+                            ),
                             Wrap(
                               spacing: AppSpacing.md,
                               runSpacing: AppSpacing.sm,

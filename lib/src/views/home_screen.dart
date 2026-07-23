@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       primary: false,
       extendBody: false,
-      appBar: const HomeAppBar(),
+      appBar: HomeAppBar(onLogin: _openLogin),
       body: CustomScrollView(
         slivers: [
           SliverPadding(
@@ -86,10 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onActionTap: _openTournamentsTab,
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                SizedBox(
-                  height: 320,
-                  child: _buildTournamentCarousel(),
-                ),
+                SizedBox(height: 320, child: _buildTournamentCarousel()),
                 const SizedBox(height: AppSpacing.section),
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -138,16 +135,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 96,
                   child: HorizontalCarousel(
                     itemCount: _viewModel.news.length,
-                    itemBuilder: (context, index) => NewsHighlightCard(
-                      article: _viewModel.news[index],
-                    ),
+                    itemBuilder: (context, index) =>
+                        NewsHighlightCard(article: _viewModel.news[index]),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.section),
-                CtaBanner(
-                  onRegister: _openRegister,
-                  onLogin: _openLogin,
-                ),
+                CtaBanner(onRegister: _openRegister, onLogin: _openLogin),
               ]),
             ),
           ),
@@ -157,21 +150,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTournamentCarousel() {
-    if (_viewModel.isLoadingTournaments && _viewModel.upcomingTournaments.isEmpty) {
+    if (_viewModel.isLoadingTournaments &&
+        _viewModel.upcomingTournaments.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (_viewModel.upcomingTournaments.isEmpty) {
-      return const Center(
-        child: Text('Chưa có giải đấu sắp tới.'),
-      );
+      return const Center(child: Text('Chưa có giải đấu sắp tới.'));
     }
 
     return HorizontalCarousel(
       itemCount: _viewModel.upcomingTournaments.length,
-      itemBuilder: (context, index) => TournamentCard(
-        tournament: _viewModel.upcomingTournaments[index],
-      ),
+      itemBuilder: (context, index) =>
+          TournamentCard(tournament: _viewModel.upcomingTournaments[index]),
     );
   }
 }
