@@ -10,6 +10,8 @@ class AuthSession {
     this.pendingRole,
     this.roleApprovalStatus,
     this.twoFactorRequired = false,
+    this.challengeId,
+    this.challengeExpiresAt,
   });
 
   final String token;
@@ -22,6 +24,8 @@ class AuthSession {
   final String? pendingRole;
   final String? roleApprovalStatus;
   final bool twoFactorRequired;
+  final String? challengeId;
+  final DateTime? challengeExpiresAt;
 
   factory AuthSession.fromJson(Map<String, dynamic> json) {
     return AuthSession(
@@ -35,6 +39,10 @@ class AuthSession {
       pendingRole: _readString(json['pendingRole']),
       roleApprovalStatus: _readString(json['roleApprovalStatus']),
       twoFactorRequired: json['twoFactorRequired'] as bool? ?? false,
+      challengeId: _readString(json['challengeId']),
+      challengeExpiresAt: DateTime.tryParse(
+        _readString(json['challengeExpiresAt']) ?? '',
+      ),
     );
   }
 

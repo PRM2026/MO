@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../constants/app_spacing.dart';
 import '../constants/app_theme_tokens.dart';
@@ -27,6 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _otpController = TextEditingController();
 
   late final LoginViewModel _viewModel;
   bool _isSubmitting = false;
@@ -41,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
@@ -63,6 +66,32 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (_viewModel.errorMessage != null) {
+      AppToast.showError(context, _viewModel.errorMessage!);
+    }
+  }
+
+  Future<void> _handleTwoFactorSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isSubmitting = true);
+    final success = await _viewModel.verifyTwoFactor(_otpController.text);
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+    if (!success) {
+      AppToast.showError(context, _viewModel.errorMessage!);
+      return;
+    }
+    AppToast.showSuccess(context, 'Xác thực đăng nhập thành công!');
+    await AppRoutes.openAfterAuth(context);
+  }
+
+  Future<void> _resendTwoFactor() async {
+    setState(() => _isSubmitting = true);
+    final success = await _viewModel.resendTwoFactor();
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+    if (success) {
+      AppToast.showSuccess(context, 'Đã gửi lại mã xác thực.');
+    } else {
       AppToast.showError(context, _viewModel.errorMessage!);
     }
   }
@@ -92,71 +121,120 @@ class _LoginScreenState extends State<LoginScreen> {
                           key: _formKey,
                           child: Column(
                             children: [
-                              const LoginBrandHeader(),
+                              if (_viewModel.requiresTwoFactor)
+                                _TwoFactorHeader(
+                                  email: _viewModel.maskedEmail ?? '',
+                                )
+                              else
+                                const LoginBrandHeader(),
                               const SizedBox(height: AppSpacing.section),
-                              AuthTextField(
-                                label: 'Email',
-                                hint: 'example@racing.com',
-                                icon: Icons.mail_outline,
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: _viewModel.validateEmail,
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              AuthTextField(
-                                label: 'Mật khẩu',
-                                hint: '••••••••',
-                                icon: Icons.lock_outline,
-                                controller: _passwordController,
-                                obscureText: _viewModel.obscurePassword,
-                                validator: _viewModel.validatePassword,
-                                suffix: IconButton(
-                                  onPressed: () => setState(
-                                    _viewModel.togglePasswordVisibility,
-                                  ),
-                                  icon: Icon(
-                                    _viewModel.obscurePassword
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color: AuthColors.slate400,
-                                  ),
+                              if (_viewModel.requiresTwoFactor) ...[
+                                AuthTextField(
+                                  label: 'Mã xác thực',
+                                  hint: '000000',
+                                  icon: Icons.pin_outlined,
+                                  controller: _otpController,
+                                  keyboardType: TextInputType.number,
+                                  validator: _viewModel.validateOtp,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  maxLength: 6,
                                 ),
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              _LoginOptionsRow(
-                                rememberMe: _viewModel.rememberMe,
-                                onRememberChanged: (value) => setState(
-                                  () => _viewModel.rememberMe = value ?? false,
+                                const SizedBox(height: AppSpacing.lg),
+                                GoldCtaButton(
+                                  label: 'Xác thực đăng nhập',
+                                  isLoading: _isSubmitting,
+                                  onPressed: _handleTwoFactorSubmit,
                                 ),
-                                onForgotPassword: () =>
-                                    AppRoutes.openForgotPassword(context),
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              GoldCtaButton(
-                                label: 'Đăng nhập',
-                                isLoading: _isSubmitting,
-                                onPressed: _handleSubmit,
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              const AuthSectionDivider(
-                                label: 'Hoặc đăng nhập với',
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              const Row(
-                                children: [
-                                  Expanded(
-                                    child: SocialAuthButton(
-                                      provider: SocialProvider.google,
+                                const SizedBox(height: AppSpacing.sm),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: _isSubmitting
+                                          ? null
+                                          : () => setState(() {
+                                              _viewModel.cancelTwoFactor();
+                                              _otpController.clear();
+                                            }),
+                                      child: const Text('Đăng nhập lại'),
+                                    ),
+                                    TextButton(
+                                      onPressed: _isSubmitting
+                                          ? null
+                                          : _resendTwoFactor,
+                                      child: const Text('Gửi lại mã'),
+                                    ),
+                                  ],
+                                ),
+                              ] else ...[
+                                AuthTextField(
+                                  label: 'Email',
+                                  hint: 'example@racing.com',
+                                  icon: Icons.mail_outline,
+                                  controller: _emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: _viewModel.validateEmail,
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                AuthTextField(
+                                  label: 'Mật khẩu',
+                                  hint: '••••••••',
+                                  icon: Icons.lock_outline,
+                                  controller: _passwordController,
+                                  obscureText: _viewModel.obscurePassword,
+                                  validator: _viewModel.validatePassword,
+                                  suffix: IconButton(
+                                    onPressed: () => setState(
+                                      _viewModel.togglePasswordVisibility,
+                                    ),
+                                    icon: Icon(
+                                      _viewModel.obscurePassword
+                                          ? Icons.visibility_outlined
+                                          : Icons.visibility_off_outlined,
+                                      color: AuthColors.slate400,
                                     ),
                                   ),
-                                  SizedBox(width: AppSpacing.lg),
-                                  Expanded(
-                                    child: SocialAuthButton(
-                                      provider: SocialProvider.facebook,
-                                    ),
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                _LoginOptionsRow(
+                                  rememberMe: _viewModel.rememberMe,
+                                  onRememberChanged: (value) => setState(
+                                    () =>
+                                        _viewModel.rememberMe = value ?? false,
                                   ),
-                                ],
-                              ),
+                                  onForgotPassword: () =>
+                                      AppRoutes.openForgotPassword(context),
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                GoldCtaButton(
+                                  label: 'Đăng nhập',
+                                  isLoading: _isSubmitting,
+                                  onPressed: _handleSubmit,
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                const AuthSectionDivider(
+                                  label: 'Hoặc đăng nhập với',
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                const Row(
+                                  children: [
+                                    Expanded(
+                                      child: SocialAuthButton(
+                                        provider: SocialProvider.google,
+                                      ),
+                                    ),
+                                    SizedBox(width: AppSpacing.lg),
+                                    Expanded(
+                                      child: SocialAuthButton(
+                                        provider: SocialProvider.facebook,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -173,6 +251,44 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TwoFactorHeader extends StatelessWidget {
+  const _TwoFactorHeader({required this.email});
+
+  final String email;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: AuthColors.primary,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Icon(
+            Icons.verified_user_outlined,
+            color: Colors.white,
+            size: 36,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          'Xác thực 2 bước',
+          style: AppTypography.displayMd(AuthColors.navy),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          'Mã 6 chữ số đã được gửi tới $email',
+          textAlign: TextAlign.center,
+          style: AppTypography.bodyMd(AuthColors.slate500),
+        ),
+      ],
     );
   }
 }

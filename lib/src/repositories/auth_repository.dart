@@ -6,11 +6,9 @@ import '../services/auth_storage.dart';
 import '../utils/username_utils.dart';
 
 class AuthRepository {
-  AuthRepository({
-    AuthApiService? apiService,
-    AuthStorage? storage,
-  })  : _apiService = apiService ?? AuthApiService(),
-        _storage = storage ?? AuthStorage();
+  AuthRepository({AuthApiService? apiService, AuthStorage? storage})
+    : _apiService = apiService ?? AuthApiService(),
+      _storage = storage ?? AuthStorage();
 
   final AuthApiService _apiService;
   final AuthStorage _storage;
@@ -19,17 +17,35 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    final session = await _apiService.login(
-      email: email,
-      password: password,
+    final session = await _apiService.login(email: email, password: password);
+    if (session.twoFactorRequired) return session;
+    await _saveAuthenticatedSession(session);
+    return session;
+  }
+
+  Future<AuthSession> verifyTwoFactor({
+    required String challengeId,
+    required String otp,
+  }) async {
+    final session = await _apiService.verifyTwoFactor(
+      challengeId: challengeId,
+      otp: otp,
     );
+    await _saveAuthenticatedSession(session);
+    return session;
+  }
+
+  Future<AuthSession> resendTwoFactor({required String challengeId}) {
+    return _apiService.resendTwoFactor(challengeId: challengeId);
+  }
+
+  Future<void> _saveAuthenticatedSession(AuthSession session) async {
     await _storage.saveSession(session);
     await _syncRoleFields(
       role: session.role,
       pendingRole: session.pendingRole,
       roleApprovalStatus: session.roleApprovalStatus,
     );
-    return session;
   }
 
   Future<AuthSession> register({
@@ -60,7 +76,9 @@ class AuthRepository {
   }) async {
     final token = await _storage.getToken();
     if (token == null || token.isEmpty) {
-      throw AuthApiException('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      throw AuthApiException(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      );
     }
 
     await _apiService.changePassword(

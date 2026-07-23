@@ -51,6 +51,23 @@ class AuthApiService {
     );
   }
 
+  Future<AuthSession> verifyTwoFactor({
+    required String challengeId,
+    required String otp,
+  }) {
+    return _postAuth(
+      path: '/auth/2fa/verify',
+      body: {'challengeId': challengeId, 'otp': otp.trim()},
+    );
+  }
+
+  Future<AuthSession> resendTwoFactor({required String challengeId}) {
+    return _postAuth(
+      path: '/auth/2fa/resend',
+      body: {'challengeId': challengeId},
+    );
+  }
+
   Future<UserProfile> getMe({required String token}) async {
     final uri = Uri.parse('$_baseUrl/auth/me');
     final response = await _client.get(
@@ -207,13 +224,12 @@ class AuthApiService {
         apiResponse.success &&
         apiResponse.data != null) {
       final session = AuthSession.fromJson(apiResponse.data!);
+      if (session.twoFactorRequired &&
+          session.challengeId?.trim().isNotEmpty == true) {
+        return session;
+      }
       if (session.token.isEmpty) {
         throw AuthApiException('Không nhận được token đăng nhập.');
-      }
-      if (session.twoFactorRequired) {
-        throw AuthApiException(
-          'Tài khoản yêu cầu xác minh 2 bước. Vui lòng đăng nhập trên web.',
-        );
       }
       return session;
     }
