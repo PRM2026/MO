@@ -128,7 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onRememberChanged: (value) => setState(
                                   () => _viewModel.rememberMe = value ?? false,
                                 ),
-                                onForgotPassword: () {},
+                                onForgotPassword: () =>
+                                    AppRoutes.openForgotPassword(context),
                               ),
                               const SizedBox(height: AppSpacing.lg),
                               GoldCtaButton(
@@ -164,7 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 LoginFooter(
-                  onActionTap: () => AppRoutes.openRegister(context, replace: true),
+                  onActionTap: () =>
+                      AppRoutes.openRegister(context, replace: true),
                 ),
               ],
             ),

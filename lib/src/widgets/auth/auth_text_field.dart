@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../constants/auth_colors.dart';
 import '../../constants/app_spacing.dart';
@@ -15,6 +16,8 @@ class AuthTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
     this.suffix,
+    this.inputFormatters,
+    this.maxLength,
   });
 
   final String label;
@@ -25,6 +28,8 @@ class AuthTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool obscureText;
   final Widget? suffix;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +49,8 @@ class AuthTextField extends StatelessWidget {
           validator: validator,
           obscureText: obscureText,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          maxLength: maxLength,
           style: AppTypography.bodyMd(AuthColors.slate700),
           decoration: InputDecoration(
             hintText: hint,
@@ -62,7 +69,10 @@ class AuthTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AuthColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AuthColors.primary,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

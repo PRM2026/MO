@@ -18,8 +18,8 @@ class AuthApiException implements Exception {
 
 class AuthApiService {
   AuthApiService({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? ApiConfig.baseUrl;
+    : _client = client ?? http.Client(),
+      _baseUrl = baseUrl ?? ApiConfig.baseUrl;
 
   final http.Client _client;
   final String _baseUrl;
@@ -30,10 +30,7 @@ class AuthApiService {
   }) async {
     return _postAuth(
       path: '/auth/login',
-      body: {
-        'email': email.trim(),
-        'password': password,
-      },
+      body: {'email': email.trim(), 'password': password},
     );
   }
 
@@ -58,10 +55,7 @@ class AuthApiService {
     final uri = Uri.parse('$_baseUrl/auth/me');
     final response = await _client.get(
       uri,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
     Map<String, dynamic>? decoded;
@@ -114,15 +108,70 @@ class AuthApiService {
 
     final success = decoded['success'] as bool? ?? false;
 
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        success) {
+    if (response.statusCode >= 200 && response.statusCode < 300 && success) {
       return;
     }
 
     final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
       decoded,
       (data) => data as Map<String, dynamic>,
+    );
+    throw AuthApiException(_resolveErrorMessage(apiResponse, decoded));
+  }
+
+  Future<void> forgotPassword({required String email}) {
+    return _postCommand(
+      path: '/auth/forgot-password',
+      body: {'email': email.trim()},
+    );
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) {
+    return _postCommand(
+      path: '/auth/reset-password',
+      body: {
+        'email': email.trim(),
+        'otp': otp.trim(),
+        'newPassword': newPassword,
+      },
+    );
+  }
+
+  Future<void> _postCommand({
+    required String path,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$_baseUrl$path'),
+      headers: const {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+    Map<String, dynamic>? decoded;
+    try {
+      decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      throw AuthApiException('Phản hồi từ máy chủ không hợp lệ.');
+    }
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300 &&
+        (decoded['success'] as bool? ?? false)) {
+      return;
+    }
+
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
+      decoded,
+      (data) => data is Map<String, dynamic>
+          ? data
+          : <String, dynamic>{'message': data},
     );
     throw AuthApiException(_resolveErrorMessage(apiResponse, decoded));
   }

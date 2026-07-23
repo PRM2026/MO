@@ -5,6 +5,7 @@ import '../models/spectator_models.dart';
 import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../views/account_screen.dart';
+import '../views/forgot_password_screen.dart';
 import '../views/login_screen.dart';
 import '../views/main_shell.dart';
 import '../views/user_account_screen.dart';
@@ -41,6 +42,12 @@ abstract final class AppRoutes {
 
   static Route<void> register() {
     return MaterialPageRoute<void>(builder: (_) => const RegisterScreen());
+  }
+
+  static Route<void> forgotPassword() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const ForgotPasswordScreen(),
+    );
   }
 
   static Route<void> account() {
@@ -233,6 +240,10 @@ abstract final class AppRoutes {
 
   static void openRegister(BuildContext context, {bool replace = false}) {
     _pushAuth(context, register(), replace: replace);
+  }
+
+  static void openForgotPassword(BuildContext context, {bool replace = false}) {
+    _pushAuth(context, forgotPassword(), replace: replace);
   }
 
   static void openAccount(BuildContext context) {
