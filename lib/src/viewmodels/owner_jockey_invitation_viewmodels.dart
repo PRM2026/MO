@@ -7,7 +7,6 @@ import '../models/tournament_list_item.dart';
 import '../repositories/owner_horse_repository.dart';
 import '../repositories/owner_jockey_invitation_repository.dart';
 import '../repositories/owner_tournament_repository.dart';
-import '../services/owner_jockey_invitation_service.dart';
 
 enum OwnerInvitationFilter { all, pending, accepted, rejected, cancelled }
 
@@ -50,9 +49,8 @@ class OwnerInvitationRaceOption {
 }
 
 class OwnerJockeyInvitationsViewModel extends ChangeNotifier {
-  OwnerJockeyInvitationsViewModel({
-    OwnerJockeyInvitationRepository? repository,
-  }) : _repository = repository ?? OwnerJockeyInvitationRepository();
+  OwnerJockeyInvitationsViewModel({OwnerJockeyInvitationRepository? repository})
+    : _repository = repository ?? OwnerJockeyInvitationRepository();
 
   final OwnerJockeyInvitationRepository _repository;
 
@@ -149,9 +147,8 @@ class OwnerJockeyInvitationDetailViewModel extends ChangeNotifier {
 }
 
 class OwnerAcceptedJockeysViewModel extends ChangeNotifier {
-  OwnerAcceptedJockeysViewModel({
-    OwnerJockeyInvitationRepository? repository,
-  }) : _repository = repository ?? OwnerJockeyInvitationRepository();
+  OwnerAcceptedJockeysViewModel({OwnerJockeyInvitationRepository? repository})
+    : _repository = repository ?? OwnerJockeyInvitationRepository();
 
   final OwnerJockeyInvitationRepository _repository;
 
@@ -257,7 +254,9 @@ class OwnerCreateJockeyInvitationViewModel extends ChangeNotifier {
       approvedHorses = const [];
       availableJockeys = const [];
       tournaments = const [];
-      if (kDebugMode) debugPrint('OwnerCreateJockeyInvitationViewModel: $error');
+      if (kDebugMode) {
+        debugPrint('OwnerCreateJockeyInvitationViewModel: $error');
+      }
     } finally {
       isLoading = false;
       notifyListeners();
@@ -300,7 +299,9 @@ class OwnerCreateJockeyInvitationViewModel extends ChangeNotifier {
           .toList(growable: false);
     } catch (error) {
       raceErrorMessage = _messageFrom(error, 'Không thể tải cuộc đua.');
-      if (kDebugMode) debugPrint('OwnerCreateJockeyInvitationViewModel race: $error');
+      if (kDebugMode) {
+        debugPrint('OwnerCreateJockeyInvitationViewModel race: $error');
+      }
     } finally {
       isLoadingRaces = false;
       notifyListeners();
@@ -312,7 +313,10 @@ class OwnerCreateJockeyInvitationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? validate({required String remunerationText, required String message}) {
+  String? validate({
+    required String remunerationText,
+    required String message,
+  }) {
     final amount = _parseAmount(remunerationText);
     if (remunerationText.trim().isNotEmpty && amount == null) {
       return 'Thù lao phải là số.';

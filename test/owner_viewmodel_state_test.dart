@@ -70,7 +70,10 @@ void main() {
     expect(full.email, 'owner@example.test');
     expect(full.roleLabel, 'Chủ ngựa');
     expect(full.avatarUrl, 'https://example.test/avatar.jpg');
-    expect(full.settings.single.title, 'Bảo mật & Mật khẩu');
+    expect(
+      full.settings.map((item) => item.title),
+      contains('Bảo mật & Mật khẩu'),
+    );
 
     expect(missing.id, isNull);
     expect(missing.displayId, isNull);

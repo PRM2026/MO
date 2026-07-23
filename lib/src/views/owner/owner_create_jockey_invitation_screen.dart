@@ -97,10 +97,7 @@ class _OwnerCreateJockeyInvitationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: RefereeColors.background,
-      appBar: const OwnerAppBar(
-        showBack: true,
-        titleOverride: 'Mời jockey',
-      ),
+      appBar: const OwnerAppBar(showBack: true, titleOverride: 'Mời jockey'),
       body: OwnerPortalBackground(
         child: _viewModel.isLoading
             ? const Center(
@@ -319,7 +316,10 @@ class _JockeyDropdown extends StatelessWidget {
       value: viewModel.selectedJockeyId,
       items: [
         for (final jockey in viewModel.availableJockeys)
-          DropdownMenuItem(value: '${jockey.id}', child: Text(jockey.displayName)),
+          DropdownMenuItem(
+            value: '${jockey.id}',
+            child: Text(jockey.displayName),
+          ),
       ],
       onChanged: viewModel.selectJockey,
     );
@@ -343,7 +343,7 @@ class _OwnerDropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final selectedExists = items.any((item) => item.value == value);
     return DropdownButtonFormField<T>(
-      value: selectedExists ? value : null,
+      initialValue: selectedExists ? value : null,
       items: items,
       onChanged: onChanged,
       dropdownColor: RefereeColors.portalSurface,
