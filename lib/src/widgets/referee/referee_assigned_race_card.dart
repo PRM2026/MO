@@ -7,9 +7,10 @@ import '../news/news_network_image.dart';
 import 'referee_glass_card.dart';
 
 class RefereeAssignedRaceCard extends StatelessWidget {
-  const RefereeAssignedRaceCard({super.key, required this.race});
+  const RefereeAssignedRaceCard({super.key, required this.race, this.onTap});
 
   final AssignedRaceItem race;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +28,17 @@ class RefereeAssignedRaceCard extends StatelessWidget {
       ),
     );
 
+    final interactiveCard = InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: card,
+    );
+
     if (!race.dimmed) {
-      return ClipRRect(borderRadius: BorderRadius.circular(16), child: card);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: interactiveCard,
+      );
     }
 
     return Opacity(
@@ -56,7 +66,10 @@ class RefereeAssignedRaceCard extends StatelessWidget {
           1,
           0,
         ]),
-        child: ClipRRect(borderRadius: BorderRadius.circular(16), child: card),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: interactiveCard,
+        ),
       ),
     );
   }

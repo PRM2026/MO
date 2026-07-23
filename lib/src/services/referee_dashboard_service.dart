@@ -79,6 +79,30 @@ class RefereeDashboardService {
     );
   }
 
+  Future<RefereeRaceParticipantResponse> checkInParticipant({
+    required int raceId,
+    required int participantId,
+    required String status,
+    String? note,
+  }) {
+    return _apiClient.putObject(
+      '/referee/races/$raceId/participants/$participantId/check-in',
+      {
+        'status': status,
+        if (note?.trim().isNotEmpty == true) 'note': note!.trim(),
+      },
+      RefereeRaceParticipantResponse.fromJson,
+    );
+  }
+
+  Future<RefereeRaceResponse> startRace(int raceId) {
+    return _apiClient.putObject(
+      '/referee/races/$raceId/start',
+      {},
+      RefereeRaceResponse.fromJson,
+    );
+  }
+
   Future<List<RefereeRaceResultResponse>> getRaceResults(int raceId) {
     return _apiClient.getList(
       '/races/$raceId/results',

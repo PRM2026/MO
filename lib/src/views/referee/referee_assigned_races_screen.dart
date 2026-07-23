@@ -4,6 +4,8 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../../viewmodels/referee_assigned_races_viewmodel.dart';
+import '../../models/assigned_race_item.dart';
+import 'referee_race_operations_screen.dart';
 import '../../widgets/referee/referee_app_bar.dart';
 import '../../widgets/referee/referee_assigned_race_card.dart';
 import '../../widgets/referee/referee_search_bar.dart';
@@ -36,6 +38,15 @@ class _RefereeAssignedRacesScreenState
 
   void _onChanged() {
     if (mounted) setState(() {});
+  }
+
+  Future<void> _openRace(AssignedRaceItem race) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => RefereeRaceOperationsScreen(race: race),
+      ),
+    );
+    await _viewModel.loadRaces();
   }
 
   @override
@@ -147,6 +158,9 @@ class _RefereeAssignedRacesScreenState
                                   itemBuilder: (context, index) =>
                                       RefereeAssignedRaceCard(
                                         race: _viewModel.filteredRaces[index],
+                                        onTap: () => _openRace(
+                                          _viewModel.filteredRaces[index],
+                                        ),
                                       ),
                                 );
                               }
@@ -166,6 +180,9 @@ class _RefereeAssignedRacesScreenState
                                   itemBuilder: (context, index) =>
                                       RefereeAssignedRaceCard(
                                         race: _viewModel.filteredRaces[index],
+                                        onTap: () => _openRace(
+                                          _viewModel.filteredRaces[index],
+                                        ),
                                       ),
                                 );
                               }
@@ -179,6 +196,9 @@ class _RefereeAssignedRacesScreenState
                                   ) ...[
                                     RefereeAssignedRaceCard(
                                       race: _viewModel.filteredRaces[i],
+                                      onTap: () => _openRace(
+                                        _viewModel.filteredRaces[i],
+                                      ),
                                     ),
                                     if (i < _viewModel.filteredRaces.length - 1)
                                       const SizedBox(height: 24),
