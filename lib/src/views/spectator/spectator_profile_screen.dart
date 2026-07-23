@@ -107,6 +107,7 @@ class _SpectatorProfileScreenState extends State<SpectatorProfileScreen> {
                   onWallet: () => AppRoutes.openSpectatorWallet(context),
                   onNotifications: () =>
                       AppRoutes.openSpectatorNotifications(context),
+                  onBetting: () => AppRoutes.openSpectatorBetting(context),
                 ),
             ],
           ),
@@ -123,6 +124,7 @@ class _ProfileContent extends StatelessWidget {
     required this.onLogout,
     required this.onWallet,
     required this.onNotifications,
+    required this.onBetting,
   });
 
   final SpectatorProfileData? profile;
@@ -130,6 +132,7 @@ class _ProfileContent extends StatelessWidget {
   final VoidCallback onLogout;
   final VoidCallback onWallet;
   final VoidCallback onNotifications;
+  final VoidCallback onBetting;
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +198,12 @@ class _ProfileContent extends StatelessWidget {
         SpectatorGlassCard(
           child: Column(
             children: [
+              _ProfileActionTile(
+                icon: Icons.sports_score_outlined,
+                label: 'Đặt cược & lịch sử',
+                onTap: onBetting,
+              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
               _ProfileActionTile(
                 icon: Icons.account_balance_wallet_outlined,
                 label: 'Ví & thanh toán',

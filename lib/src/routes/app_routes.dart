@@ -29,6 +29,7 @@ import '../views/referee/referee_profile_screen.dart';
 import '../views/referee/referee_shell.dart';
 import '../views/register_screen.dart';
 import '../views/spectator/spectator_horse_ranking_screen.dart';
+import '../views/spectator/spectator_betting_screen.dart';
 import '../views/spectator/spectator_race_detail_screen.dart';
 import '../views/spectator/spectator_race_results_screen.dart';
 import '../views/spectator/spectator_shell.dart';
@@ -124,6 +125,12 @@ abstract final class AppRoutes {
     return MaterialPageRoute<void>(
       builder: (_) =>
           const JockeyNotificationsScreen(title: 'Thông báo khán giả'),
+    );
+  }
+
+  static Route<void> spectatorBetting() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const SpectatorBettingScreen(),
     );
   }
 
@@ -501,6 +508,10 @@ abstract final class AppRoutes {
 
   static Future<void> openSpectatorNotifications(BuildContext context) {
     return Navigator.of(context).push(spectatorNotifications());
+  }
+
+  static Future<void> openSpectatorBetting(BuildContext context) {
+    return Navigator.of(context).push(spectatorBetting());
   }
 
   static void openSpectatorRaceResults(
