@@ -316,10 +316,7 @@ class _JockeyDropdown extends StatelessWidget {
       value: viewModel.selectedJockeyId,
       items: [
         for (final jockey in viewModel.availableJockeys)
-          DropdownMenuItem(
-            value: '${jockey.id}',
-            child: Text(jockey.displayName),
-          ),
+          DropdownMenuItem(value: jockey.id, child: Text(jockey.displayName)),
       ],
       onChanged: viewModel.selectJockey,
     );

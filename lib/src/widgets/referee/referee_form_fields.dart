@@ -24,8 +24,9 @@ class RefereeFormDropdown extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-              .copyWith(fontSize: 13, letterSpacing: 0.3),
+          style: AppTypography.labelCaps(
+            RefereeColors.onSurfaceVariant,
+          ).copyWith(fontSize: 13, letterSpacing: 0.3),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
@@ -80,8 +81,9 @@ class RefereeFormTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-              .copyWith(fontSize: 13, letterSpacing: 0.3),
+          style: AppTypography.labelCaps(
+            RefereeColors.onSurfaceVariant,
+          ).copyWith(fontSize: 13, letterSpacing: 0.3),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -132,8 +134,9 @@ class RefereeUploadZone extends StatelessWidget {
       children: [
         Text(
           'Bằng chứng (Hình ảnh/Video)',
-          style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-              .copyWith(fontSize: 13, letterSpacing: 0.3),
+          style: AppTypography.labelCaps(
+            RefereeColors.onSurfaceVariant,
+          ).copyWith(fontSize: 13, letterSpacing: 0.3),
         ),
         const SizedBox(height: 8),
         Material(
@@ -164,7 +167,9 @@ class RefereeUploadZone extends StatelessWidget {
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+                      style: AppTypography.bodyMd(
+                        RefereeColors.onSurfaceVariant,
+                      ),
                       children: const [
                         TextSpan(text: 'Kéo thả tệp hoặc '),
                         TextSpan(

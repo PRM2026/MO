@@ -40,9 +40,9 @@ class AboutHeroSection extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 badge.toUpperCase(),
-                style: AppTypography.labelCaps(AboutColors.secondary).copyWith(
-                  fontSize: 12,
-                ),
+                style: AppTypography.labelCaps(
+                  AboutColors.secondary,
+                ).copyWith(fontSize: 12),
               ),
             ],
           ),
@@ -59,9 +59,9 @@ class AboutHeroSection extends StatelessWidget {
           child: Text(
             description,
             textAlign: TextAlign.center,
-            style: AppTypography.bodyMd(AboutColors.outline).copyWith(
-              height: 1.6,
-            ),
+            style: AppTypography.bodyMd(
+              AboutColors.outline,
+            ).copyWith(height: 1.6),
           ),
         ),
       ],

@@ -10,11 +10,7 @@ import '../widgets/home/home_app_bar.dart';
 import '../widgets/personal_info/personal_info_widgets.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  const PersonalInfoScreen({
-    super.key,
-    this.viewModel,
-    this.embedded = false,
-  });
+  const PersonalInfoScreen({super.key, this.viewModel, this.embedded = false});
 
   final PersonalInfoViewModel? viewModel;
   final bool embedded;
@@ -43,7 +39,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 
   void _schedulePortalRedirectIfNeeded() {
-    if (_portalRedirectScheduled || _viewModel.isLoading || !_viewModel.isLoggedIn) {
+    if (_portalRedirectScheduled ||
+        _viewModel.isLoading ||
+        !_viewModel.isLoggedIn) {
       return;
     }
 
@@ -56,6 +54,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       AppRoutes.openDedicatedPortal(context, role);
     });
   }
+
   @override
   void dispose() {
     _viewModel.removeListener(_onChanged);
@@ -111,7 +110,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                               PersonalInfoActions(
                                 isLoggedIn: false,
                                 onLogin: () => AppRoutes.openLogin(context),
-                                onRegister: () => AppRoutes.openRegister(context),
+                                onRegister: () =>
+                                    AppRoutes.openRegister(context),
                                 onJockeyPortal: () {},
                                 onRefereePortal: () {},
                                 showGuestActions: true,

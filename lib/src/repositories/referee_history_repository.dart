@@ -9,15 +9,15 @@ class RefereeHistoryRepository {
   RefereeHistoryRepository({
     RefereeDashboardService? dashboardService,
     AuthRepository? authRepository,
-  })  : _dashboardService = dashboardService ?? RefereeDashboardService(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _dashboardService = dashboardService ?? RefereeDashboardService(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final RefereeDashboardService _dashboardService;
   final AuthRepository _authRepository;
 
   List<RefereeRaceResponse> _cachedRaces = const [];
 
-  Future<RaceResultConfirmationData> fetchPageData({int? raceId}) async {
+  Future<RaceResultConfirmationData> fetchPageData({String? raceId}) async {
     final profileImageUrl = await _loadProfileImageUrl();
     _cachedRaces = await _dashboardService.getAssignedRaces();
 
@@ -40,7 +40,7 @@ class RefereeHistoryRepository {
     );
   }
 
-  Future<RaceResultConfirmationData> fetchRaceDetails(int raceId) async {
+  Future<RaceResultConfirmationData> fetchRaceDetails(String raceId) async {
     final profileImageUrl = await _loadProfileImageUrl();
     if (_cachedRaces.isEmpty) {
       _cachedRaces = await _dashboardService.getAssignedRaces();
@@ -60,7 +60,7 @@ class RefereeHistoryRepository {
 
   RefereeRaceResponse _pickRace(
     List<RefereeRaceResponse> relevant,
-    int? raceId,
+    String? raceId,
   ) {
     if (raceId != null) {
       return relevant.firstWhere(

@@ -33,16 +33,16 @@ class OwnerJockeyInvitation {
   });
 
   final String id;
-  final int? ownerId;
+  final Object? ownerId;
   final String? ownerUsername;
-  final int? jockeyId;
+  final Object? jockeyId;
   final String? jockeyUsername;
-  final int? jockeyProfileId;
-  final int? horseId;
+  final Object? jockeyProfileId;
+  final Object? horseId;
   final String? horseName;
-  final int? raceId;
+  final Object? raceId;
   final String? raceName;
-  final int? tournamentId;
+  final Object? tournamentId;
   final String? tournamentName;
   final String statusCode;
   final String statusLabel;
@@ -60,16 +60,16 @@ class OwnerJockeyInvitation {
     final status = _statusCode(json['status']);
     return OwnerJockeyInvitation(
       id: '${json['id'] ?? ''}',
-      ownerId: _readInt(json['ownerId']),
+      ownerId: _readId(json['ownerId']),
       ownerUsername: _readNullableString(json['ownerUsername']),
-      jockeyId: _readInt(json['jockeyId']),
+      jockeyId: _readId(json['jockeyId']),
       jockeyUsername: _readNullableString(json['jockeyUsername']),
-      jockeyProfileId: _readInt(json['jockeyProfileId']),
-      horseId: _readInt(json['horseId']),
+      jockeyProfileId: _readId(json['jockeyProfileId']),
+      horseId: _readId(json['horseId']),
       horseName: _readNullableString(json['horseName']),
-      raceId: _readInt(json['raceId']),
+      raceId: _readId(json['raceId']),
       raceName: _readNullableString(json['raceName']),
-      tournamentId: _readInt(json['tournamentId']),
+      tournamentId: _readId(json['tournamentId']),
       tournamentName: _readNullableString(json['tournamentName']),
       statusCode: status,
       statusLabel: _statusLabel(status),
@@ -93,20 +93,20 @@ class OwnerJockeyInvitationFormData {
     this.message,
   });
 
-  final int? horseId;
-  final int? raceId;
-  final int? jockeyId;
+  final Object? horseId;
+  final Object? raceId;
+  final Object? jockeyId;
   final num? remunerationAmount;
   final String? message;
 
   String? validate() {
-    if (horseId == null || horseId! <= 0) {
+    if (horseId == null || horseId.toString().trim().isEmpty) {
       return 'Vui lòng chọn ngựa.';
     }
-    if (raceId == null || raceId! <= 0) {
+    if (raceId == null || raceId.toString().trim().isEmpty) {
       return 'Vui lòng chọn cuộc đua.';
     }
-    if (jockeyId == null || jockeyId! <= 0) {
+    if (jockeyId == null || jockeyId.toString().trim().isEmpty) {
       return 'Vui lòng chọn jockey.';
     }
     final amount = remunerationAmount;
@@ -158,16 +158,16 @@ class OwnerAcceptedJockey {
   });
 
   final String id;
-  final int? invitationId;
-  final int? jockeyId;
+  final Object? invitationId;
+  final Object? jockeyId;
   final String? jockeyUsername;
   final String? jockeyFullName;
   final String? jockeyAvatarUrl;
-  final int? horseId;
+  final Object? horseId;
   final String? horseName;
-  final int? raceId;
+  final Object? raceId;
   final String? raceName;
-  final int? tournamentId;
+  final Object? tournamentId;
   final String? tournamentName;
   final DateTime? acceptedAt;
 
@@ -187,10 +187,8 @@ class OwnerAcceptedJockey {
 
     return OwnerAcceptedJockey(
       id: '${json['id'] ?? json['invitationId'] ?? ''}',
-      invitationId: _readInt(json['invitationId'] ?? json['id']),
-      jockeyId: _readInt(
-        json['jockeyId'] ?? jockey?['id'] ?? jockey?['userId'],
-      ),
+      invitationId: _readId(json['invitationId'] ?? json['id']),
+      jockeyId: _readId(json['jockeyId'] ?? jockey?['id'] ?? jockey?['userId']),
       jockeyUsername: _readFirstString([
         json['jockeyUsername'],
         jockey?['username'],
@@ -209,11 +207,11 @@ class OwnerAcceptedJockey {
           jockey?['profileImageUrl'],
         ]),
       ),
-      horseId: _readInt(json['horseId'] ?? horse?['id']),
+      horseId: _readId(json['horseId'] ?? horse?['id']),
       horseName: _readFirstString([json['horseName'], horse?['name']]),
-      raceId: _readInt(json['raceId'] ?? race?['id']),
+      raceId: _readId(json['raceId'] ?? race?['id']),
       raceName: _readFirstString([json['raceName'], race?['name']]),
-      tournamentId: _readInt(json['tournamentId'] ?? tournament?['id']),
+      tournamentId: _readId(json['tournamentId'] ?? tournament?['id']),
       tournamentName: _readFirstString([
         json['tournamentName'],
         tournament?['name'],
@@ -238,12 +236,12 @@ class OwnerAvailableJockey {
     this.experienceYears,
   });
 
-  final int id;
+  final String id;
   final String? username;
   final String? fullName;
   final String? email;
   final String? avatarUrl;
-  final int? profileId;
+  final String? profileId;
   final double? rating;
   final int? experienceYears;
 
@@ -252,13 +250,13 @@ class OwnerAvailableJockey {
     if (name != null && name.isNotEmpty) return name;
     final handle = username?.trim();
     if (handle != null && handle.isNotEmpty) return handle;
-    return id <= 0 ? 'Jockey' : 'Jockey #$id';
+    return id.isEmpty ? 'Jockey' : 'Jockey #$id';
   }
 
   factory OwnerAvailableJockey.fromJson(Map<String, dynamic> json) {
     final profile = _readMap(json['profile']);
     return OwnerAvailableJockey(
-      id: _readInt(json['id'] ?? json['userId'] ?? profile?['userId']) ?? 0,
+      id: _readId(json['id'] ?? json['userId'] ?? profile?['userId']) ?? '',
       username: _readNullableString(json['username']),
       fullName: _readFirstString([
         json['fullName'],
@@ -276,7 +274,7 @@ class OwnerAvailableJockey {
           profile?['imageUrl'],
         ]),
       ),
-      profileId: _readInt(json['profileId'] ?? profile?['id']),
+      profileId: _readId(json['profileId'] ?? profile?['id']),
       rating: _readNum(json['rating'] ?? profile?['rating'])?.toDouble(),
       experienceYears: _readInt(
         json['experienceYears'] ?? profile?['experienceYears'],
@@ -322,6 +320,11 @@ int? _readInt(Object? value) {
   if (value is num) return value.toInt();
   if (value is String) return int.tryParse(value.trim());
   return null;
+}
+
+String? _readId(Object? value) {
+  final id = value?.toString().trim();
+  return id == null || id.isEmpty ? null : id;
 }
 
 num? _readNum(Object? value) {

@@ -11,7 +11,7 @@ class RefereeRaceOption {
     required this.status,
   });
 
-  final int id;
+  final String id;
   final String label;
   final String status;
 }
@@ -69,7 +69,7 @@ class RaceResultConfirmationData {
   });
 
   final List<RefereeRaceOption> races;
-  final int? selectedRaceId;
+  final String? selectedRaceId;
   final String raceName;
   final String raceCode;
   final String raceStatus;
@@ -118,8 +118,9 @@ class RaceResultConfirmationData {
     final raceOptions = relevant
         .map(
           (race) => RefereeRaceOption(
-            id: race.id ?? 0,
-            label: '${race.name ?? 'Cuộc đua #${race.id}'} '
+            id: race.id ?? '',
+            label:
+                '${race.name ?? 'Cuộc đua #${race.id}'} '
                 '(${race_format.raceStatusLabel(race.status)})',
             status: race.status ?? '',
           ),
@@ -184,7 +185,9 @@ class RaceResultConfirmationData {
       });
 
     final leaderMillis = sorted
-        .where((item) => item.status == 'FINISHED' && item.finishTimeMillis != null)
+        .where(
+          (item) => item.status == 'FINISHED' && item.finishTimeMillis != null,
+        )
         .map((item) => item.finishTimeMillis)
         .fold<int?>(null, (prev, curr) => prev ?? curr);
 
@@ -200,7 +203,8 @@ class RaceResultConfirmationData {
             gapLabel: item.status == 'FINISHED'
                 ? race_format.formatRaceGap(item.finishTimeMillis, leaderMillis)
                 : '—',
-            gapIsPositive: item.finishTimeMillis != null &&
+            gapIsPositive:
+                item.finishTimeMillis != null &&
                 leaderMillis != null &&
                 item.finishTimeMillis! > leaderMillis,
             highlightRank: item.rank == 1 && item.status == 'FINISHED',

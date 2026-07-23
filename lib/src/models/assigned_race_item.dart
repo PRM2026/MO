@@ -54,8 +54,11 @@ class AssignedRaceItem {
     final status = beStatus.toUpperCase();
     return switch (filter) {
       AssignedRaceFilter.all => true,
-      AssignedRaceFilter.upcoming =>
-        !['ONGOING', 'RESULT_CONFIRMED', 'CANCELLED'].contains(status),
+      AssignedRaceFilter.upcoming => ![
+        'ONGOING',
+        'RESULT_CONFIRMED',
+        'CANCELLED',
+      ].contains(status),
       AssignedRaceFilter.live => status == 'ONGOING',
       AssignedRaceFilter.finished =>
         status == 'RESULT_CONFIRMED' || status == 'CANCELLED',
@@ -70,7 +73,8 @@ class AssignedRaceItem {
     final uiStatus = _mapUiStatus(beStatus);
     final locationParts = [
       if (race.venueName?.trim().isNotEmpty == true) race.venueName!.trim(),
-      if (race.provinceName?.trim().isNotEmpty == true) race.provinceName!.trim(),
+      if (race.provinceName?.trim().isNotEmpty == true)
+        race.provinceName!.trim(),
     ];
     final participantCount = race.participantCount ?? 0;
     final participantsLabel = '$participantCount ngựa';
@@ -78,7 +82,7 @@ class AssignedRaceItem {
     final action = _actionForStatus(beStatus);
 
     return AssignedRaceItem(
-      id: '${race.id ?? race.name ?? ''}',
+      id: race.id ?? race.name ?? '',
       raceCode: race.id != null ? 'Race #${race.id}' : 'Race',
       title: _firstNonEmpty([race.name, 'Cuộc đua']),
       imageUrl: _defaultRaceImage,
@@ -104,8 +108,7 @@ class AssignedRaceItem {
   static AssignedRaceStatus _mapUiStatus(String status) {
     return switch (status) {
       'ONGOING' => AssignedRaceStatus.live,
-      'RESULT_CONFIRMED' || 'CANCELLED' =>
-        AssignedRaceStatus.pendingResults,
+      'RESULT_CONFIRMED' || 'CANCELLED' => AssignedRaceStatus.pendingResults,
       _ => AssignedRaceStatus.upcoming,
     };
   }
@@ -141,11 +144,7 @@ class AssignedRaceItem {
         filled: false,
         enabled: false,
       ),
-      _ => const _RaceAction(
-        label: 'Chưa mở',
-        filled: false,
-        enabled: false,
-      ),
+      _ => const _RaceAction(label: 'Chưa mở', filled: false, enabled: false),
     };
   }
 

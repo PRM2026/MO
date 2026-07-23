@@ -42,8 +42,9 @@ class TournamentCard extends StatelessWidget {
                         ),
                         child: Text(
                           tournament.homeStatusBadge,
-                          style: AppTypography.labelCaps(Colors.white)
-                              .copyWith(fontSize: 10),
+                          style: AppTypography.labelCaps(
+                            Colors.white,
+                          ).copyWith(fontSize: 10),
                         ),
                       ),
                     ),
@@ -60,8 +61,9 @@ class TournamentCard extends StatelessWidget {
                     tournament.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodyMd(AppColors.onSurface)
-                        .copyWith(fontWeight: FontWeight.w700),
+                    style: AppTypography.bodyMd(
+                      AppColors.onSurface,
+                    ).copyWith(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   _MetaRow(
@@ -90,8 +92,9 @@ class TournamentCard extends StatelessWidget {
                       ),
                       Text(
                         tournament.registrationLabel,
-                        style: AppTypography.bodyMd(AppColors.primary)
-                            .copyWith(fontWeight: FontWeight.w700),
+                        style: AppTypography.bodyMd(
+                          AppColors.primary,
+                        ).copyWith(fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -120,8 +123,9 @@ class _MetaRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: AppTypography.labelCaps(AppColors.onSurfaceVariant)
-                .copyWith(fontSize: 11, fontWeight: FontWeight.w500),
+            style: AppTypography.labelCaps(
+              AppColors.onSurfaceVariant,
+            ).copyWith(fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ),
       ],

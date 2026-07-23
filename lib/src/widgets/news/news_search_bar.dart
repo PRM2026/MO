@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/news_colors.dart';
 
 class NewsSearchBar extends StatelessWidget {
-  const NewsSearchBar({
-    super.key,
-    required this.controller,
-    this.onChanged,
-  });
+  const NewsSearchBar({super.key, required this.controller, this.onChanged});
 
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;

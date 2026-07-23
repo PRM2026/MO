@@ -25,7 +25,7 @@ class UserProfile {
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      id: (json['id'] as num?)?.toInt(),
+      id: _readInt(json['id']),
       username: json['username'] as String?,
       email: json['email'] as String?,
       fullName: json['fullName'] as String?,
@@ -43,19 +43,24 @@ class UserProfile {
     return value.toString();
   }
 
+  static int? _readInt(Object? value) {
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
   String get normalizedRole => (role ?? 'USER').trim().toUpperCase();
 
-  String get normalizedPendingRole =>
-      (pendingRole ?? '').trim().toUpperCase();
+  String get normalizedPendingRole => (pendingRole ?? '').trim().toUpperCase();
 
   String get normalizedApprovalStatus =>
       (roleApprovalStatus ?? 'NONE').trim().toUpperCase();
 
   /// Role used by the app shell until admin approves the application.
   String get effectiveAppRole => resolveEffectiveAppRole(
-        role: role,
-        roleApprovalStatus: roleApprovalStatus,
-      );
+    role: role,
+    roleApprovalStatus: roleApprovalStatus,
+  );
 
   bool get isRolePending => normalizedApprovalStatus == 'PENDING';
 

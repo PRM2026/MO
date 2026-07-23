@@ -22,6 +22,10 @@ class OwnerDashboardService {
     return _apiClient.getObject('/owner/dashboard', (json) => json);
   }
 
+  Future<Map<String, dynamic>> getOwnerResults() async {
+    return _apiClient.getObject('/owner/results', (json) => json);
+  }
+
   Future<List<TournamentListItem>> getTournaments() async {
     return _apiClient.getList(
       '/tournaments',

@@ -6,6 +6,36 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
+  test('login accepts the UUID userId returned by the Railway API', () async {
+    final service = AuthApiService(
+      baseUrl: 'https://api.example.test',
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'success': true,
+            'message': 'Đăng nhập thành công',
+            'data': {
+              'token': 'jwt-token',
+              'tokenType': 'Bearer',
+              'userId': '6a45ffa2f39ce4024ca749e9',
+              'role': 'OWNER',
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        ),
+      ),
+    );
+
+    final session = await service.login(
+      email: 'owner1@hr.vn',
+      password: 'Password123!',
+    );
+
+    expect(session.token, 'jwt-token');
+    expect(session.role, 'OWNER');
+  });
+
   test(
     'login returns two-factor challenge without requiring a token',
     () async {

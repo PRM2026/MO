@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/referee_colors.dart';
 
-enum PasswordStrength {
-  weak,
-  medium,
-  strong,
-}
+enum PasswordStrength { weak, medium, strong }
 
 abstract final class PasswordStrengthUtils {
   static int score(String password) {

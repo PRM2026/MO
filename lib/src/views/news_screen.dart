@@ -92,15 +92,13 @@ class _NewsScreenState extends State<NewsScreen> {
                     if (_viewModel.featuredNews.isNotEmpty) ...[
                       FeaturedNewsSection(
                         articles: _viewModel.featuredNews,
-                        onReadMore: (_) =>
-                            _showSnack('Đang mở bài viết...'),
+                        onReadMore: (_) => _showSnack('Đang mở bài viết...'),
                       ),
                       const SizedBox(height: AppSpacing.section),
                     ],
                     LatestNewsSection(
                       articles: _viewModel.latestNews,
-                      onArticleTap: (_) =>
-                          _showSnack('Đang mở bài viết...'),
+                      onArticleTap: (_) => _showSnack('Đang mở bài viết...'),
                       onLoadMore: _viewModel.refreshNews,
                     ),
                   ],

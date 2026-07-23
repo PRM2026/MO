@@ -12,13 +12,14 @@ class RoleRequestViewModel extends ChangeNotifier {
     AuthRepository? authRepository,
     RoleApplicationService? applicationService,
     RoleApplicationRepository? repository,
-  })  : _authRepository = authRepository ?? AuthRepository(),
-        _applicationService = applicationService ?? RoleApplicationService(),
-        _repository = repository ??
-            RoleApplicationRepository(
-              authRepository: authRepository,
-              applicationService: applicationService,
-            );
+  }) : _authRepository = authRepository ?? AuthRepository(),
+       _applicationService = applicationService ?? RoleApplicationService(),
+       _repository =
+           repository ??
+           RoleApplicationRepository(
+             authRepository: authRepository,
+             applicationService: applicationService,
+           );
 
   final AuthRepository _authRepository;
   final RoleApplicationService _applicationService;

@@ -5,7 +5,7 @@ import '../repositories/news_repository.dart';
 
 class NewsViewModel extends ChangeNotifier {
   NewsViewModel({NewsRepository? repository})
-      : _repository = repository ?? NewsRepository();
+    : _repository = repository ?? NewsRepository();
 
   final NewsRepository _repository;
 

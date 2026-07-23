@@ -35,13 +35,13 @@ void main() {
 
       final invitation = (await service.getJockeyInvitations()).single;
 
-      expect(invitation.id, 7);
-      expect(invitation.ownerId, 3);
-      expect(invitation.jockeyId, 5);
-      expect(invitation.jockeyProfileId, 11);
-      expect(invitation.horseId, 21);
-      expect(invitation.raceId, 31);
-      expect(invitation.tournamentId, 41);
+      expect(invitation.id, '7');
+      expect(invitation.ownerId, '3');
+      expect(invitation.jockeyId, '5');
+      expect(invitation.jockeyProfileId, '11');
+      expect(invitation.horseId, '21');
+      expect(invitation.raceId, '31');
+      expect(invitation.tournamentId, '41');
       expect(invitation.remunerationAmount, 500000);
       expect(invitation.statusCode, 'PENDING');
       expect(invitation.createdAt, DateTime.parse('2026-06-18T08:00:00'));
@@ -72,7 +72,7 @@ void main() {
         }),
       );
 
-      final invitation = await service.getJockeyInvitation(7);
+      final invitation = await service.getJockeyInvitation('7');
 
       expect(invitation.horseName, 'Night Wind');
       expect(invitation.statusLabel, 'Đã nhận');
@@ -95,7 +95,7 @@ void main() {
       );
 
       expect(
-        () => service.getJockeyInvitation(99),
+        () => service.getJockeyInvitation('99'),
         throwsA(
           isA<JockeyInvitationApiException>().having(
             (error) => error.message,
@@ -178,7 +178,7 @@ void main() {
         }),
       );
 
-      final invitation = await service.acceptInvitation(7, note: ' Ready ');
+      final invitation = await service.acceptInvitation('7', note: ' Ready ');
 
       expect(invitation.statusCode, 'ACCEPTED');
       expect(invitation.responseNote, 'Ready');
@@ -204,7 +204,7 @@ void main() {
         }),
       );
 
-      final invitation = await service.rejectInvitation(7, note: 'Busy');
+      final invitation = await service.rejectInvitation('7', note: 'Busy');
 
       expect(invitation.statusCode, 'REJECTED');
       expect(invitation.responseNote, 'Busy');
@@ -226,7 +226,7 @@ void main() {
         }),
       );
 
-      final invitation = await service.acceptInvitation(7, note: '   ');
+      final invitation = await service.acceptInvitation('7', note: '   ');
 
       expect(invitation.statusCode, 'ACCEPTED');
     });
@@ -248,7 +248,7 @@ void main() {
       );
 
       expect(
-        () => service.rejectInvitation(7, note: 'x' * 1001),
+        () => service.rejectInvitation('7', note: 'x' * 1001),
         throwsA(
           isA<JockeyInvitationApiException>().having(
             (error) => error.message,

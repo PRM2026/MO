@@ -91,8 +91,9 @@ class _ProcessStepItem extends StatelessWidget {
             children: [
               Text(
                 step.title,
-                style: AppTypography.headlineSm(AboutColors.primary)
-                    .copyWith(fontSize: 18),
+                style: AppTypography.headlineSm(
+                  AboutColors.primary,
+                ).copyWith(fontSize: 18),
               ),
               const SizedBox(height: 4),
               Text(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 
-enum JockeyTab { dashboard, invitations, schedule, results, assignments }
+enum JockeyTab { dashboard, invitations, schedule, results, assignments, more }
 
 class JockeyBottomNav extends StatelessWidget {
   const JockeyBottomNav({
@@ -17,15 +17,14 @@ class JockeyBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: RefereeColors.portalSurface.withValues(alpha: 0.9),
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-        ),
+        color: scheme.surfaceContainer,
+        border: Border(top: BorderSide(color: scheme.outlineVariant)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: scheme.shadow.withValues(alpha: 0.18),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -67,7 +66,7 @@ const _items = [
   _NavItemData(JockeyTab.invitations, Icons.mail_outline, 'Lời mời'),
   _NavItemData(JockeyTab.schedule, Icons.calendar_today_outlined, 'Lịch đua'),
   _NavItemData(JockeyTab.results, Icons.military_tech_outlined, 'Kết quả'),
-  _NavItemData(JockeyTab.assignments, Icons.pets_outlined, 'Phân công'),
+  _NavItemData(JockeyTab.more, Icons.grid_view_outlined, 'Thêm'),
 ];
 
 class _NavItem extends StatelessWidget {
@@ -85,9 +84,10 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final color = selected
         ? RefereeColors.championshipGold
-        : RefereeColors.onSurfaceVariant.withValues(alpha: 0.6);
+        : scheme.onSurfaceVariant.withValues(alpha: 0.8);
 
     return InkWell(
       onTap: onTap,
@@ -97,18 +97,13 @@ class _NavItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: selected ? 24 : 22,
-            ),
+            Icon(icon, color: color, size: selected ? 24 : 22),
             const SizedBox(height: 4),
             Text(
               label,
-              style: AppTypography.labelCaps(color).copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTypography.labelCaps(
+                color,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w500),
             ),
           ],
         ),

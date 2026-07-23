@@ -38,8 +38,7 @@ class _OwnerHorseDetailScreenState extends State<OwnerHorseDetailScreen> {
     super.initState();
     _ownsViewModel = widget.viewModel == null;
     _viewModel =
-        widget.viewModel ??
-        OwnerHorseDetailViewModel(horseId: widget.horseId);
+        widget.viewModel ?? OwnerHorseDetailViewModel(horseId: widget.horseId);
     _viewModel.addListener(_onChanged);
     _viewModel.loadDetail();
   }
@@ -213,29 +212,17 @@ class _OwnerHorseDetailScreenState extends State<OwnerHorseDetailScreen> {
                         children: [
                           _InfoRow('Giống', detail.breed),
                           _InfoRow('Tuổi', _ageLabel(detail.age)),
-                          _InfoRow(
-                            'Giới tính',
-                            _emptyLabel(detail.gender),
-                          ),
+                          _InfoRow('Giới tính', _emptyLabel(detail.gender)),
                           _InfoRow('Màu lông', _emptyLabel(detail.color)),
-                          _InfoRow(
-                            'Thể trạng',
-                            _bodyMetricsLabel(detail),
-                          ),
+                          _InfoRow('Thể trạng', _bodyMetricsLabel(detail)),
                           if (detail.ownerUsername?.isNotEmpty == true)
-                            _InfoRow(
-                              'Chủ sở hữu',
-                              detail.ownerUsername!,
-                            ),
+                            _InfoRow('Chủ sở hữu', detail.ownerUsername!),
                           if (detail.ownerId != null)
                             _InfoRow('Owner ID', '${detail.ownerId}'),
                           if (detail.createdAt != null)
                             _InfoRow('Ngày tạo', _formatDate(detail.createdAt)),
                           if (detail.updatedAt != null)
-                            _InfoRow(
-                              'Cập nhật',
-                              _formatDate(detail.updatedAt),
-                            ),
+                            _InfoRow('Cập nhật', _formatDate(detail.updatedAt)),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -294,9 +281,7 @@ class _HeroCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         detail.name,
-                        style: AppTypography.displayMd(
-                          RefereeColors.onSurface,
-                        ),
+                        style: AppTypography.displayMd(RefereeColors.onSurface),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -413,10 +398,7 @@ class _InfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: AppTypography.headlineSm(RefereeColors.onSurface),
-          ),
+          Text(title, style: AppTypography.headlineSm(RefereeColors.onSurface)),
           const SizedBox(height: 12),
           ...children,
         ],
@@ -603,9 +585,9 @@ class _RaceHistoryTile extends StatelessWidget {
         children: [
           Text(
             item.raceName,
-            style: AppTypography.bodyMd(RefereeColors.onSurface).copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTypography.bodyMd(
+              RefereeColors.onSurface,
+            ).copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
           Text(

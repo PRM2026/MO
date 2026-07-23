@@ -14,11 +14,7 @@ abstract final class TournamentColors {
   static const LinearGradient imageOverlay = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
-    colors: [
-      Color(0xE60D2542),
-      Color(0x660D2542),
-      Colors.transparent,
-    ],
+    colors: [Color(0xE60D2542), Color(0x660D2542), Colors.transparent],
     stops: [0.0, 0.5, 1.0],
   );
 }

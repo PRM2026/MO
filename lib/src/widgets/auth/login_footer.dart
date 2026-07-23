@@ -42,8 +42,9 @@ class LoginFooter extends StatelessWidget {
                 onTap: onActionTap,
                 child: Text(
                   actionLabel,
-                  style: AppTypography.bodyMd(AuthColors.primaryDark)
-                      .copyWith(fontWeight: FontWeight.w700),
+                  style: AppTypography.bodyMd(
+                    AuthColors.primaryDark,
+                  ).copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
             ],

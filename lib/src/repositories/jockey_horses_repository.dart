@@ -129,18 +129,20 @@ JockeyRaceHistoryItem? _resolveHistory(
   for (final item in history) {
     if (invitation.raceId != null &&
         invitation.horseId != null &&
-        item.raceId == invitation.raceId &&
-        item.horseId == invitation.horseId) {
+        '${item.raceId}' == invitation.raceId.toString() &&
+        '${item.horseId}' == invitation.horseId.toString()) {
       return item;
     }
   }
   for (final item in history) {
-    if (invitation.raceId != null && item.raceId == invitation.raceId) {
+    if (invitation.raceId != null &&
+        '${item.raceId}' == invitation.raceId.toString()) {
       return item;
     }
   }
   for (final item in history) {
-    if (invitation.horseId != null && item.horseId == invitation.horseId) {
+    if (invitation.horseId != null &&
+        '${item.horseId}' == invitation.horseId.toString()) {
       return item;
     }
   }

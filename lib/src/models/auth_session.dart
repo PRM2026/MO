@@ -31,7 +31,7 @@ class AuthSession {
     return AuthSession(
       token: (json['token'] as String?) ?? '',
       tokenType: (json['tokenType'] as String?) ?? 'Bearer',
-      userId: (json['userId'] as num?)?.toInt(),
+      userId: _readInt(json['userId']),
       username: json['username'] as String?,
       email: json['email'] as String?,
       fullName: json['fullName'] as String?,
@@ -50,5 +50,11 @@ class AuthSession {
     if (value == null) return null;
     if (value is String) return value;
     return value.toString();
+  }
+
+  static int? _readInt(Object? value) {
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 }

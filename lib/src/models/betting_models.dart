@@ -9,20 +9,20 @@ class BetOption {
     this.status,
   });
 
-  final int participantId;
-  final int horseId;
+  final String participantId;
+  final String horseId;
   final String horseName;
-  final int? jockeyId;
+  final String? jockeyId;
   final String? jockeyUsername;
   final int? gateNumber;
   final String? status;
 
   factory BetOption.fromJson(Map<String, dynamic> json) {
     return BetOption(
-      participantId: _int(json['participantId']),
-      horseId: _int(json['horseId']),
+      participantId: _id(json['participantId']),
+      horseId: _id(json['horseId']),
       horseName: _text(json['horseName'], fallback: 'Chưa cập nhật'),
-      jockeyId: _nullableInt(json['jockeyId']),
+      jockeyId: _nullableText(json['jockeyId']),
       jockeyUsername: _nullableText(json['jockeyUsername']),
       gateNumber: _nullableInt(json['gateNumber']),
       status: _nullableText(json['status']),
@@ -46,10 +46,10 @@ class BetMarket {
     this.closedAt,
   });
 
-  final int id;
-  final int raceId;
+  final String id;
+  final String raceId;
   final String raceName;
-  final int tournamentId;
+  final String tournamentId;
   final String tournamentName;
   final String status;
   final num minStake;
@@ -62,10 +62,10 @@ class BetMarket {
   factory BetMarket.fromJson(Map<String, dynamic> json) {
     final rawOptions = json['options'];
     return BetMarket(
-      id: _int(json['id']),
-      raceId: _int(json['raceId']),
+      id: _id(json['id']),
+      raceId: _id(json['raceId']),
       raceName: _text(json['raceName'], fallback: 'Cuộc đua'),
-      tournamentId: _int(json['tournamentId']),
+      tournamentId: _id(json['tournamentId']),
       tournamentName: _text(json['tournamentName'], fallback: 'Giải đấu'),
       status: _text(json['status'], fallback: 'UNKNOWN').toUpperCase(),
       minStake: _number(json['minStake']),
@@ -103,12 +103,12 @@ class BetRecord {
     this.settledAt,
   });
 
-  final int id;
-  final int marketId;
-  final int raceId;
+  final String id;
+  final String marketId;
+  final String raceId;
   final String raceName;
-  final int participantId;
-  final int horseId;
+  final String participantId;
+  final String horseId;
   final String horseName;
   final num stakeAmount;
   final num potentialPayoutAmount;
@@ -120,12 +120,12 @@ class BetRecord {
 
   factory BetRecord.fromJson(Map<String, dynamic> json) {
     return BetRecord(
-      id: _int(json['id']),
-      marketId: _int(json['marketId']),
-      raceId: _int(json['raceId']),
+      id: _id(json['id']),
+      marketId: _id(json['marketId']),
+      raceId: _id(json['raceId']),
       raceName: _text(json['raceName'], fallback: 'Cuộc đua'),
-      participantId: _int(json['participantId']),
-      horseId: _int(json['horseId']),
+      participantId: _id(json['participantId']),
+      horseId: _id(json['horseId']),
       horseName: _text(json['horseName'], fallback: 'Chưa cập nhật'),
       stakeAmount: _number(json['stakeAmount']),
       potentialPayoutAmount: _number(json['potentialPayoutAmount']),
@@ -138,7 +138,7 @@ class BetRecord {
   }
 }
 
-int _int(Object? value) => _nullableInt(value) ?? 0;
+String _id(Object? value) => value?.toString().trim() ?? '';
 
 int? _nullableInt(Object? value) {
   if (value is num) return value.toInt();

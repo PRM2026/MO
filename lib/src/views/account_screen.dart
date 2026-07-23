@@ -109,7 +109,9 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.all(12),
                         child: SelectableText(
-                          _token?.isNotEmpty == true ? _token! : 'Không có token',
+                          _token?.isNotEmpty == true
+                              ? _token!
+                              : 'Không có token',
                           style: const TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,

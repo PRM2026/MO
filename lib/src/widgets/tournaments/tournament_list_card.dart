@@ -7,11 +7,7 @@ import '../../models/tournament_list_item.dart';
 import '../news/news_network_image.dart';
 
 class TournamentListCard extends StatelessWidget {
-  const TournamentListCard({
-    super.key,
-    required this.tournament,
-    this.onTap,
-  });
+  const TournamentListCard({super.key, required this.tournament, this.onTap});
 
   final TournamentListItem tournament;
   final VoidCallback? onTap;
@@ -207,8 +203,9 @@ class _MetaItem extends StatelessWidget {
               label,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.bodySm(TournamentColors.onSurfaceVariant)
-                  .copyWith(fontWeight: FontWeight.w600),
+              style: AppTypography.bodySm(
+                TournamentColors.onSurfaceVariant,
+              ).copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ],

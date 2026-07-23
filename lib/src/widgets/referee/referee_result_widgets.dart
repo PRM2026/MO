@@ -42,10 +42,9 @@ class RefereeBreadcrumb extends StatelessWidget {
   Widget _crumb(String text, Color color) {
     return Text(
       text,
-      style: AppTypography.labelCaps(color).copyWith(
-        fontWeight: FontWeight.w500,
-        fontSize: 12,
-      ),
+      style: AppTypography.labelCaps(
+        color,
+      ).copyWith(fontWeight: FontWeight.w500, fontSize: 12),
     );
   }
 }
@@ -59,8 +58,8 @@ class RefereeRaceSelector extends StatelessWidget {
   });
 
   final List<RefereeRaceOption> races;
-  final int? selectedRaceId;
-  final ValueChanged<int?> onChanged;
+  final String? selectedRaceId;
+  final ValueChanged<String?> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +68,14 @@ class RefereeRaceSelector extends StatelessWidget {
     return RefereeGlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<int>(
+        child: DropdownButton<String>(
           isExpanded: true,
           value: selectedRaceId,
           dropdownColor: RefereeColors.portalSurface,
           icon: const Icon(Icons.expand_more, color: RefereeColors.tertiary),
           items: races
               .map(
-                (race) => DropdownMenuItem<int>(
+                (race) => DropdownMenuItem<String>(
                   value: race.id,
                   child: Text(
                     race.label,
@@ -119,24 +118,29 @@ class RefereeResultsTable extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'BẢNG KẾT QUẢ VỀ ĐÍCH',
-                    style: AppTypography.labelCaps(RefereeColors.onSurface)
-                        .copyWith(fontSize: 14),
+                    style: AppTypography.labelCaps(
+                      RefereeColors.onSurface,
+                    ).copyWith(fontSize: 14),
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: (isFinalized
-                            ? RefereeColors.successEmerald
-                            : RefereeColors.tertiary)
-                        .withValues(alpha: 0.1),
+                    color:
+                        (isFinalized
+                                ? RefereeColors.successEmerald
+                                : RefereeColors.tertiary)
+                            .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
-                      color: (isFinalized
-                              ? RefereeColors.successEmerald
-                              : RefereeColors.tertiary)
-                          .withValues(alpha: 0.2),
+                      color:
+                          (isFinalized
+                                  ? RefereeColors.successEmerald
+                                  : RefereeColors.tertiary)
+                              .withValues(alpha: 0.2),
                     ),
                   ),
                   child: Text(
@@ -203,8 +207,9 @@ class _ResultListTile extends StatelessWidget {
                       row.horseName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.labelCaps(RefereeColors.onSurface)
-                          .copyWith(fontSize: 14, letterSpacing: 0.2),
+                      style: AppTypography.labelCaps(
+                        RefereeColors.onSurface,
+                      ).copyWith(fontSize: 14, letterSpacing: 0.2),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -220,8 +225,9 @@ class _ResultListTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         row.statusLabel!,
-                        style: AppTypography.labelCaps(RefereeColors.statusRed)
-                            .copyWith(fontSize: 10),
+                        style: AppTypography.labelCaps(
+                          RefereeColors.statusRed,
+                        ).copyWith(fontSize: 10),
                       ),
                     ],
                   ],
@@ -283,8 +289,9 @@ class _RankBadge extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: AppTypography.labelCaps(RefereeColors.tertiary)
-              .copyWith(fontWeight: FontWeight.w700),
+          style: AppTypography.labelCaps(
+            RefereeColors.tertiary,
+          ).copyWith(fontWeight: FontWeight.w700),
         ),
       );
     }
@@ -331,8 +338,9 @@ class RefereePrizePreviewCard extends StatelessWidget {
             children: [
               Text(
                 'CƠ CẤU GIẢI THƯỞNG',
-                style: AppTypography.labelCaps(RefereeColors.tertiary)
-                    .copyWith(letterSpacing: 1.2),
+                style: AppTypography.labelCaps(
+                  RefereeColors.tertiary,
+                ).copyWith(letterSpacing: 1.2),
               ),
               const SizedBox(height: 16),
               Row(
@@ -349,8 +357,9 @@ class RefereePrizePreviewCard extends StatelessWidget {
                     child: RichText(
                       textAlign: TextAlign.end,
                       text: TextSpan(
-                        style: AppTypography.headlineSm(RefereeColors.onSurface)
-                            .copyWith(fontWeight: FontWeight.w700),
+                        style: AppTypography.headlineSm(
+                          RefereeColors.onSurface,
+                        ).copyWith(fontWeight: FontWeight.w700),
                         children: [
                           TextSpan(text: totalPrizePool),
                           TextSpan(
@@ -384,14 +393,16 @@ class RefereePrizePreviewCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         row.amount,
-                        style: AppTypography.bodySm(
-                          row.highlight
-                              ? RefereeColors.championshipGold
-                              : RefereeColors.onSurface,
-                        ).copyWith(
-                          fontWeight:
-                              row.highlight ? FontWeight.w700 : FontWeight.w500,
-                        ),
+                        style:
+                            AppTypography.bodySm(
+                              row.highlight
+                                  ? RefereeColors.championshipGold
+                                  : RefereeColors.onSurface,
+                            ).copyWith(
+                              fontWeight: row.highlight
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
                       ),
                     ],
                   ),
@@ -491,8 +502,9 @@ class _ConfirmResultDialog extends StatelessWidget {
             Text(
               'Xác nhận chốt kết quả?',
               textAlign: TextAlign.center,
-              style: AppTypography.headlineSm(RefereeColors.onSurface)
-                  .copyWith(fontSize: 22),
+              style: AppTypography.headlineSm(
+                RefereeColors.onSurface,
+              ).copyWith(fontSize: 22),
             ),
             const SizedBox(height: 8),
             Text(
@@ -508,7 +520,9 @@ class _ConfirmResultDialog extends StatelessWidget {
                     onPressed: () => Navigator.pop(context, false),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: RefereeColors.onSurface,
-                      side: const BorderSide(color: RefereeColors.outlineVariant),
+                      side: const BorderSide(
+                        color: RefereeColors.outlineVariant,
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: const Text('Hủy bỏ'),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 
-enum SpectatorTab { home, races, results, profile }
+enum SpectatorTab { home, races, betting, results, profile, more }
 
 class SpectatorBottomNav extends StatelessWidget {
   const SpectatorBottomNav({
@@ -17,12 +17,11 @@ class SpectatorBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: RefereeColors.portalSurface.withValues(alpha: 0.9),
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-        ),
+        color: scheme.surfaceContainer,
+        border: Border(top: BorderSide(color: scheme.outlineVariant)),
       ),
       child: SafeArea(
         top: false,
@@ -66,16 +65,22 @@ const _items = [
     'Cuoc dua',
   ),
   _NavItemData(
+    SpectatorTab.betting,
+    Icons.paid_outlined,
+    Icons.paid,
+    'Đặt cược',
+  ),
+  _NavItemData(
     SpectatorTab.results,
     Icons.leaderboard_outlined,
     Icons.leaderboard,
     'Ket qua',
   ),
   _NavItemData(
-    SpectatorTab.profile,
-    Icons.person_outline,
-    Icons.person,
-    'Ho so',
+    SpectatorTab.more,
+    Icons.grid_view_outlined,
+    Icons.grid_view,
+    'Thêm',
   ),
 ];
 
@@ -96,9 +101,10 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final color = selected
         ? RefereeColors.championshipGold
-        : RefereeColors.onSurfaceVariant.withValues(alpha: 0.7);
+        : scheme.onSurfaceVariant.withValues(alpha: 0.8);
 
     return Material(
       color: Colors.transparent,
@@ -109,9 +115,7 @@ class _NavItem extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           decoration: selected
               ? BoxDecoration(
-                  color: RefereeColors.secondaryContainer.withValues(
-                    alpha: 0.3,
-                  ),
+                  color: scheme.primaryContainer.withValues(alpha: 0.45),
                   borderRadius: BorderRadius.circular(12),
                 )
               : null,

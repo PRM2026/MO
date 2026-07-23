@@ -11,10 +11,10 @@ class RefereeRaceParticipantResponse {
     this.checkedInAt,
   });
 
-  final int? id;
-  final int? raceId;
+  final String? id;
+  final String? raceId;
   final String? ownerUsername;
-  final int? horseId;
+  final String? horseId;
   final String? horseName;
   final String? jockeyUsername;
   final int? gateNumber;
@@ -23,10 +23,10 @@ class RefereeRaceParticipantResponse {
 
   factory RefereeRaceParticipantResponse.fromJson(Map<String, dynamic> json) {
     return RefereeRaceParticipantResponse(
-      id: _readInt(json['id']),
-      raceId: _readInt(json['raceId']),
+      id: _readString(json['id'] ?? json['participantId']),
+      raceId: _readString(json['raceId']),
       ownerUsername: _readString(json['ownerUsername']),
-      horseId: _readInt(json['horseId']),
+      horseId: _readString(json['horseId']),
       horseName: _readString(json['horseName']),
       jockeyUsername: _readString(json['jockeyUsername']),
       gateNumber: _readInt(json['gateNumber']),

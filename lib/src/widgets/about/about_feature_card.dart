@@ -41,8 +41,9 @@ class AboutFeatureCard extends StatelessWidget {
                 children: [
                   Text(
                     feature.title,
-                    style: AppTypography.headlineSm(AboutColors.primary)
-                        .copyWith(fontSize: 18),
+                    style: AppTypography.headlineSm(
+                      AboutColors.primary,
+                    ).copyWith(fontSize: 18),
                   ),
                   const SizedBox(height: 4),
                   Text(

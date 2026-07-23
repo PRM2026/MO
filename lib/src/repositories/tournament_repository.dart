@@ -3,7 +3,7 @@ import '../services/tournament_api_service.dart';
 
 class TournamentRepository {
   TournamentRepository({TournamentApiService? apiService})
-      : _apiService = apiService ?? TournamentApiService();
+    : _apiService = apiService ?? TournamentApiService();
 
   final TournamentApiService _apiService;
 

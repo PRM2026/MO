@@ -55,9 +55,10 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final data = _viewModel.data;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: RefereeColors.background,
+      backgroundColor: scheme.surface,
       appBar: OwnerAppBar(
         profileImageUrl: data?.profileImageUrl,
         onProfileTap: widget.onProfileTap,
@@ -153,7 +154,7 @@ class _DashboardErrorState extends StatelessWidget {
             message,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: RefereeColors.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: AppSpacing.md),

@@ -5,6 +5,7 @@ import '../models/spectator_models.dart';
 import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../views/account_screen.dart';
+import '../views/admin/admin_shell.dart';
 import '../views/forgot_password_screen.dart';
 import '../views/login_screen.dart';
 import '../views/main_shell.dart';
@@ -15,6 +16,7 @@ import '../views/jockey/jockey_deposit_screen.dart';
 import '../views/jockey/jockey_notifications_screen.dart';
 import '../views/jockey/jockey_profile_edit_screen.dart';
 import '../views/jockey/jockey_profile_screen.dart';
+import '../views/jockey/jockey_rankings_screen.dart';
 import '../views/jockey/jockey_race_detail_screen.dart';
 import '../views/jockey/jockey_race_results_screen.dart';
 import '../views/jockey/jockey_shell.dart';
@@ -24,10 +26,13 @@ import '../views/owner/owner_change_password_screen.dart';
 import '../views/owner/owner_create_jockey_invitation_screen.dart';
 import '../views/owner/owner_jockey_invitations_screen.dart';
 import '../views/owner/owner_race_registrations_screen.dart';
+import '../views/owner/owner_results_screen.dart';
 import '../views/owner/owner_shell.dart';
 import '../views/referee/referee_change_password_screen.dart';
 import '../views/referee/referee_profile_screen.dart';
+import '../views/referee/referee_invitations_screen.dart';
 import '../views/referee/referee_shell.dart';
+import '../views/referee/referee_violations_screen.dart';
 import '../views/register_screen.dart';
 import '../views/spectator/spectator_horse_ranking_screen.dart';
 import '../views/spectator/spectator_betting_screen.dart';
@@ -35,6 +40,7 @@ import '../views/spectator/spectator_race_detail_screen.dart';
 import '../views/spectator/spectator_race_results_screen.dart';
 import '../views/spectator/spectator_shell.dart';
 import '../views/spectator/spectator_tournament_detail_screen.dart';
+import '../views/tournaments_screen.dart';
 import '../widgets/home/home_bottom_nav.dart';
 
 abstract final class AppRoutes {
@@ -108,6 +114,55 @@ abstract final class AppRoutes {
   static Route<void> ownerRaceRegistrations() {
     return MaterialPageRoute<void>(
       builder: (_) => const OwnerRaceRegistrationsScreen(),
+    );
+  }
+
+  static Route<void> ownerResults() {
+    return MaterialPageRoute<void>(builder: (_) => const OwnerResultsScreen());
+  }
+
+  static Route<void> jockeyRankings() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const JockeyRankingsScreen(),
+    );
+  }
+
+  static Route<void> jockeyTournaments() {
+    return MaterialPageRoute<void>(
+      builder: (context) => TournamentsScreen(
+        showBack: true,
+        onTournamentTap: (id) => Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => SpectatorTournamentDetailScreen(
+              tournamentId: id,
+              appBarTitle: 'Giải đấu của Jockey',
+              onRaceTap: (race) => openJockeyRaceDetail(context, race.id),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Route<void> spectatorTournaments() {
+    return MaterialPageRoute<void>(
+      builder: (context) => TournamentsScreen(
+        showBack: true,
+        onTournamentTap: (id) =>
+            openSpectatorTournamentDetail(context, tournamentId: id),
+      ),
+    );
+  }
+
+  static Route<void> refereeViolations() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const RefereeViolationsScreen(),
+    );
+  }
+
+  static Route<void> refereeInvitations() {
+    return MaterialPageRoute<void>(
+      builder: (_) => const RefereeInvitationsScreen(),
     );
   }
 
@@ -339,9 +394,15 @@ abstract final class AppRoutes {
         return ownerPortal();
       case 'SPECTATOR':
         return spectatorPortal();
+      case 'ADMIN':
+        return adminPortal();
       default:
         return main(initialTab: HomeTab.home);
     }
+  }
+
+  static Route<void> adminPortal() {
+    return MaterialPageRoute<void>(builder: (_) => const AdminShell());
   }
 
   /// After login/register: route to role portal or main home.
@@ -462,8 +523,24 @@ abstract final class AppRoutes {
     return Navigator.of(context).push(ownerRaceRegistrations());
   }
 
+  static Future<void> openOwnerResults(BuildContext context) {
+    return Navigator.of(context).push(ownerResults());
+  }
+
   static Future<void> openOwnerNotifications(BuildContext context) {
     return Navigator.of(context).push(ownerNotifications());
+  }
+
+  static Future<void> openJockeyRankings(BuildContext context) {
+    return Navigator.of(context).push(jockeyRankings());
+  }
+
+  static Future<void> openJockeyTournaments(BuildContext context) {
+    return Navigator.of(context).push(jockeyTournaments());
+  }
+
+  static Future<void> openSpectatorTournaments(BuildContext context) {
+    return Navigator.of(context).push(spectatorTournaments());
   }
 
   static Future<bool?> openOwnerJockeyInvitations(BuildContext context) {
@@ -510,6 +587,14 @@ abstract final class AppRoutes {
 
   static Future<void> openRefereeNotifications(BuildContext context) {
     return Navigator.of(context).push(refereeNotifications());
+  }
+
+  static Future<void> openRefereeInvitations(BuildContext context) {
+    return Navigator.of(context).push<void>(refereeInvitations());
+  }
+
+  static Future<void> openRefereeViolations(BuildContext context) {
+    return Navigator.of(context).push(refereeViolations());
   }
 
   static void openSpectatorRaceDetail(

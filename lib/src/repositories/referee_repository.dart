@@ -23,8 +23,8 @@ class RefereeRepository {
     await Future.wait([
       (() async {
         try {
-          assignedRaces =
-              await _dashboardService.getAssignedRacesWithParticipantCounts();
+          assignedRaces = await _dashboardService
+              .getAssignedRacesWithParticipantCounts();
         } catch (_) {}
       })(),
       (() async {

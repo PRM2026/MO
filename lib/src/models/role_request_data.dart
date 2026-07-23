@@ -2,18 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../constants/referee_colors.dart';
 
-enum SystemRoleType {
-  spectator,
-  horseOwner,
-  jockey,
-  referee,
-}
+enum SystemRoleType { spectator, horseOwner, jockey, referee }
 
-enum RoleHistoryStatus {
-  rejected,
-  approved,
-  pending,
-}
+enum RoleHistoryStatus { rejected, approved, pending }
 
 extension SystemRoleTypeX on SystemRoleType {
   String get label {
@@ -106,7 +97,8 @@ class RoleRequestOverview {
   }) {
     return RoleRequestOverview(
       displayName: displayName ?? 'USER',
-      profileImageUrl: profileImageUrl ??
+      profileImageUrl:
+          profileImageUrl ??
           'https://lh3.googleusercontent.com/aida-public/AB6AXuCzPdUxj7Tjm0x_2HS9oJ2FFbaZbqBgS2mTNBXzqOLoD19DPLegynaK3Fnb7ILsILTglzpKOX6oyEHS32TLDSDSfQsN-embyN9fVTrJIx49hUXQeY6ZF034V9zMhyGpFif6KhEvnHlPtpInLZ67AwGNAyT2HgeEDkrjyRIGaRz62G4OqrbkfmaCMS0_5tIajkMayPOxn5btaltowZe3PQOy_d0fHw0GRw3IJTDW7VZfGIT5h1YFX8nkOwOQxRgV06toTB35Pj9xL_6B',
       history: const [
         RoleApplicationHistoryItem(

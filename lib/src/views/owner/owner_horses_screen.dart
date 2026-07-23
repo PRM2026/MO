@@ -108,10 +108,8 @@ class _OwnerHorsesScreenState extends State<OwnerHorsesScreen> {
   Future<void> _openDetail(OwnerHorseItem horse) async {
     final changed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => OwnerHorseDetailScreen(
-          horseId: horse.id,
-          initialName: horse.name,
-        ),
+        builder: (_) =>
+            OwnerHorseDetailScreen(horseId: horse.id, initialName: horse.name),
       ),
     );
     if (changed == true) {

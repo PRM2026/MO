@@ -25,13 +25,17 @@ class JockeyInvitationRepository {
     await _service.rejectInvitation(_parseInvitationId(id), note: note);
   }
 
-  int _parseInvitationId(String id) {
-    final invitationId = int.tryParse(id);
-    if (invitationId == null || invitationId <= 0) {
+  String _parseInvitationId(String id) {
+    final invitationId = id.trim();
+    final isLegacyNumeric =
+        int.tryParse(invitationId) != null &&
+        (int.tryParse(invitationId) ?? 0) > 0;
+    final isObjectId = RegExp(r'^[a-fA-F0-9]{24}$').hasMatch(invitationId);
+    if (!isLegacyNumeric && !isObjectId) {
       throw const JockeyInvitationApiException(
         'Không xác định được mã lời mời.',
       );
     }
-    return invitationId;
+    return Uri.encodeComponent(invitationId);
   }
 }

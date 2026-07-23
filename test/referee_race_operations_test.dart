@@ -36,8 +36,8 @@ void main() {
       );
 
       final participant = await service.checkInParticipant(
-        raceId: 3,
-        participantId: 7,
+        raceId: '3',
+        participantId: '7',
         status: 'CHECKED_IN',
       );
 

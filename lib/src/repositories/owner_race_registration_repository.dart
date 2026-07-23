@@ -7,8 +7,8 @@ class OwnerRaceRegistrationRepository {
 
   final OwnerRaceRegistrationService _service;
 
-  Future<List<OwnerEligibleHorseTeam>> fetchEligibleTeams() =>
-      _service.getEligibleTeams();
+  Future<List<OwnerEligibleHorseTeam>> fetchEligibleTeams(String raceId) =>
+      _service.getEligibleTeams(raceId);
 
   Future<OwnerRaceRegistration> registerRace(
     String raceId,

@@ -4,7 +4,7 @@ import '../../constants/app_constants.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 
-enum OwnerTab { home, tournament, horses, profile }
+enum OwnerTab { home, tournament, horses, registrations, profile, more }
 
 class OwnerBottomNav extends StatelessWidget {
   const OwnerBottomNav({
@@ -18,12 +18,11 @@ class OwnerBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: RefereeColors.portalSurface.withValues(alpha: 0.9),
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-        ),
+        color: scheme.surfaceContainer,
+        border: Border(top: BorderSide(color: scheme.outlineVariant)),
       ),
       child: SafeArea(
         top: false,
@@ -50,12 +49,7 @@ class OwnerBottomNav extends StatelessWidget {
 }
 
 class _NavItemData {
-  const _NavItemData(
-    this.tab,
-    this.icon,
-    this.selectedIcon,
-    this.label,
-  );
+  const _NavItemData(this.tab, this.icon, this.selectedIcon, this.label);
 
   final OwnerTab tab;
   final IconData icon;
@@ -64,12 +58,7 @@ class _NavItemData {
 }
 
 const _items = [
-  _NavItemData(
-    OwnerTab.home,
-    Icons.home_outlined,
-    Icons.home,
-    'Trang chủ',
-  ),
+  _NavItemData(OwnerTab.home, Icons.home_outlined, Icons.home, 'Trang chủ'),
   _NavItemData(
     OwnerTab.tournament,
     Icons.emoji_events_outlined,
@@ -83,10 +72,16 @@ const _items = [
     'Ngựa',
   ),
   _NavItemData(
-    OwnerTab.profile,
-    Icons.person_outline,
-    Icons.person,
-    'Hồ sơ',
+    OwnerTab.registrations,
+    Icons.assignment_outlined,
+    Icons.assignment,
+    'Đăng ký',
+  ),
+  _NavItemData(
+    OwnerTab.more,
+    Icons.grid_view_outlined,
+    Icons.grid_view,
+    'Thêm',
   ),
 ];
 
@@ -107,9 +102,10 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final color = selected
         ? RefereeColors.championshipGold
-        : RefereeColors.onSurfaceVariant.withValues(alpha: 0.7);
+        : scheme.onSurfaceVariant.withValues(alpha: 0.8);
 
     return InkWell(
       onTap: onTap,
@@ -127,10 +123,9 @@ class _NavItem extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: AppTypography.labelCaps(color).copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTypography.labelCaps(
+                color,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w500),
             ),
           ],
         ),

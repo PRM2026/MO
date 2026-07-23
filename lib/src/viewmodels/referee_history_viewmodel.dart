@@ -5,7 +5,7 @@ import '../repositories/referee_history_repository.dart';
 
 class RefereeHistoryViewModel extends ChangeNotifier {
   RefereeHistoryViewModel({RefereeHistoryRepository? repository})
-      : _repository = repository ?? RefereeHistoryRepository();
+    : _repository = repository ?? RefereeHistoryRepository();
 
   final RefereeHistoryRepository _repository;
 
@@ -18,9 +18,7 @@ class RefereeHistoryViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      data = await _repository.fetchPageData(
-        raceId: data?.selectedRaceId,
-      );
+      data = await _repository.fetchPageData(raceId: data?.selectedRaceId);
     } catch (error) {
       if (kDebugMode) debugPrint('RefereeHistoryViewModel: $error');
       data = RaceResultConfirmationData.empty();
@@ -30,7 +28,7 @@ class RefereeHistoryViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> selectRace(int raceId) async {
+  Future<void> selectRace(String raceId) async {
     isLoading = true;
     notifyListeners();
 

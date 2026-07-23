@@ -17,8 +17,8 @@ class NewsApiException implements Exception {
 
 class NewsApiService {
   NewsApiService({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? ApiConfig.baseUrl;
+    : _client = client ?? http.Client(),
+      _baseUrl = baseUrl ?? ApiConfig.baseUrl;
 
   final http.Client _client;
   final String _baseUrl;
@@ -41,23 +41,33 @@ class NewsApiService {
       );
     }
 
-    final body = jsonDecode(response.body) as Map<String, dynamic>;
-    final apiResponse = ApiResponse<List<NewsArticle>>.fromJson(
-      body,
-      (data) => (data as List<dynamic>)
-          .map((item) => NewsArticle.fromJson(item as Map<String, dynamic>))
-          .toList(),
-    );
+    final decoded = jsonDecode(response.body);
+    final List<dynamic> items;
 
-    if (!apiResponse.success) {
-      throw NewsApiException(
-        apiResponse.message.isEmpty
-            ? 'Không thể tải tin tức'
-            : apiResponse.message,
+    if (decoded is List<dynamic>) {
+      items = decoded;
+    } else if (decoded is Map<String, dynamic>) {
+      final apiResponse = ApiResponse<List<dynamic>>.fromJson(
+        decoded,
+        (data) => data as List<dynamic>,
       );
+      if (!apiResponse.success) {
+        throw NewsApiException(
+          apiResponse.message.isEmpty
+              ? 'Không thể tải tin tức'
+              : apiResponse.message,
+        );
+      }
+      items = apiResponse.data ?? const [];
+    } else {
+      throw NewsApiException('Phản hồi tin tức không hợp lệ.');
     }
 
-    return apiResponse.data ?? [];
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(NewsArticle.fromJson)
+        .where((article) => featured == null || article.isFeatured == featured)
+        .toList();
   }
 
   Future<NewsArticle> fetchNewsDetail(String id) async {

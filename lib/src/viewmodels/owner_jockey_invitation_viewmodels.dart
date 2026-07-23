@@ -392,9 +392,9 @@ bool _canInviteRace(OwnerTournamentRace race) {
   return !{'CANCELLED', 'COMPLETED', 'RESULT_CONFIRMED'}.contains(race.status);
 }
 
-int? _parseId(String? value) {
+String? _parseId(String? value) {
   if (value == null || value.trim().isEmpty) return null;
-  return int.tryParse(value.trim());
+  return value.trim();
 }
 
 num? _parseAmount(String value) {

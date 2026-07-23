@@ -240,9 +240,7 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
                       title: 'Tài liệu',
                       value:
                           _documentName ??
-                          _existingFileLabel(
-                            widget.initialDetail?.documentUrl,
-                          ),
+                          _existingFileLabel(widget.initialDetail?.documentUrl),
                       onTap: _pickDocument,
                     ),
                     const SizedBox(height: 24),
@@ -364,9 +362,7 @@ class _FilePickTile extends StatelessWidget {
                     value!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodySm(
-                      RefereeColors.onSurfaceVariant,
-                    ),
+                    style: AppTypography.bodySm(RefereeColors.onSurfaceVariant),
                   ),
               ],
             ),

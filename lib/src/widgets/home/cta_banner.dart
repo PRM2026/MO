@@ -5,11 +5,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 
 class CtaBanner extends StatelessWidget {
-  const CtaBanner({
-    super.key,
-    this.onRegister,
-    this.onLogin,
-  });
+  const CtaBanner({super.key, this.onRegister, this.onLogin});
 
   final VoidCallback? onRegister;
   final VoidCallback? onLogin;

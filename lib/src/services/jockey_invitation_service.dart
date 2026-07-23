@@ -34,7 +34,7 @@ class JockeyInvitationService {
     );
   }
 
-  Future<JockeyInvitationResponse> getJockeyInvitation(int id) async {
+  Future<JockeyInvitationResponse> getJockeyInvitation(String id) async {
     return _run(
       () => _apiClient.getObject(
         '/jockey/invitations/$id',
@@ -44,7 +44,7 @@ class JockeyInvitationService {
   }
 
   Future<JockeyInvitationResponse> acceptInvitation(
-    int id, {
+    String id, {
     String? note,
   }) async {
     return _run(
@@ -57,7 +57,7 @@ class JockeyInvitationService {
   }
 
   Future<JockeyInvitationResponse> rejectInvitation(
-    int id, {
+    String id, {
     String? note,
   }) async {
     return _run(

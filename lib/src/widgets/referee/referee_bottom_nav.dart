@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 
-enum RefereeTab { overview, races, history, wallet }
+enum RefereeTab { overview, races, violations, history, wallet }
 
 class RefereeBottomNav extends StatelessWidget {
   const RefereeBottomNav({
@@ -17,16 +17,15 @@ class RefereeBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: RefereeColors.surfaceContainer,
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-        ),
+        color: scheme.surfaceContainer,
+        border: Border(top: BorderSide(color: scheme.outlineVariant)),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: scheme.shadow.withValues(alpha: 0.18),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -66,6 +65,7 @@ class _NavItemData {
 const _items = [
   _NavItemData(RefereeTab.overview, Icons.dashboard_outlined, 'Tổng quan'),
   _NavItemData(RefereeTab.races, Icons.sports_score_outlined, 'Cuộc đua'),
+  _NavItemData(RefereeTab.violations, Icons.gavel_outlined, 'Vi phạm'),
   _NavItemData(RefereeTab.history, Icons.history, 'Lịch sử'),
   _NavItemData(RefereeTab.wallet, Icons.account_balance_wallet_outlined, 'Ví'),
 ];
@@ -85,13 +85,11 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        selected ? RefereeColors.tertiary : RefereeColors.onSurfaceVariant;
+    final scheme = Theme.of(context).colorScheme;
+    final color = selected ? RefereeColors.tertiary : scheme.onSurfaceVariant;
 
     return Material(
-      color: selected
-          ? RefereeColors.tertiaryContainer
-          : Colors.transparent,
+      color: selected ? scheme.primaryContainer : Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -105,10 +103,9 @@ class _NavItem extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 label,
-                style: AppTypography.labelCaps(color).copyWith(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTypography.labelCaps(
+                  color,
+                ).copyWith(fontSize: 10, fontWeight: FontWeight.w500),
               ),
             ],
           ),

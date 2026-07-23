@@ -5,6 +5,7 @@ import '../repositories/auth_repository.dart';
 import '../utils/role_utils.dart';
 import '../widgets/home/home_bottom_nav.dart';
 import 'about_screen.dart';
+import 'admin/admin_shell.dart';
 import 'home_screen.dart';
 import 'jockey/jockey_shell.dart';
 import 'news_screen.dart';
@@ -77,6 +78,7 @@ class MainShellState extends State<MainShell> {
             'REFEREE' => const RefereeShell(),
             'OWNER' => const OwnerShell(),
             'SPECTATOR' => const SpectatorShell(),
+            'ADMIN' => const AdminShell(),
             _ => const MainShell(),
           },
         ),
@@ -145,9 +147,7 @@ class MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     if (_isCheckingAuth) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(

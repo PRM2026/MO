@@ -36,16 +36,18 @@ class NewsHighlightCard extends StatelessWidget {
                   children: [
                     Text(
                       article.category,
-                      style: AppTypography.labelCaps(AppColors.primary)
-                          .copyWith(fontSize: 11),
+                      style: AppTypography.labelCaps(
+                        AppColors.primary,
+                      ).copyWith(fontSize: 11),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       article.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodyMd(AppColors.onSurface)
-                          .copyWith(fontWeight: FontWeight.w500, fontSize: 13),
+                      style: AppTypography.bodyMd(
+                        AppColors.onSurface,
+                      ).copyWith(fontWeight: FontWeight.w500, fontSize: 13),
                     ),
                   ],
                 ),

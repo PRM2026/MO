@@ -15,11 +15,13 @@ class SpectatorTournamentDetailScreen extends StatefulWidget {
     required this.tournamentId,
     this.onRaceTap,
     this.viewModel,
+    this.appBarTitle = 'Chi tiết giải đấu',
   });
 
   final String tournamentId;
   final ValueChanged<SpectatorRaceItem>? onRaceTap;
   final SpectatorTournamentDetailViewModel? viewModel;
+  final String appBarTitle;
 
   @override
   State<SpectatorTournamentDetailScreen> createState() =>
@@ -58,8 +60,8 @@ class _SpectatorTournamentDetailScreenState
 
         return Scaffold(
           backgroundColor: RefereeColors.background,
-          appBar: const SpectatorAppBar(
-            titleOverride: 'Chi tiet giai dau',
+          appBar: SpectatorAppBar(
+            titleOverride: widget.appBarTitle,
             showProfileAvatar: false,
           ),
           body: ListView(

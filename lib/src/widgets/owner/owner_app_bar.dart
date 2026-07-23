@@ -5,6 +5,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../common/profile_avatar.dart';
+import '../common/theme_mode_toggle.dart';
 
 class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
   const OwnerAppBar({
@@ -31,9 +32,10 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return AppBar(
-      backgroundColor: RefereeColors.background.withValues(alpha: 0.8),
-      foregroundColor: RefereeColors.onSurface,
+      backgroundColor: scheme.surface.withValues(alpha: 0.92),
+      foregroundColor: scheme.onSurface,
       elevation: 0,
       automaticallyImplyLeading: false,
       leading: showBack
@@ -51,8 +53,9 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
               titleOverride!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.headlineSm(RefereeColors.championshipGold)
-                  .copyWith(fontWeight: FontWeight.w700),
+              style: AppTypography.headlineSm(
+                RefereeColors.championshipGold,
+              ).copyWith(fontWeight: FontWeight.w700),
             )
           : Row(
               children: [
@@ -75,13 +78,11 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
               ],
             ),
       actions: [
+        const ThemeModeIconButton(),
         if (showSearchAction)
           IconButton(
             onPressed: onSearchTap,
-            icon: const Icon(
-              Icons.search,
-              color: RefereeColors.onSurfaceVariant,
-            ),
+            icon: Icon(Icons.search, color: scheme.onSurfaceVariant),
           ),
         ProfileAvatarButton(
           imageUrl: profileImageUrl,
@@ -93,10 +94,7 @@ class OwnerAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Divider(
-          height: 1,
-          color: Colors.white.withValues(alpha: 0.1),
-        ),
+        child: Divider(height: 1, color: scheme.outlineVariant),
       ),
     );
   }

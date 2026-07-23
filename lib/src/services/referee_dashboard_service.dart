@@ -72,7 +72,9 @@ class RefereeDashboardService {
     return violations;
   }
 
-  Future<List<RefereeRaceParticipantResponse>> getRaceParticipants(int raceId) {
+  Future<List<RefereeRaceParticipantResponse>> getRaceParticipants(
+    String raceId,
+  ) {
     return _apiClient.getList(
       '/referee/races/$raceId/participants',
       RefereeRaceParticipantResponse.fromJson,
@@ -80,8 +82,8 @@ class RefereeDashboardService {
   }
 
   Future<RefereeRaceParticipantResponse> checkInParticipant({
-    required int raceId,
-    required int participantId,
+    required String raceId,
+    required String participantId,
     required String status,
     String? note,
   }) {
@@ -95,7 +97,7 @@ class RefereeDashboardService {
     );
   }
 
-  Future<RefereeRaceResponse> startRace(int raceId) {
+  Future<RefereeRaceResponse> startRace(String raceId) {
     return _apiClient.putObject(
       '/referee/races/$raceId/start',
       {},
@@ -103,7 +105,7 @@ class RefereeDashboardService {
     );
   }
 
-  Future<List<RefereeRaceResultResponse>> getRaceResults(int raceId) {
+  Future<List<RefereeRaceResultResponse>> getRaceResults(String raceId) {
     return _apiClient.getList(
       '/races/$raceId/results',
       RefereeRaceResultResponse.fromJson,
@@ -112,7 +114,7 @@ class RefereeDashboardService {
   }
 
   Future<List<RefereeRaceResultResponse>> finalizeRaceResults(
-    int raceId,
+    String raceId,
     List<Map<String, dynamic>> results,
   ) {
     return _apiClient.postList(

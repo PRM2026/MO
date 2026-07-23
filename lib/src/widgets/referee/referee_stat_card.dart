@@ -26,8 +26,9 @@ class RefereeStatCard extends StatelessWidget {
                 stat.label.toUpperCase(),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-                    .copyWith(fontWeight: FontWeight.w500, fontSize: 11),
+                style: AppTypography.labelCaps(
+                  RefereeColors.onSurfaceVariant,
+                ).copyWith(fontWeight: FontWeight.w500, fontSize: 11),
               ),
               const SizedBox(height: 4),
               Row(
@@ -39,8 +40,9 @@ class RefereeStatCard extends StatelessWidget {
                       stat.value,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.headlineSm(RefereeColors.onSurface)
-                          .copyWith(fontSize: 24, height: 1.1),
+                      style: AppTypography.headlineSm(
+                        RefereeColors.onSurface,
+                      ).copyWith(fontSize: 24, height: 1.1),
                     ),
                   ),
                   if (stat.suffix != null) ...[

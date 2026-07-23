@@ -32,8 +32,9 @@ class _RefereePasswordFieldState extends State<RefereePasswordField> {
       children: [
         Text(
           widget.label.toUpperCase(),
-          style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-              .copyWith(fontSize: 13, letterSpacing: 0.8),
+          style: AppTypography.labelCaps(
+            RefereeColors.onSurfaceVariant,
+          ).copyWith(fontSize: 13, letterSpacing: 0.8),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -75,7 +76,9 @@ class _RefereePasswordFieldState extends State<RefereePasswordField> {
             suffixIcon: IconButton(
               onPressed: () => setState(() => _obscure = !_obscure),
               icon: Icon(
-                _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscure
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 color: RefereeColors.onSurfaceVariant,
               ),
             ),
@@ -87,10 +90,7 @@ class _RefereePasswordFieldState extends State<RefereePasswordField> {
 }
 
 class PasswordStrengthIndicator extends StatelessWidget {
-  const PasswordStrengthIndicator({
-    super.key,
-    required this.strength,
-  });
+  const PasswordStrengthIndicator({super.key, required this.strength});
 
   final PasswordStrength strength;
 
@@ -114,9 +114,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
                 height: 6,
                 margin: EdgeInsets.only(right: index < 2 ? 4 : 0),
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? color
-                      : Colors.white.withValues(alpha: 0.1),
+                  color: isActive ? color : Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
@@ -126,8 +124,9 @@ class PasswordStrengthIndicator extends StatelessWidget {
         const SizedBox(height: 8),
         RichText(
           text: TextSpan(
-            style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-                .copyWith(fontWeight: FontWeight.w500),
+            style: AppTypography.labelCaps(
+              RefereeColors.onSurfaceVariant,
+            ).copyWith(fontWeight: FontWeight.w500),
             children: [
               const TextSpan(text: 'Độ mạnh mật khẩu: '),
               TextSpan(
@@ -168,8 +167,9 @@ class PasswordSecurityRequirements extends StatelessWidget {
           children: [
             Text(
               'YÊU CẦU BẢO MẬT:',
-              style: AppTypography.labelCaps(RefereeColors.tertiary)
-                  .copyWith(letterSpacing: 0.6),
+              style: AppTypography.labelCaps(
+                RefereeColors.tertiary,
+              ).copyWith(letterSpacing: 0.6),
             ),
             const SizedBox(height: 8),
             for (final requirement in _requirements)
@@ -203,10 +203,7 @@ class PasswordSecurityRequirements extends StatelessWidget {
 }
 
 class RefereeChangePasswordGlowBackground extends StatelessWidget {
-  const RefereeChangePasswordGlowBackground({
-    super.key,
-    required this.child,
-  });
+  const RefereeChangePasswordGlowBackground({super.key, required this.child});
 
   final Widget child;
 

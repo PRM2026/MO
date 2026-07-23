@@ -25,14 +25,14 @@ class RefereeRaceOperationsScreen extends StatefulWidget {
 class _RefereeRaceOperationsScreenState
     extends State<RefereeRaceOperationsScreen> {
   final _service = RefereeDashboardService();
-  final Map<int, TextEditingController> _finishTimes = {};
+  final Map<String, TextEditingController> _finishTimes = {};
   List<RefereeRaceParticipantResponse> _participants = const [];
   bool _loading = true;
   bool _mutating = false;
   String? _error;
   late String _status;
 
-  int get _raceId => int.tryParse(widget.race.id) ?? 0;
+  String get _raceId => widget.race.id;
 
   @override
   void initState() {
@@ -132,9 +132,9 @@ class _RefereeRaceOperationsScreenState
     }
   }
 
-  TextEditingController _controllerFor(int? participantId) {
+  TextEditingController _controllerFor(String? participantId) {
     return _finishTimes.putIfAbsent(
-      participantId ?? 0,
+      participantId ?? '',
       TextEditingController.new,
     );
   }

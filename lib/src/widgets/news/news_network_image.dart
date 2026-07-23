@@ -21,8 +21,9 @@ class NewsNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedUrl = ImageUrlResolver.resolve(imageUrl);
-    final displayUrl =
-        resolvedUrl.isNotEmpty ? resolvedUrl : AppConstants.newsPlaceholderImage;
+    final displayUrl = resolvedUrl.isNotEmpty
+        ? resolvedUrl
+        : AppConstants.newsPlaceholderImage;
 
     final image = Image.network(
       displayUrl,

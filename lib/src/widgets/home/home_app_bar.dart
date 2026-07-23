@@ -8,6 +8,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 
 import '../common/brand_logo.dart';
+import '../common/theme_mode_toggle.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key, this.title, this.onLogin});
@@ -21,6 +22,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -37,7 +39,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   title ?? AppConstants.appName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.headlineSm(AppColors.onSurface).copyWith(
+                  style: AppTypography.headlineSm(scheme.onSurface).copyWith(
                     fontSize: title == null ? 15 : 18,
                     height: 1.2,
                     fontWeight: FontWeight.w700,
@@ -47,6 +49,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           actions: [
+            const ThemeModeIconButton(),
             if (onLogin != null)
               Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.md),
@@ -57,7 +60,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             preferredSize: const Size.fromHeight(1),
             child: Divider(
               height: 1,
-              color: AppColors.outlineVariant.withValues(alpha: 0.4),
+              color: scheme.outlineVariant.withValues(alpha: 0.7),
             ),
           ),
         ),

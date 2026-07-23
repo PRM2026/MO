@@ -107,8 +107,9 @@ class _RefereeChangePasswordScreenState
                 children: [
                   Text(
                     'Bảo mật tài khoản',
-                    style: AppTypography.displayLg(RefereeColors.onSurface)
-                        .copyWith(fontSize: 28),
+                    style: AppTypography.displayLg(
+                      RefereeColors.onSurface,
+                    ).copyWith(fontSize: 28),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -147,8 +148,9 @@ class _RefereeChangePasswordScreenState
                         const PasswordSecurityRequirements(),
                         const SizedBox(height: 24),
                         FilledButton(
-                          onPressed:
-                              _viewModel.isSubmitting ? null : _handleSubmit,
+                          onPressed: _viewModel.isSubmitting
+                              ? null
+                              : _handleSubmit,
                           style: FilledButton.styleFrom(
                             backgroundColor: RefereeColors.tertiary,
                             foregroundColor: RefereeColors.portalSurface,
@@ -157,10 +159,8 @@ class _RefereeChangePasswordScreenState
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 0,
-                            shadowColor:
-                                RefereeColors.championshipGold.withValues(
-                              alpha: 0.2,
-                            ),
+                            shadowColor: RefereeColors.championshipGold
+                                .withValues(alpha: 0.2),
                           ),
                           child: _viewModel.isSubmitting
                               ? const SizedBox(
@@ -173,13 +173,14 @@ class _RefereeChangePasswordScreenState
                                 )
                               : Text(
                                   'CẬP NHẬT MẬT KHẨU',
-                                  style: AppTypography.labelCaps(
-                                    RefereeColors.portalSurface,
-                                  ).copyWith(
-                                    fontSize: 14,
-                                    letterSpacing: 1.2,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                  style:
+                                      AppTypography.labelCaps(
+                                        RefereeColors.portalSurface,
+                                      ).copyWith(
+                                        fontSize: 14,
+                                        letterSpacing: 1.2,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                 ),
                         ),
                       ],

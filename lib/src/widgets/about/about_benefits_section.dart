@@ -18,10 +18,7 @@ class AboutBenefitsSection extends StatelessWidget {
       color: AboutColors.surfaceLow,
       child: Column(
         children: [
-          Text(
-            'Lợi ích',
-            style: AppTypography.headlineSm(AboutColors.primary),
-          ),
+          Text('Lợi ích', style: AppTypography.headlineSm(AboutColors.primary)),
           const SizedBox(height: 4),
           Text(
             'Những giá trị mà hệ thống mang lại cho người dùng',
@@ -53,11 +50,7 @@ class _BenefitItem extends StatelessWidget {
             color: AboutColors.surfaceHighest,
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            benefit.icon,
-            size: 32,
-            color: AboutColors.secondary,
-          ),
+          child: Icon(benefit.icon, size: 32, color: AboutColors.secondary),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(

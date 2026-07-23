@@ -5,7 +5,7 @@ import '../repositories/auth_repository.dart';
 
 class PersonalInfoViewModel extends ChangeNotifier {
   PersonalInfoViewModel({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? AuthRepository();
+    : _authRepository = authRepository ?? AuthRepository();
 
   final AuthRepository _authRepository;
 

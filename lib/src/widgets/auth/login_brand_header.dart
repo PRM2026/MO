@@ -30,10 +30,7 @@ class LoginBrandHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        Text(
-          'Đăng nhập',
-          style: AppTypography.displayMd(AuthColors.navy),
-        ),
+        Text('Đăng nhập', style: AppTypography.displayMd(AuthColors.navy)),
         const SizedBox(height: AppSpacing.sm),
         Text(
           'Chào mừng trở lại hệ thống quản lý giải đua ngựa',

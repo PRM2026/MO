@@ -21,18 +21,24 @@ class ApiClient {
     String path,
     T Function(Map<String, dynamic>) mapper, {
     bool authenticated = true,
+    bool allowBareResponse = false,
   }) async {
     final response = await _send('GET', path, authenticated: authenticated);
-    return _decodeObject(response, mapper);
+    return _decodeObject(
+      response,
+      mapper,
+      allowBareResponse: allowBareResponse,
+    );
   }
 
   Future<List<T>> getList<T>(
     String path,
     T Function(Map<String, dynamic>) mapper, {
     bool authenticated = true,
+    bool allowBareResponse = false,
   }) async {
     final response = await _send('GET', path, authenticated: authenticated);
-    return _decodeList(response, mapper);
+    return _decodeList(response, mapper, allowBareResponse: allowBareResponse);
   }
 
   Future<ApiPage<T>> getPage<T>(
@@ -156,14 +162,15 @@ class ApiClient {
 
   T _decodeObject<T>(
     http.Response response,
-    T Function(Map<String, dynamic>) mapper,
-  ) {
+    T Function(Map<String, dynamic>) mapper, {
+    bool allowBareResponse = false,
+  }) {
     final apiResponse = _decodeApiResponse<Map<String, dynamic>>(response, (
       data,
     ) {
       if (data is Map<String, dynamic>) return data;
       throw const ApiException('Phan hoi tu may chu khong hop le.');
-    });
+    }, allowBareResponse: allowBareResponse);
     final data = apiResponse.data;
     if (data == null) {
       throw ApiException(
@@ -178,12 +185,13 @@ class ApiClient {
 
   List<T> _decodeList<T>(
     http.Response response,
-    T Function(Map<String, dynamic>) mapper,
-  ) {
+    T Function(Map<String, dynamic>) mapper, {
+    bool allowBareResponse = false,
+  }) {
     final apiResponse = _decodeApiResponse<List<dynamic>>(response, (data) {
       if (data is List<dynamic>) return data;
       throw const ApiException('Phan hoi tu may chu khong hop le.');
-    });
+    }, allowBareResponse: allowBareResponse);
 
     return (apiResponse.data ?? const [])
         .whereType<Map<String, dynamic>>()
@@ -240,14 +248,11 @@ class ApiClient {
     http.Response response,
     T Function(Object? json) fromJsonT, {
     bool allowNullData = false,
+    bool allowBareResponse = false,
   }) {
-    final Map<String, dynamic> decoded;
+    final Object? decoded;
     try {
-      final raw = jsonDecode(response.body);
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException();
-      }
-      decoded = raw;
+      decoded = jsonDecode(response.body);
     } catch (_) {
       throw ApiException(
         'Phan hoi tu may chu khong hop le.',
@@ -257,6 +262,31 @@ class ApiClient {
 
     final isSuccessStatus =
         response.statusCode >= 200 && response.statusCode < 300;
+    if (decoded is! Map<String, dynamic> || !decoded.containsKey('success')) {
+      if (!isSuccessStatus) {
+        throw ApiException(
+          decoded is Map && decoded['message'] is String
+              ? decoded['message'] as String
+              : 'Khong the thuc hien yeu cau. Vui long thu lai.',
+          statusCode: response.statusCode,
+        );
+      }
+      if (!allowBareResponse) {
+        throw ApiException(
+          'Phan hoi tu may chu khong hop le.',
+          statusCode: response.statusCode,
+        );
+      }
+      if (decoded == null && allowNullData) {
+        return ApiResponse<T>(success: true, message: '', data: null);
+      }
+      return ApiResponse<T>(
+        success: true,
+        message: '',
+        data: fromJsonT(decoded),
+      );
+    }
+
     final success = decoded['success'] as bool? ?? false;
     final message = decoded['message'] as String? ?? '';
     final rawData = decoded['data'];

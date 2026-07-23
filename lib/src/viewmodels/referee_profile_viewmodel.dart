@@ -8,8 +8,8 @@ class RefereeProfileViewModel extends ChangeNotifier {
   RefereeProfileViewModel({
     RefereeProfileRepository? repository,
     AuthRepository? authRepository,
-  })  : _repository = repository ?? RefereeProfileRepository(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _repository = repository ?? RefereeProfileRepository(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final RefereeProfileRepository _repository;
   final AuthRepository _authRepository;
@@ -17,16 +17,18 @@ class RefereeProfileViewModel extends ChangeNotifier {
   bool isLoading = false;
   bool isLoggingOut = false;
   RefereeProfileData? data;
+  String? errorMessage;
 
   Future<void> loadData() async {
     isLoading = true;
     notifyListeners();
 
     try {
+      errorMessage = null;
       data = await _repository.fetchProfile();
     } catch (error) {
       if (kDebugMode) debugPrint('RefereeProfileViewModel: $error');
-      data = RefereeProfileData.sample();
+      errorMessage = 'Không thể tải hồ sơ trọng tài.';
     } finally {
       isLoading = false;
       notifyListeners();

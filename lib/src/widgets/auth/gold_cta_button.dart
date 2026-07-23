@@ -47,10 +47,7 @@ class GoldCtaButton extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : Text(
-                      label,
-                      style: AppTypography.headlineSm(Colors.white),
-                    ),
+                  : Text(label, style: AppTypography.headlineSm(Colors.white)),
             ),
           ),
         ),

@@ -3,7 +3,7 @@ import '../services/news_api_service.dart';
 
 class NewsRepository {
   NewsRepository({NewsApiService? apiService})
-      : _apiService = apiService ?? NewsApiService();
+    : _apiService = apiService ?? NewsApiService();
 
   final NewsApiService _apiService;
 

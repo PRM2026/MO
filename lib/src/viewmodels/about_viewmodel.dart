@@ -3,7 +3,7 @@ import '../repositories/about_repository.dart';
 
 class AboutViewModel {
   AboutViewModel({AboutRepository? repository})
-      : _repository = repository ?? const AboutRepository();
+    : _repository = repository ?? const AboutRepository();
 
   final AboutRepository _repository;
 

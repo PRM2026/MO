@@ -63,9 +63,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenPadding,
                   ),
-                  child: AboutFeaturesSection(
-                    features: _viewModel.features,
-                  ),
+                  child: AboutFeaturesSection(features: _viewModel.features),
                 ),
                 const SizedBox(height: AppSpacing.section),
                 AboutBenefitsSection(benefits: _viewModel.benefits),
@@ -76,9 +74,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     AppSpacing.screenPadding,
                     AppSpacing.section,
                   ),
-                  child: AboutProcessSection(
-                    steps: _viewModel.processSteps,
-                  ),
+                  child: AboutProcessSection(steps: _viewModel.processSteps),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
