@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:http/http.dart' as http;
 
 import '../models/owner_jockey_invitation.dart';
@@ -63,6 +65,7 @@ class OwnerJockeyInvitationService {
         '/owner/jockey-invitations',
         data.toJson(),
         OwnerJockeyInvitation.fromJson,
+        headers: {'Idempotency-Key': _newIdempotencyKey()},
       ),
     );
   }
@@ -116,5 +119,11 @@ class OwnerJockeyInvitationService {
         code: error.code,
       );
     }
+  }
+
+  String _newIdempotencyKey() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    return bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
   }
 }
