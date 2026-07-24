@@ -41,11 +41,27 @@ class RoleFilePicker {
     required bool imageOnly,
   }) async {
     if (kIsWeb) {
+      if (imageOnly) {
+        final picked = await _imagePicker.pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 85,
+          maxWidth: 1920,
+          maxHeight: 1920,
+        );
+        if (picked == null) return null;
+        final bytes = await picked.readAsBytes();
+        if (bytes.isEmpty) {
+          throw StateError('Không đọc được dữ liệu ảnh đã chọn.');
+        }
+        if (bytes.length > 5 * 1024 * 1024) {
+          throw StateError('Ảnh sau khi nén vẫn lớn hơn 5 MB.');
+        }
+        return PickedUploadFile(displayName: picked.name, bytes: bytes);
+      }
+
       final result = await FilePicker.pickFiles(
-        type: imageOnly ? FileType.image : FileType.custom,
-        allowedExtensions: imageOnly
-            ? null
-            : const ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+        type: FileType.custom,
+        allowedExtensions: const ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
         withData: true,
         allowMultiple: false,
       );
@@ -53,6 +69,9 @@ class RoleFilePicker {
       final picked = result.files.single;
       if (picked.bytes == null || picked.bytes!.isEmpty) {
         throw StateError('Không đọc được dữ liệu tệp đã chọn.');
+      }
+      if (picked.bytes!.length > 10 * 1024 * 1024) {
+        throw StateError('Tài liệu không được lớn hơn 10 MB.');
       }
       return PickedUploadFile(displayName: picked.name, bytes: picked.bytes);
     }

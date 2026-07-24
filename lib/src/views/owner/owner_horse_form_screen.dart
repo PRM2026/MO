@@ -73,8 +73,13 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
         _image = picked;
         _imageName = picked.displayName;
       });
-    } catch (_) {
-      if (mounted) AppToast.showError(context, 'Không thể chọn ảnh ngựa.');
+    } catch (error) {
+      if (mounted) {
+        AppToast.showError(
+          context,
+          _filePickerError(error, 'Không thể chọn ảnh ngựa.'),
+        );
+      }
     }
   }
 
@@ -90,8 +95,13 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
         _document = picked;
         _documentName = picked.displayName;
       });
-    } catch (_) {
-      if (mounted) AppToast.showError(context, 'Không thể chọn tài liệu.');
+    } catch (error) {
+      if (mounted) {
+        AppToast.showError(
+          context,
+          _filePickerError(error, 'Không thể chọn tài liệu.'),
+        );
+      }
     }
   }
 
@@ -441,4 +451,9 @@ String? _normalizeGender(String? value) {
     'cái' || 'cai' || 'female' => 'Cái',
     _ => null,
   };
+}
+
+String _filePickerError(Object error, String fallback) {
+  final message = error.toString().replaceFirst('Bad state: ', '').trim();
+  return message.isEmpty ? fallback : message;
 }

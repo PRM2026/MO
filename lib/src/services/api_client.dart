@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../config/api_config.dart';
 import '../models/api_response.dart';
@@ -138,6 +139,7 @@ class ApiClient {
           entry.key,
           entry.value.bytes,
           filename: entry.value.filename,
+          contentType: _mediaTypeForFileName(entry.value.filename),
         ),
       );
     }
@@ -145,6 +147,17 @@ class ApiClient {
     final streamed = await _client.send(request);
     final response = await http.Response.fromStream(streamed);
     return _decodeOptionalMultipartObject(response, mapper);
+  }
+
+  MediaType _mediaTypeForFileName(String fileName) {
+    final extension = fileName.toLowerCase().split('.').last;
+    return switch (extension) {
+      'jpg' || 'jpeg' => MediaType('image', 'jpeg'),
+      'png' => MediaType('image', 'png'),
+      'webp' => MediaType('image', 'webp'),
+      'pdf' => MediaType('application', 'pdf'),
+      _ => MediaType('application', 'octet-stream'),
+    };
   }
 
   Future<http.Response> _send(
