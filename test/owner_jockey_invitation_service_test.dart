@@ -203,6 +203,10 @@ void main() {
         );
         expect(request.headers['Content-Type'], 'application/json');
         expect(request.headers['Authorization'], 'Bearer owner-token');
+        expect(
+          request.headers['Idempotency-Key'],
+          matches(RegExp(r'^[a-f0-9]{32}$')),
+        );
         expect(jsonDecode(request.body), {
           'horseId': 7,
           'raceId': 21,

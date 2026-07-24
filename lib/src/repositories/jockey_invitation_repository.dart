@@ -13,8 +13,22 @@ class JockeyInvitationRepository {
   }
 
   Future<JockeyInvitationDetail> fetchInvitationDetail(String id) async {
-    final response = await _service.getJockeyInvitation(_parseInvitationId(id));
-    return response.toDetail();
+    final invitationId = _parseInvitationId(id);
+    try {
+      final response = await _service.getJockeyInvitation(invitationId);
+      return response.toDetail();
+    } on JockeyInvitationApiException catch (error) {
+      if (error.statusCode != 404) rethrow;
+
+      // Some deployed backends expose the invitation list and decision
+      // endpoints but not GET /jockey/invitations/{id}. The list payload
+      // already contains every field required by the detail screen.
+      final responses = await _service.getJockeyInvitations();
+      for (final response in responses) {
+        if (response.idString == id.trim()) return response.toDetail();
+      }
+      rethrow;
+    }
   }
 
   Future<void> acceptInvitation(String id, {String? note}) async {

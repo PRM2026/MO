@@ -122,6 +122,18 @@ void main() {
       expect(viewModel.data, same(detail));
     });
 
+    test('falls back to list data when detail endpoint is missing', () async {
+      final service = _MissingDetailEndpointService();
+      final repository = JockeyInvitationRepository(service: service);
+
+      final detail = await repository.fetchInvitationDetail('7');
+
+      expect(detail.id, '7');
+      expect(detail.horseName, 'Night Wind');
+      expect(service.detailCalls, 1);
+      expect(service.listCalls, 1);
+    });
+
     test('invalid id does not call service', () async {
       final service = _RecordingService();
       final viewModel = JockeyInvitationDetailViewModel(
@@ -299,5 +311,28 @@ class _RecordingService extends JockeyInvitationService {
   Future<JockeyInvitationResponse> getJockeyInvitation(String id) async {
     detailCalls++;
     return const JockeyInvitationResponse(id: '7');
+  }
+}
+
+class _MissingDetailEndpointService extends JockeyInvitationService {
+  int detailCalls = 0;
+  int listCalls = 0;
+
+  @override
+  Future<JockeyInvitationResponse> getJockeyInvitation(String id) async {
+    detailCalls++;
+    throw const JockeyInvitationApiException('Not Found', statusCode: 404);
+  }
+
+  @override
+  Future<List<JockeyInvitationResponse>> getJockeyInvitations() async {
+    listCalls++;
+    return const [
+      JockeyInvitationResponse(
+        id: '7',
+        horseName: 'Night Wind',
+        status: 'PENDING',
+      ),
+    ];
   }
 }

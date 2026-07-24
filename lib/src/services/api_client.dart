@@ -53,9 +53,15 @@ class ApiClient {
   Future<T> postObject<T>(
     String path,
     Map<String, dynamic> body,
-    T Function(Map<String, dynamic>) mapper,
-  ) async {
-    final response = await _send('POST', path, body: body);
+    T Function(Map<String, dynamic>) mapper, {
+    Map<String, String>? headers,
+  }) async {
+    final response = await _send(
+      'POST',
+      path,
+      body: body,
+      extraHeaders: headers,
+    );
     return _decodeObject(response, mapper);
   }
 
@@ -152,8 +158,10 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? body,
     bool authenticated = true,
+    Map<String, String>? extraHeaders,
   }) async {
     final headers = await _headers(authenticated: authenticated);
+    if (extraHeaders != null) headers.addAll(extraHeaders);
     final uri = _uri(path);
     final encodedBody = body == null ? null : jsonEncode(body);
     if (encodedBody != null) {
