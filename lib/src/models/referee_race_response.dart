@@ -19,8 +19,8 @@ class RefereeRaceResponse {
     this.prizes = const [],
   });
 
-  final int? id;
-  final int? tournamentId;
+  final String? id;
+  final String? tournamentId;
   final String? name;
   final String? distance;
   final String? venueName;
@@ -58,8 +58,8 @@ class RefereeRaceResponse {
   factory RefereeRaceResponse.fromJson(Map<String, dynamic> json) {
     final rawPrizes = json['prizes'];
     return RefereeRaceResponse(
-      id: _readInt(json['id']),
-      tournamentId: _readInt(json['tournamentId']),
+      id: _readString(json['id'] ?? json['raceId']),
+      tournamentId: _readString(json['tournamentId']),
       name: _readString(json['name']),
       distance: _readString(json['distance']),
       venueName: _readString(json['venueName']),
@@ -74,9 +74,9 @@ class RefereeRaceResponse {
       resultFinalizedAt: _readDate(json['resultFinalizedAt']),
       prizes: rawPrizes is List
           ? rawPrizes
-              .whereType<Map<String, dynamic>>()
-              .map(RefereeRacePrizeResponse.fromJson)
-              .toList(growable: false)
+                .whereType<Map<String, dynamic>>()
+                .map(RefereeRacePrizeResponse.fromJson)
+                .toList(growable: false)
           : const [],
     );
   }

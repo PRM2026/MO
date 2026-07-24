@@ -18,19 +18,20 @@ class RefereeGlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final card = DecoratedBox(
       decoration: BoxDecoration(
-        color: RefereeColors.glassFill,
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: highlighted
               ? RefereeColors.tertiary.withValues(alpha: 0.4)
-              : RefereeColors.glassBorder,
+              : scheme.outlineVariant,
         ),
         boxShadow: highlighted
             ? [
                 BoxShadow(
-                  color: RefereeColors.tertiary.withValues(alpha: 0.12),
+                  color: scheme.primary.withValues(alpha: 0.12),
                   blurRadius: 12,
                 ),
               ]

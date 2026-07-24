@@ -40,36 +40,38 @@ class OwnerHorseService {
     }
   }
 
-  Future<OwnerHorseDetail> createHorse(OwnerHorseFormData data) async {
+  Future<OwnerHorseDetail?> createHorse(OwnerHorseFormData data) async {
     final name = data.name?.trim();
     if (name == null || name.isEmpty) {
       throw const OwnerApiException('Vui lòng nhập tên ngựa.');
     }
 
     try {
-      return await _apiClient.multipartObject(
+      return await _apiClient.multipartOptionalObject(
         'POST',
         '/owner/horses',
         data.toFields(includeEmptyName: true),
         data.toFilePaths(),
         OwnerHorseDetail.fromJson,
+        memoryFiles: data.toMemoryFiles(),
       );
     } on ApiException catch (error) {
       throw _wrap(error);
     }
   }
 
-  Future<OwnerHorseDetail> updateHorse(
+  Future<OwnerHorseDetail?> updateHorse(
     String id,
     OwnerHorseFormData data,
   ) async {
     try {
-      return await _apiClient.multipartObject(
+      return await _apiClient.multipartOptionalObject(
         'PUT',
         '/owner/horses/$id',
         data.toFields(includeEmptyName: false),
         data.toFilePaths(),
         OwnerHorseDetail.fromJson,
+        memoryFiles: data.toMemoryFiles(),
       );
     } on ApiException catch (error) {
       throw _wrap(error);

@@ -119,6 +119,7 @@ class OwnerDashboardEmptyHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return RefereeGlassCard(
       padding: EdgeInsets.zero,
       child: AspectRatio(
@@ -139,14 +140,14 @@ class OwnerDashboardEmptyHero extends StatelessWidget {
                   'Chưa có giải đấu nổi bật.',
                   textAlign: TextAlign.center,
                   style: AppTypography.headlineSm(
-                    RefereeColors.onSurface,
+                    scheme.onSurface,
                   ).copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'Dữ liệu sẽ hiển thị khi máy chủ trả về giải đấu phù hợp.',
                   textAlign: TextAlign.center,
-                  style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+                  style: AppTypography.bodyMd(scheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -169,6 +170,7 @@ class OwnerFeaturedHorsesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -178,7 +180,7 @@ class OwnerFeaturedHorsesSection extends StatelessWidget {
               child: Text(
                 'Ngựa nổi bật',
                 style: AppTypography.headlineSm(
-                  RefereeColors.onSurface,
+                  scheme.onSurface,
                 ).copyWith(fontSize: 22),
               ),
             ),
@@ -257,6 +259,7 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return RefereeGlassCard(
       onTap: onTap,
       padding: const EdgeInsets.all(16),
@@ -270,7 +273,7 @@ class _QuickActionButton extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppTypography.labelCaps(
-                RefereeColors.onSurface,
+                scheme.onSurface,
               ).copyWith(fontSize: 12, letterSpacing: 0),
             ),
           ),
@@ -287,6 +290,7 @@ class _FeaturedHorseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return RefereeGlassCard(
       padding: const EdgeInsets.all(12),
       child: SizedBox(
@@ -337,7 +341,7 @@ class _FeaturedHorseCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTypography.labelCaps(
-                RefereeColors.onSurface,
+                scheme.onSurface,
               ).copyWith(fontSize: 14, letterSpacing: 0.2),
             ),
             Text(
@@ -345,7 +349,7 @@ class _FeaturedHorseCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTypography.labelCaps(
-                RefereeColors.onSurfaceVariant,
+                scheme.onSurfaceVariant,
               ).copyWith(fontWeight: FontWeight.w400, fontSize: 11),
             ),
           ],
@@ -362,13 +366,14 @@ class OwnerUpcomingRacesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           'Lịch đua sắp tới',
           style: AppTypography.headlineSm(
-            RefereeColors.onSurface,
+            scheme.onSurface,
           ).copyWith(fontSize: 22),
         ),
         const SizedBox(height: 16),
@@ -391,12 +396,13 @@ class _DashboardEmptyMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return RefereeGlassCard(
       padding: const EdgeInsets.all(20),
       child: Text(
         message,
         textAlign: TextAlign.center,
-        style: AppTypography.bodyMd(RefereeColors.onSurfaceVariant),
+        style: AppTypography.bodyMd(scheme.onSurfaceVariant),
       ),
     );
   }
@@ -449,6 +455,7 @@ class _UpcomingRaceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return RefereeGlassCard(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -466,7 +473,7 @@ class _UpcomingRaceTile extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: RefereeColors.surfaceContainer,
+              color: scheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             ),
@@ -482,7 +489,7 @@ class _UpcomingRaceTile extends StatelessWidget {
                 Text(
                   race.monthLabel,
                   style: AppTypography.labelCaps(
-                    RefereeColors.onSurfaceVariant,
+                    scheme.onSurfaceVariant,
                   ).copyWith(fontSize: 9),
                 ),
               ],
@@ -496,13 +503,13 @@ class _UpcomingRaceTile extends StatelessWidget {
                 Text(
                   race.title,
                   style: AppTypography.labelCaps(
-                    RefereeColors.onSurface,
+                    scheme.onSurface,
                   ).copyWith(fontSize: 14, letterSpacing: 0.2),
                 ),
                 Text(
                   race.detail,
                   style: AppTypography.labelCaps(
-                    RefereeColors.onSurfaceVariant,
+                    scheme.onSurfaceVariant,
                   ).copyWith(fontWeight: FontWeight.w400, fontSize: 11),
                 ),
               ],

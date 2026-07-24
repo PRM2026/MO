@@ -4,6 +4,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../common/profile_avatar.dart';
+import '../common/theme_mode_toggle.dart';
 
 class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SpectatorAppBar({
@@ -28,15 +29,13 @@ class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final compact = titleOverride != null;
     final avatarSize = compact ? 32.0 : 40.0;
 
     return AppBar(
-      backgroundColor: (titleOverride != null
-              ? RefereeColors.background
-              : RefereeColors.portalSurface)
-          .withValues(alpha: 0.8),
-      foregroundColor: RefereeColors.onSurface,
+      backgroundColor: scheme.surface.withValues(alpha: 0.92),
+      foregroundColor: scheme.onSurface,
       elevation: 0,
       automaticallyImplyLeading: false,
       titleSpacing: AppSpacing.screenPadding,
@@ -55,14 +54,15 @@ class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTypography.headlineSm(RefereeColors.championshipGold)
                   .copyWith(
-                fontSize: titleOverride != null ? 24 : 20,
-                fontWeight: FontWeight.w600,
-              ),
+                    fontSize: titleOverride != null ? 24 : 20,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ),
         ],
       ),
       actions: [
+        const ThemeModeIconButton(),
         if (showProfileAvatar)
           ProfileAvatarButton(
             imageUrl: profileImageUrl,
@@ -75,10 +75,7 @@ class SpectatorAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Divider(
-          height: 1,
-          color: Colors.white.withValues(alpha: 0.1),
-        ),
+        child: Divider(height: 1, color: scheme.outlineVariant),
       ),
     );
   }

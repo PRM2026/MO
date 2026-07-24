@@ -6,14 +6,15 @@ class RefereeAssignedRacesRepository {
   RefereeAssignedRacesRepository({
     RefereeDashboardService? dashboardService,
     AuthRepository? authRepository,
-  })  : _dashboardService = dashboardService ?? RefereeDashboardService(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _dashboardService = dashboardService ?? RefereeDashboardService(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final RefereeDashboardService _dashboardService;
   final AuthRepository _authRepository;
 
   Future<AssignedRacesData> fetchAssignedRaces() async {
-    final races = await _dashboardService.getAssignedRacesWithParticipantCounts();
+    final races = await _dashboardService
+        .getAssignedRacesWithParticipantCounts();
     final profileImageUrl = await _loadProfileImageUrl();
 
     return AssignedRacesData.fromApi(

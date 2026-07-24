@@ -301,11 +301,11 @@ _RefereeDashboardAlert? _primaryAlert(
 
 RefereeRaceItem? _raceFromDashboardItem(
   JockeyDashboardItemResponse item,
-  Map<int, RefereeRaceResponse> racesById,
+  Map<String, RefereeRaceResponse> racesById,
 ) {
   final id = item.id;
   if (id != null) {
-    final race = racesById[id];
+    final race = racesById['$id'];
     if (race != null) return _raceFromAssignedRace(race);
   }
 

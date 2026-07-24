@@ -14,6 +14,7 @@ void main() {
         expect(hasDedicatedPortal('HORSE_OWNER'), isTrue);
         expect(hasDedicatedPortal('JOCKEY'), isTrue);
         expect(hasDedicatedPortal('REFEREE'), isTrue);
+        expect(hasDedicatedPortal('ADMIN'), isTrue);
         expect(hasDedicatedPortal('USER'), isFalse);
         expect(normalizePortalRole('HORSE_OWNER'), 'OWNER');
         expect(
@@ -23,12 +24,14 @@ void main() {
       },
     );
 
-    test('bottom nav keeps exactly four spectator tabs', () {
+    test('bottom nav covers betting, profile and expanded actions', () {
       expect(SpectatorTab.values, [
         SpectatorTab.home,
         SpectatorTab.races,
+        SpectatorTab.betting,
         SpectatorTab.results,
         SpectatorTab.profile,
+        SpectatorTab.more,
       ]);
     });
 

@@ -15,8 +15,8 @@ class SpectatorBettingViewModel extends ChangeNotifier {
   String? mutationError;
   List<BetMarket> markets = const [];
   List<BetRecord> bets = const [];
-  int? selectedMarketId;
-  int? selectedParticipantId;
+  String? selectedMarketId;
+  String? selectedParticipantId;
 
   BetMarket? get selectedMarket {
     for (final market in markets) {
@@ -48,7 +48,7 @@ class SpectatorBettingViewModel extends ChangeNotifier {
     }
   }
 
-  void selectMarket(int id, {bool notify = true}) {
+  void selectMarket(String id, {bool notify = true}) {
     selectedMarketId = id;
     BetMarket? market;
     for (final item in markets) {
@@ -61,7 +61,7 @@ class SpectatorBettingViewModel extends ChangeNotifier {
     if (notify) notifyListeners();
   }
 
-  void selectParticipant(int id) {
+  void selectParticipant(String id) {
     selectedParticipantId = id;
     mutationError = null;
     notifyListeners();
@@ -99,7 +99,7 @@ class SpectatorBettingViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       final result = await _service.placeBet(
-        raceId: '${market.raceId}',
+        raceId: market.raceId,
         participantId: selectedParticipantId!,
         stakeAmount: amount,
       );

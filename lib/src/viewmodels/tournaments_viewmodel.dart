@@ -5,7 +5,7 @@ import '../repositories/tournament_repository.dart';
 
 class TournamentsViewModel extends ChangeNotifier {
   TournamentsViewModel({TournamentRepository? repository})
-      : _repository = repository ?? TournamentRepository();
+    : _repository = repository ?? TournamentRepository();
 
   final TournamentRepository _repository;
 

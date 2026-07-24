@@ -9,12 +9,10 @@ import '../utils/app_toast.dart';
 import '../viewmodels/login_viewmodel.dart';
 import '../widgets/auth/auth_back_button.dart';
 import '../widgets/auth/auth_background.dart';
-import '../widgets/auth/auth_section_divider.dart';
 import '../widgets/auth/auth_text_field.dart';
 import '../widgets/auth/gold_cta_button.dart';
 import '../widgets/auth/login_brand_header.dart';
 import '../widgets/auth/login_footer.dart';
-import '../widgets/auth/social_auth_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, this.viewModel});
@@ -223,26 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   label: 'Đăng nhập',
                                   isLoading: _isSubmitting,
                                   onPressed: _handleSubmit,
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                const AuthSectionDivider(
-                                  label: 'Hoặc đăng nhập với',
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                                const Row(
-                                  children: [
-                                    Expanded(
-                                      child: SocialAuthButton(
-                                        provider: SocialProvider.google,
-                                      ),
-                                    ),
-                                    SizedBox(width: AppSpacing.lg),
-                                    Expanded(
-                                      child: SocialAuthButton(
-                                        provider: SocialProvider.facebook,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ],
                             ],

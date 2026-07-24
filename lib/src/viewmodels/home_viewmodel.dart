@@ -11,8 +11,8 @@ class HomeViewModel extends ChangeNotifier {
   HomeViewModel({
     HomeRepository? homeRepository,
     TournamentRepository? tournamentRepository,
-  })  : _homeRepository = homeRepository ?? const HomeRepository(),
-        _tournamentRepository = tournamentRepository ?? TournamentRepository();
+  }) : _homeRepository = homeRepository ?? const HomeRepository(),
+       _tournamentRepository = tournamentRepository ?? TournamentRepository();
 
   final HomeRepository _homeRepository;
   final TournamentRepository _tournamentRepository;
@@ -53,12 +53,13 @@ class HomeViewModel extends ChangeNotifier {
   ) {
     const excluded = {'COMPLETED', 'CANCELLED', 'DRAFT'};
 
-    final upcoming = items.where((item) => !excluded.contains(item.status)).toList()
-      ..sort((a, b) {
-        final aDate = a.startAt ?? DateTime(9999);
-        final bDate = b.startAt ?? DateTime(9999);
-        return aDate.compareTo(bDate);
-      });
+    final upcoming =
+        items.where((item) => !excluded.contains(item.status)).toList()
+          ..sort((a, b) {
+            final aDate = a.startAt ?? DateTime(9999);
+            final bDate = b.startAt ?? DateTime(9999);
+            return aDate.compareTo(bDate);
+          });
 
     return upcoming.take(10).toList();
   }

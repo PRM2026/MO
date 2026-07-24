@@ -3,7 +3,7 @@ import '../services/auth_api_service.dart';
 
 class RegisterViewModel {
   RegisterViewModel({AuthRepository? repository})
-      : _repository = repository ?? AuthRepository();
+    : _repository = repository ?? AuthRepository();
 
   final AuthRepository _repository;
 

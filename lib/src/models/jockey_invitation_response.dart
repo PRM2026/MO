@@ -33,17 +33,17 @@ class JockeyInvitationResponse {
     this.updatedAt,
   });
 
-  final int? id;
-  final int? ownerId;
+  final Object? id;
+  final Object? ownerId;
   final String? ownerUsername;
-  final int? jockeyId;
+  final Object? jockeyId;
   final String? jockeyUsername;
-  final int? jockeyProfileId;
-  final int? horseId;
+  final Object? jockeyProfileId;
+  final Object? horseId;
   final String? horseName;
-  final int? raceId;
+  final Object? raceId;
   final String? raceName;
-  final int? tournamentId;
+  final Object? tournamentId;
   final String? tournamentName;
   final String? status;
   final String? message;
@@ -60,17 +60,17 @@ class JockeyInvitationResponse {
 
   factory JockeyInvitationResponse.fromJson(Map<String, dynamic> json) {
     return JockeyInvitationResponse(
-      id: _readInt(json['id']),
-      ownerId: _readInt(json['ownerId']),
+      id: _readId(json['id']),
+      ownerId: _readId(json['ownerId']),
       ownerUsername: _readString(json['ownerUsername']),
-      jockeyId: _readInt(json['jockeyId']),
+      jockeyId: _readId(json['jockeyId']),
       jockeyUsername: _readString(json['jockeyUsername']),
-      jockeyProfileId: _readInt(json['jockeyProfileId']),
-      horseId: _readInt(json['horseId']),
+      jockeyProfileId: _readId(json['jockeyProfileId']),
+      horseId: _readId(json['horseId']),
       horseName: _readString(json['horseName']),
-      raceId: _readInt(json['raceId']),
+      raceId: _readId(json['raceId']),
       raceName: _readString(json['raceName']),
-      tournamentId: _readInt(json['tournamentId']),
+      tournamentId: _readId(json['tournamentId']),
       tournamentName: _readString(json['tournamentName']),
       status: _readString(json['status']),
       message: _readString(json['message']),
@@ -134,7 +134,7 @@ class JockeyInvitationResponse {
     return text == null || text.isEmpty ? fallback : text;
   }
 
-  static String _reference(String label, int? id) {
+  static String _reference(String label, Object? id) {
     return id == null ? '$label chưa cập nhật' : '$label #$id';
   }
 
@@ -144,11 +144,9 @@ class JockeyInvitationResponse {
   }
 }
 
-int? _readInt(Object? value) {
-  if (value is int) return value;
-  if (value is num) return value.toInt();
-  if (value is String) return int.tryParse(value);
-  return null;
+String? _readId(Object? value) {
+  final id = value?.toString().trim();
+  return id == null || id.isEmpty ? null : id;
 }
 
 num? _readNum(Object? value) {

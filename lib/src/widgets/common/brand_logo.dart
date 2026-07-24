@@ -4,11 +4,7 @@ import '../../constants/app_colors.dart';
 
 /// Logo đại diện: vòng tròn vàng + sao trắng.
 class BrandLogo extends StatelessWidget {
-  const BrandLogo({
-    super.key,
-    this.size = 32,
-    this.elevated = false,
-  });
+  const BrandLogo({super.key, this.size = 32, this.elevated = false});
 
   final double size;
   final bool elevated;
@@ -34,11 +30,7 @@ class BrandLogo extends StatelessWidget {
       child: SizedBox(
         width: size,
         height: size,
-        child: Icon(
-          Icons.star_rounded,
-          color: Colors.white,
-          size: iconSize,
-        ),
+        child: Icon(Icons.star_rounded, color: Colors.white, size: iconSize),
       ),
     );
   }

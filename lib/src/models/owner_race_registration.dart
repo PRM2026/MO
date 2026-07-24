@@ -12,14 +12,14 @@ class OwnerEligibleHorseTeam {
     this.acceptedAt,
   });
 
-  final int invitationId;
-  final int? horseId;
+  final String invitationId;
+  final String? horseId;
   final String? horseName;
-  final int? ownerId;
+  final String? ownerId;
   final String? ownerUsername;
-  final int? jockeyId;
+  final String? jockeyId;
   final String? jockeyUsername;
-  final int? jockeyProfileId;
+  final String? jockeyProfileId;
   final String? jockeyFullName;
   final DateTime? acceptedAt;
 
@@ -31,22 +31,18 @@ class OwnerEligibleHorseTeam {
     final profile = _map(json['jockeyProfile']) ?? _map(jockey?['profile']);
 
     return OwnerEligibleHorseTeam(
-      invitationId: _int(json['invitationId'] ?? invitation?['id']) ?? 0,
-      horseId: _int(json['horseId'] ?? horse?['id']),
+      invitationId:
+          _id(json['invitationId'] ?? json['id'] ?? invitation?['id']) ?? '',
+      horseId: _id(json['horseId'] ?? horse?['id']),
       horseName: _firstString([json['horseName'], horse?['name']]),
-      ownerId: _int(json['ownerId'] ?? owner?['id'] ?? owner?['userId']),
-      ownerUsername: _firstString([
-        json['ownerUsername'],
-        owner?['username'],
-      ]),
-      jockeyId: _int(
-        json['jockeyId'] ?? jockey?['id'] ?? jockey?['userId'],
-      ),
+      ownerId: _id(json['ownerId'] ?? owner?['id'] ?? owner?['userId']),
+      ownerUsername: _firstString([json['ownerUsername'], owner?['username']]),
+      jockeyId: _id(json['jockeyId'] ?? jockey?['id'] ?? jockey?['userId']),
       jockeyUsername: _firstString([
         json['jockeyUsername'],
         jockey?['username'],
       ]),
-      jockeyProfileId: _int(json['jockeyProfileId'] ?? profile?['id']),
+      jockeyProfileId: _id(json['jockeyProfileId'] ?? profile?['id']),
       jockeyFullName: _firstString([
         json['jockeyFullName'],
         jockey?['fullName'],
@@ -89,17 +85,17 @@ class OwnerRaceRegistration {
   });
 
   final String id;
-  final int? raceId;
+  final String? raceId;
   final String? raceName;
-  final int? tournamentId;
+  final String? tournamentId;
   final String? tournamentName;
-  final int? ownerId;
+  final String? ownerId;
   final String? ownerUsername;
-  final int? horseId;
+  final String? horseId;
   final String? horseName;
-  final int? jockeyId;
+  final String? jockeyId;
   final String? jockeyUsername;
-  final int? jockeyInvitationId;
+  final String? jockeyInvitationId;
   final String statusCode;
   final String statusLabel;
   final num? entryFeeAmount;
@@ -125,9 +121,9 @@ class OwnerRaceRegistration {
 
     return OwnerRaceRegistration(
       id: '${json['id'] ?? ''}',
-      raceId: _int(json['raceId'] ?? race?['id']),
+      raceId: _id(json['raceId'] ?? race?['id']),
       raceName: _firstString([json['raceName'], race?['name']]),
-      tournamentId: _int(
+      tournamentId: _id(
         json['tournamentId'] ?? tournament?['id'] ?? race?['tournamentId'],
       ),
       tournamentName: _firstString([
@@ -136,23 +132,16 @@ class OwnerRaceRegistration {
         tournament?['title'],
         race?['tournamentName'],
       ]),
-      ownerId: _int(json['ownerId'] ?? owner?['id'] ?? owner?['userId']),
-      ownerUsername: _firstString([
-        json['ownerUsername'],
-        owner?['username'],
-      ]),
-      horseId: _int(json['horseId'] ?? horse?['id']),
+      ownerId: _id(json['ownerId'] ?? owner?['id'] ?? owner?['userId']),
+      ownerUsername: _firstString([json['ownerUsername'], owner?['username']]),
+      horseId: _id(json['horseId'] ?? horse?['id']),
       horseName: _firstString([json['horseName'], horse?['name']]),
-      jockeyId: _int(
-        json['jockeyId'] ?? jockey?['id'] ?? jockey?['userId'],
-      ),
+      jockeyId: _id(json['jockeyId'] ?? jockey?['id'] ?? jockey?['userId']),
       jockeyUsername: _firstString([
         json['jockeyUsername'],
         jockey?['username'],
       ]),
-      jockeyInvitationId: _int(
-        json['jockeyInvitationId'] ?? invitation?['id'],
-      ),
+      jockeyInvitationId: _id(json['jockeyInvitationId'] ?? invitation?['id']),
       statusCode: status,
       statusLabel: ownerRaceRegistrationStatusLabels[status] ?? status,
       entryFeeAmount: _num(
@@ -176,13 +165,15 @@ class OwnerRaceRegistrationFormData {
     this.note,
   });
 
-  final int? horseId;
-  final int? jockeyInvitationId;
+  final String? horseId;
+  final String? jockeyInvitationId;
   final String? note;
 
   String? validate() {
-    if (horseId == null || horseId! <= 0) return 'Vui lòng chọn ngựa.';
-    if (jockeyInvitationId == null || jockeyInvitationId! <= 0) {
+    if (horseId == null || horseId!.trim().isEmpty) {
+      return 'Vui lòng chọn ngựa.';
+    }
+    if (jockeyInvitationId == null || jockeyInvitationId!.trim().isEmpty) {
       return 'Vui lòng chọn jockey đã nhận lời.';
     }
     if ((note?.trim().length ?? 0) > 1000) {
@@ -246,10 +237,9 @@ String? _firstString(List<Object?> values) {
   return null;
 }
 
-int? _int(Object? value) {
-  if (value is int) return value;
-  if (value is num) return value.toInt();
-  return value is String ? int.tryParse(value.trim()) : null;
+String? _id(Object? value) {
+  final id = value?.toString().trim();
+  return id == null || id.isEmpty ? null : id;
 }
 
 num? _num(Object? value) {

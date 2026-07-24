@@ -29,11 +29,7 @@ const documentMime = {
   'image/webp',
 };
 
-const imageMime = {
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-};
+const imageMime = {'image/jpeg', 'image/png', 'image/webp'};
 
 const documentMaxBytes = 10 * 1024 * 1024;
 const imageMaxBytes = 5 * 1024 * 1024;
@@ -95,7 +91,11 @@ class RoleApplicationValidation {
     return null;
   }
 
-  static String? validateFile(String fieldName, int sizeBytes, String? extension) {
+  static String? validateFile(
+    String fieldName,
+    int sizeBytes,
+    String? extension,
+  ) {
     final isImage = _imageFields.contains(fieldName);
     final ext = (extension ?? '').toLowerCase();
     final allowedExts = isImage

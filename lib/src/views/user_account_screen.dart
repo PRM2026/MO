@@ -12,10 +12,7 @@ import '../widgets/home/home_app_bar.dart';
 enum AccountSubTab { info, roleRequest }
 
 class UserAccountScreen extends StatefulWidget {
-  const UserAccountScreen({
-    super.key,
-    this.initialSubTab = AccountSubTab.info,
-  });
+  const UserAccountScreen({super.key, this.initialSubTab = AccountSubTab.info});
 
   final AccountSubTab initialSubTab;
 
@@ -83,15 +80,15 @@ class UserAccountScreenState extends State<UserAccountScreen>
               unselectedLabelColor: AppColors.onSurfaceVariant,
               indicatorColor: AppColors.primary,
               indicatorWeight: 3,
-              labelStyle: AppTypography.labelCaps(AppColors.primary)
-                  .copyWith(fontSize: 13, letterSpacing: 0.2),
-              unselectedLabelStyle: AppTypography.labelCaps(
-                AppColors.onSurfaceVariant,
-              ).copyWith(
-                fontSize: 13,
-                letterSpacing: 0.2,
-                fontWeight: FontWeight.w500,
-              ),
+              labelStyle: AppTypography.labelCaps(
+                AppColors.primary,
+              ).copyWith(fontSize: 13, letterSpacing: 0.2),
+              unselectedLabelStyle:
+                  AppTypography.labelCaps(AppColors.onSurfaceVariant).copyWith(
+                    fontSize: 13,
+                    letterSpacing: 0.2,
+                    fontWeight: FontWeight.w500,
+                  ),
               tabs: const [
                 Tab(text: 'Thông tin cá nhân'),
                 Tab(text: 'Yêu cầu vai trò'),

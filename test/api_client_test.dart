@@ -46,6 +46,47 @@ void main() {
     expect(items, ['Night Wind']);
   });
 
+  test('getList maps legacy top-level lists used by WDP endpoints', () async {
+    final storage = await _storageWithToken('admin-token');
+    final client = ApiClient(
+      baseUrl: 'http://example.test',
+      storage: storage,
+      client: MockClient(
+        (_) async => http.Response.bytes(
+          utf8.encode('[{"id":"tournament-1","name":"Grand Cup"}]'),
+          200,
+        ),
+      ),
+    );
+
+    final items = await client.getList(
+      '/admin/tournaments',
+      (json) => json['name'] as String,
+      allowBareResponse: true,
+    );
+
+    expect(items, ['Grand Cup']);
+  });
+
+  test(
+    'rejects an unwrapped success response unless explicitly allowed',
+    () async {
+      final storage = await _storageWithToken('owner-token');
+      final client = ApiClient(
+        baseUrl: 'http://example.test',
+        storage: storage,
+        client: MockClient(
+          (_) async => http.Response('{"id":"unexpected"}', 200),
+        ),
+      );
+
+      expect(
+        () => client.getObject('/owner/dashboard', (json) => json),
+        throwsA(isA<ApiException>()),
+      );
+    },
+  );
+
   test('public getObject does not require bearer token', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();

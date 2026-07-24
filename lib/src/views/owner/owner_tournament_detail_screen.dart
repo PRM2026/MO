@@ -346,7 +346,7 @@ class _RaceRegistrationDialogState extends State<_RaceRegistrationDialog> {
   final _repository = OwnerRaceRegistrationRepository();
   final _note = TextEditingController();
   List<OwnerEligibleHorseTeam> _teams = const [];
-  int? _invitationId;
+  String? _invitationId;
   bool _loading = true;
   bool _submitting = false;
   String? _error;
@@ -359,7 +359,7 @@ class _RaceRegistrationDialogState extends State<_RaceRegistrationDialog> {
 
   Future<void> _loadTeams() async {
     try {
-      final teams = await _repository.fetchEligibleTeams();
+      final teams = await _repository.fetchEligibleTeams(widget.race.id);
       if (!mounted) return;
       setState(() {
         _teams = teams;
@@ -430,7 +430,7 @@ class _RaceRegistrationDialogState extends State<_RaceRegistrationDialog> {
                       'Chưa có đội hợp lệ. Hãy mời jockey và chờ họ chấp nhận.',
                     )
                   else
-                    DropdownButtonFormField<int>(
+                    DropdownButtonFormField<String>(
                       initialValue: _invitationId,
                       decoration: const InputDecoration(
                         labelText: 'Đội ngựa – jockey',

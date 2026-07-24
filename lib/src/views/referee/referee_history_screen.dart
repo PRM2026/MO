@@ -122,8 +122,7 @@ class _RefereeHistoryScreenState extends State<RefereeHistoryScreen> {
                               if (data != null && data.races.isNotEmpty)
                                 LayoutBuilder(
                                   builder: (context, constraints) {
-                                    final isWide =
-                                        constraints.maxWidth >= 960;
+                                    final isWide = constraints.maxWidth >= 960;
 
                                     final main = RefereeResultsTable(
                                       rows: data.finishers,
@@ -160,7 +159,8 @@ class _RefereeHistoryScreenState extends State<RefereeHistoryScreen> {
                                 )
                               else
                                 RefereeInfoBanner(
-                                  message: data?.infoMessage ??
+                                  message:
+                                      data?.infoMessage ??
                                       'Chưa có cuộc đua nào để xem kết quả.',
                                 ),
                             ],
@@ -218,8 +218,9 @@ class _PageHeader extends StatelessWidget {
               Text(
                 'Trạng thái: $statusLabel'
                 '${finalizedAt != null ? ' • ${formatDisplayDateTime(finalizedAt.toIso8601String())}' : ''}',
-                style: AppTypography.labelCaps(RefereeColors.successEmerald)
-                    .copyWith(fontWeight: FontWeight.w500, letterSpacing: 0),
+                style: AppTypography.labelCaps(
+                  RefereeColors.successEmerald,
+                ).copyWith(fontWeight: FontWeight.w500, letterSpacing: 0),
               ),
             ],
           ],
@@ -252,27 +253,26 @@ class _PageHeader extends StatelessWidget {
                       ),
               )
             : data?.isFinalized == true
-                ? Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: RefereeColors.successEmerald.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color:
-                            RefereeColors.successEmerald.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Text(
-                      'ĐÃ CHỐT KẾT QUẢ',
-                      style: AppTypography.labelCaps(
-                        RefereeColors.successEmerald,
-                      ).copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  )
-                : const SizedBox.shrink();
+            ? Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: RefereeColors.successEmerald.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: RefereeColors.successEmerald.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  'ĐÃ CHỐT KẾT QUẢ',
+                  style: AppTypography.labelCaps(
+                    RefereeColors.successEmerald,
+                  ).copyWith(fontWeight: FontWeight.w700),
+                ),
+              )
+            : const SizedBox.shrink();
 
         if (isWide) {
           return Row(

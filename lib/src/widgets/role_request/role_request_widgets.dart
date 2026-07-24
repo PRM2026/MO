@@ -24,8 +24,8 @@ class RoleSelectorGrid extends StatelessWidget {
         final crossAxisCount = constraints.maxWidth >= 960
             ? 4
             : constraints.maxWidth >= 640
-                ? 2
-                : 1;
+            ? 2
+            : 1;
 
         return GridView.builder(
           shrinkWrap: true,
@@ -39,10 +39,7 @@ class RoleSelectorGrid extends StatelessWidget {
           itemCount: SystemRoleType.values.length,
           itemBuilder: (context, index) {
             final role = SystemRoleType.values[index];
-            return _RoleOptionCard(
-              role: role,
-              onTap: () => onRoleTap(role),
-            );
+            return _RoleOptionCard(role: role, onTap: () => onRoleTap(role));
           },
         );
       },
@@ -51,10 +48,7 @@ class RoleSelectorGrid extends StatelessWidget {
 }
 
 class _RoleOptionCard extends StatelessWidget {
-  const _RoleOptionCard({
-    required this.role,
-    required this.onTap,
-  });
+  const _RoleOptionCard({required this.role, required this.onTap});
 
   final SystemRoleType role;
   final VoidCallback onTap;
@@ -104,23 +98,26 @@ class _RoleOptionCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     role.label,
-                    style: AppTypography.labelCaps(AppColors.onSurface)
-                        .copyWith(fontSize: 14, letterSpacing: 0.2),
+                    style: AppTypography.labelCaps(
+                      AppColors.onSurface,
+                    ).copyWith(fontSize: 14, letterSpacing: 0.2),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     role.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.labelCaps(AppColors.onSurfaceVariant)
-                        .copyWith(fontWeight: FontWeight.w400, fontSize: 11),
+                    style: AppTypography.labelCaps(
+                      AppColors.onSurfaceVariant,
+                    ).copyWith(fontWeight: FontWeight.w400, fontSize: 11),
                   ),
                 ],
               ),
               Text(
                 'Gửi yêu cầu cấp quyền →',
-                style: AppTypography.labelCaps(AppColors.primary)
-                    .copyWith(fontSize: 11, fontWeight: FontWeight.w600),
+                style: AppTypography.labelCaps(
+                  AppColors.primary,
+                ).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -130,10 +127,11 @@ class _RoleOptionCard extends StatelessWidget {
   }
 }
 
-typedef RoleApplicationSubmit = Future<String?> Function(
-  Map<String, String> values,
-  Map<String, File> files,
-);
+typedef RoleApplicationSubmit =
+    Future<String?> Function(
+      Map<String, String> values,
+      Map<String, File> files,
+    );
 
 class RoleRequestModalSheet extends StatefulWidget {
   const RoleRequestModalSheet({
@@ -216,7 +214,8 @@ class _RoleRequestModalSheetState extends State<RoleRequestModalSheet> {
     } catch (_) {
       if (!mounted) return;
       setState(
-        () => _errorMessage = 'Không thể mở trình chọn ảnh/tệp. Vui lòng thử lại.',
+        () => _errorMessage =
+            'Không thể mở trình chọn ảnh/tệp. Vui lòng thử lại.',
       );
     }
   }
@@ -281,7 +280,9 @@ class _RoleRequestModalSheetState extends State<RoleRequestModalSheet> {
                           children: [
                             Text(
                               'Hồ sơ xin cấp quyền: ${widget.role.label}',
-                              style: AppTypography.headlineSm(AppColors.onSurface),
+                              style: AppTypography.headlineSm(
+                                AppColors.onSurface,
+                              ),
                             ),
                             if (widget.fullName.isNotEmpty)
                               Text(
@@ -406,8 +407,9 @@ class _RoleApplicationFieldWidget extends StatelessWidget {
           child: Text.rich(
             TextSpan(
               text: field.label,
-              style: AppTypography.labelCaps(AppColors.onSurfaceVariant)
-                  .copyWith(fontWeight: FontWeight.w500),
+              style: AppTypography.labelCaps(
+                AppColors.onSurfaceVariant,
+              ).copyWith(fontWeight: FontWeight.w500),
               children: [
                 if (field.required)
                   const TextSpan(
@@ -420,7 +422,8 @@ class _RoleApplicationFieldWidget extends StatelessWidget {
         ),
         if (field.type == RoleFieldType.file)
           _UploadField(
-            label: fileName ??
+            label:
+                fileName ??
                 (supportsLocalComputerFilePicker
                     ? 'Chọn file từ máy tính...'
                     : 'Chọn file để tải lên...'),
@@ -437,26 +440,28 @@ class _RoleApplicationFieldWidget extends StatelessWidget {
             maxLength: field.maxLength,
             keyboardType: switch (field.type) {
               RoleFieldType.number => const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
+                decimal: true,
+              ),
               RoleFieldType.tel => TextInputType.phone,
               _ => TextInputType.text,
             },
             inputFormatters: switch (field.type) {
               RoleFieldType.number => [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                ],
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
               RoleFieldType.tel => [
-                  TextInputFormatter.withFunction((oldValue, newValue) {
-                    final sanitized =
-                        RoleApplicationValidation.sanitizePhone(newValue.text);
-                    return TextEditingValue(
-                      text: sanitized,
-                      selection:
-                          TextSelection.collapsed(offset: sanitized.length),
-                    );
-                  }),
-                ],
+                TextInputFormatter.withFunction((oldValue, newValue) {
+                  final sanitized = RoleApplicationValidation.sanitizePhone(
+                    newValue.text,
+                  );
+                  return TextEditingValue(
+                    text: sanitized,
+                    selection: TextSelection.collapsed(
+                      offset: sanitized.length,
+                    ),
+                  );
+                }),
+              ],
               _ => null,
             },
             style: AppTypography.bodyMd(AppColors.onSurface),
@@ -481,8 +486,10 @@ class _RoleApplicationFieldWidget extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: AppColors.primary, width: 1.5),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
@@ -529,9 +536,13 @@ class _UploadField extends StatelessWidget {
           child: Column(
             children: [
               Icon(
-                hasFile ? Icons.check_circle_outline : Icons.cloud_upload_outlined,
+                hasFile
+                    ? Icons.check_circle_outline
+                    : Icons.cloud_upload_outlined,
                 size: 36,
-                color: hasFile ? RefereeColors.successEmerald : AppColors.primary,
+                color: hasFile
+                    ? RefereeColors.successEmerald
+                    : AppColors.primary,
               ),
               const SizedBox(height: 8),
               Text(
@@ -547,8 +558,9 @@ class _UploadField extends StatelessWidget {
               Text(
                 hasFile ? 'Nhấn để đổi file khác' : hint,
                 textAlign: TextAlign.center,
-                style: AppTypography.labelCaps(AppColors.onSurfaceVariant)
-                    .copyWith(fontWeight: FontWeight.w400, fontSize: 11),
+                style: AppTypography.labelCaps(
+                  AppColors.onSurfaceVariant,
+                ).copyWith(fontWeight: FontWeight.w400, fontSize: 11),
               ),
               if (!hasFile && supportsLocalComputerFilePicker) ...[
                 const SizedBox(height: 6),
@@ -580,14 +592,13 @@ class RoleRequestHistorySection extends StatelessWidget {
       children: [
         Text(
           'Lịch sử yêu cầu',
-          style: AppTypography.headlineSm(AppColors.onSurface)
-              .copyWith(fontSize: 22),
+          style: AppTypography.headlineSm(
+            AppColors.onSurface,
+          ).copyWith(fontSize: 22),
         ),
         const SizedBox(height: 16),
         _RoleLightCard(
-          padding: history.isEmpty
-              ? const EdgeInsets.all(24)
-              : EdgeInsets.zero,
+          padding: history.isEmpty ? const EdgeInsets.all(24) : EdgeInsets.zero,
           child: history.isEmpty
               ? Column(
                   children: [
@@ -629,7 +640,9 @@ class RoleRequestHistorySection extends StatelessWidget {
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                        constraints: BoxConstraints(
+                          minWidth: constraints.maxWidth,
+                        ),
                         child: DataTable(
                           headingRowColor: WidgetStateProperty.all(
                             AppColors.surfaceContainer,
@@ -656,9 +669,12 @@ class RoleRequestHistorySection extends StatelessWidget {
                                         height: 32,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          color: AppColors.primary
-                                              .withValues(alpha: 0.12),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: AppColors.primary.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Icon(
                                           item.role.icon,
@@ -760,8 +776,9 @@ class _StatusBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             item.statusLabel,
-            style: AppTypography.labelCaps(item.statusColor)
-                .copyWith(fontSize: 11, fontWeight: FontWeight.w700),
+            style: AppTypography.labelCaps(
+              item.statusColor,
+            ).copyWith(fontSize: 11, fontWeight: FontWeight.w700),
           ),
         ],
       ),

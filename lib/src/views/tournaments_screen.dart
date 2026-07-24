@@ -9,9 +9,16 @@ import '../widgets/tournaments/tournament_list_card.dart';
 import '../widgets/tournaments/tournament_search_bar.dart';
 
 class TournamentsScreen extends StatefulWidget {
-  const TournamentsScreen({super.key, this.viewModel});
+  const TournamentsScreen({
+    super.key,
+    this.viewModel,
+    this.showBack = false,
+    this.onTournamentTap,
+  });
 
   final TournamentsViewModel? viewModel;
+  final bool showBack;
+  final ValueChanged<String>? onTournamentTap;
 
   @override
   State<TournamentsScreen> createState() => _TournamentsScreenState();
@@ -50,7 +57,13 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
       primary: false,
       extendBody: false,
       backgroundColor: TournamentColors.surface,
-      appBar: const HomeAppBar(),
+      appBar: widget.showBack
+          ? AppBar(
+              backgroundColor: TournamentColors.primary,
+              foregroundColor: Colors.white,
+              title: const Text('Giải đấu'),
+            )
+          : const HomeAppBar(),
       body: RefreshIndicator(
         onRefresh: _viewModel.refreshTournaments,
         child: CustomScrollView(
@@ -102,7 +115,8 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                         final tournament = _viewModel.tournaments[index];
                         return TournamentListCard(
                           tournament: tournament,
-                          onTap: () {},
+                          onTap: () =>
+                              widget.onTournamentTap?.call(tournament.id),
                         );
                       },
                     ),

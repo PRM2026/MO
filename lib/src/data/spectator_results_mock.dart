@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum SpectatorResultsFilter {
-  all,
-  championshipSeries,
-  g1Derby,
-  speedChallenge,
-}
+enum SpectatorResultsFilter { all, championshipSeries, g1Derby, speedChallenge }
 
 class SpectatorResultFinisher {
   const SpectatorResultFinisher({

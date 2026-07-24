@@ -29,7 +29,7 @@ class BettingService {
 
   Future<BetRecord> placeBet({
     required String raceId,
-    required int participantId,
+    required String participantId,
     required num stakeAmount,
   }) {
     return _apiClient.postObject('/races/$raceId/bets', {

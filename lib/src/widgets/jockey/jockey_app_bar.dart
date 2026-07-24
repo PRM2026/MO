@@ -8,6 +8,7 @@ import '../../constants/app_theme_tokens.dart';
 import '../../constants/referee_colors.dart';
 import '../common/brand_logo.dart';
 import '../common/profile_avatar.dart';
+import '../common/theme_mode_toggle.dart';
 
 class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const JockeyAppBar({
@@ -40,9 +41,10 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return AppBar(
-      backgroundColor: RefereeColors.background,
-      foregroundColor: RefereeColors.onSurface,
+      backgroundColor: scheme.surface,
+      foregroundColor: scheme.onSurface,
       elevation: 0,
       automaticallyImplyLeading: false,
       leading: showBack
@@ -83,6 +85,7 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       actions: [
+        const ThemeModeIconButton(),
         if (showNotificationAction)
           JockeyNotificationAction(
             unreadCount: notificationUnreadCount,
@@ -101,7 +104,7 @@ class JockeyAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+        child: Divider(height: 1, color: scheme.outlineVariant),
       ),
     );
   }

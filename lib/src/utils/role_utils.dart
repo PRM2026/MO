@@ -35,8 +35,8 @@ bool hasDedicatedPortal(String role) {
     'REFEREE' ||
     'OWNER' ||
     'HORSE_OWNER' ||
-    'SPECTATOR' =>
-      true,
+    'SPECTATOR' ||
+    'ADMIN' => true,
     _ => false,
   };
 }

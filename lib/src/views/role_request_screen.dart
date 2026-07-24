@@ -9,11 +9,7 @@ import '../viewmodels/role_request_viewmodel.dart';
 import '../widgets/role_request/role_request_widgets.dart';
 
 class RoleRequestScreen extends StatefulWidget {
-  const RoleRequestScreen({
-    super.key,
-    this.viewModel,
-    this.embedded = false,
-  });
+  const RoleRequestScreen({super.key, this.viewModel, this.embedded = false});
 
   final RoleRequestViewModel? viewModel;
   final bool embedded;
@@ -103,8 +99,9 @@ class _RoleRequestScreenState extends State<RoleRequestScreen> {
                     children: [
                       Text(
                         'Đăng ký vai trò hệ thống',
-                        style: AppTypography.displayLg(AppColors.onSurface)
-                            .copyWith(fontSize: 28),
+                        style: AppTypography.displayLg(
+                          AppColors.onSurface,
+                        ).copyWith(fontSize: 28),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -114,15 +111,14 @@ class _RoleRequestScreenState extends State<RoleRequestScreen> {
                       const SizedBox(height: AppSpacing.xl),
                       Text(
                         'Chọn vai trò bạn muốn ứng tuyển',
-                        style: AppTypography.headlineSm(AppColors.onSurface)
-                            .copyWith(fontSize: 22),
+                        style: AppTypography.headlineSm(
+                          AppColors.onSurface,
+                        ).copyWith(fontSize: 22),
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       RoleSelectorGrid(onRoleTap: _openRoleForm),
                       const SizedBox(height: AppSpacing.xl),
-                      RoleRequestHistorySection(
-                        history: overview!.history,
-                      ),
+                      RoleRequestHistorySection(history: overview!.history),
                     ],
                   ),
                 ),
@@ -136,9 +132,6 @@ class _RoleRequestScreenState extends State<RoleRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: AppColors.surface,
-      child: _buildBody(),
-    );
+    return ColoredBox(color: AppColors.surface, child: _buildBody());
   }
 }

@@ -18,7 +18,7 @@ class JockeyHorseAssignmentItem {
   });
 
   final String invitationId;
-  final int? horseId;
+  final Object? horseId;
   final String horseName;
   final String ownerUsername;
   final String? raceId;

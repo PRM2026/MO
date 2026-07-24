@@ -6,11 +6,7 @@ import '../../models/news_article.dart';
 import 'news_network_image.dart';
 
 class NewsListTile extends StatelessWidget {
-  const NewsListTile({
-    super.key,
-    required this.article,
-    this.onTap,
-  });
+  const NewsListTile({super.key, required this.article, this.onTap});
 
   final NewsArticle article;
   final VoidCallback? onTap;

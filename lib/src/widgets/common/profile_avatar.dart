@@ -45,7 +45,9 @@ class ProfileAvatar extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: RefereeColors.championshipGold.withValues(alpha: 0.22),
+                    color: RefereeColors.championshipGold.withValues(
+                      alpha: 0.22,
+                    ),
                     blurRadius: size * 0.28,
                     spreadRadius: size * 0.02,
                   ),
@@ -262,10 +264,7 @@ class _ProfileAvatarButtonState extends State<ProfileAvatarButton> {
                 child: avatar,
               ),
             )
-          : Opacity(
-              opacity: widget.interactive ? 1 : 0.92,
-              child: avatar,
-            ),
+          : Opacity(opacity: widget.interactive ? 1 : 0.92, child: avatar),
     );
   }
 }

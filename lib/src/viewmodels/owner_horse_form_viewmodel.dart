@@ -79,7 +79,11 @@ class OwnerHorseFormViewModel extends ChangeNotifier {
     required String heightCm,
     required String weightKg,
     String? imagePath,
+    Uint8List? imageBytes,
+    String? imageName,
     String? documentPath,
+    Uint8List? documentBytes,
+    String? documentName,
   }) async {
     submitError = validate(
       name: name,
@@ -108,7 +112,11 @@ class OwnerHorseFormViewModel extends ChangeNotifier {
       heightCm: _parseDouble(heightCm),
       weightKg: _parseDouble(weightKg),
       imagePath: _emptyToNull(imagePath),
+      imageBytes: imageBytes,
+      imageName: _emptyToNull(imageName),
       documentPath: _emptyToNull(documentPath),
+      documentBytes: documentBytes,
+      documentName: _emptyToNull(documentName),
     );
 
     try {

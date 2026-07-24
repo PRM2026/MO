@@ -30,10 +30,7 @@ class RegisterBrandHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        Text(
-          'Đăng ký',
-          style: AppTypography.displayMd(AuthColors.navy),
-        ),
+        Text('Đăng ký', style: AppTypography.displayMd(AuthColors.navy)),
         const SizedBox(height: AppSpacing.sm),
         Text(
           'Tham gia hệ thống quản lý giải đua ngựa',
@@ -61,7 +58,11 @@ class RegisterInfoBox extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.info_outline, color: AuthColors.primaryDark, size: 22),
+            const Icon(
+              Icons.info_outline,
+              color: AuthColors.primaryDark,
+              size: 22,
+            ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/referee_colors.dart';
 import '../../widgets/referee/referee_bottom_nav.dart';
 import 'referee_assigned_races_screen.dart';
 import 'referee_dashboard_screen.dart';
 import 'referee_history_screen.dart';
+import 'referee_violations_screen.dart';
 import 'referee_wallet_screen.dart';
 
 class RefereeShell extends StatefulWidget {
@@ -20,12 +20,13 @@ class _RefereeShellState extends State<RefereeShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: RefereeColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: IndexedStack(
         index: _currentTab.index,
         children: [
           const RefereeDashboardScreen(),
           const RefereeAssignedRacesScreen(),
+          const RefereeViolationsScreen(),
           const RefereeHistoryScreen(),
           const RefereeWalletScreen(),
         ],

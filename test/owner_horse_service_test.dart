@@ -236,7 +236,7 @@ void main() {
 
     final detail = await service.getOwnerHorse('7');
 
-    expect(detail.id, '7');
+    expect(detail?.id, '7');
     expect(detail.ownerUsername, 'owner01');
   });
 
@@ -270,7 +270,7 @@ void main() {
       ),
     );
 
-    expect(detail.id, '7');
+    expect(detail?.id, '7');
   });
 
   test('rejects create without a horse name before multipart upload', () async {
@@ -293,6 +293,52 @@ void main() {
     );
   });
 
+  test('accepts a bare horse object from create multipart API', () async {
+    final storage = await _storageWithToken('owner-token');
+    final service = OwnerHorseService(
+      client: _MultipartInspectingClient(
+        expectedMethod: 'POST',
+        expectedUrl: 'http://example.test/owner/horses',
+        expectedFields: {'name': 'Night Wind'},
+        expectedFileFields: const {},
+        responseBody: jsonEncode(_horseDetailJson()),
+      ),
+      baseUrl: 'http://example.test',
+      storage: storage,
+    );
+
+    final detail = await service.createHorse(
+      const OwnerHorseFormData(name: 'Night Wind'),
+    );
+
+    expect(detail?.id, '7');
+  });
+
+  test(
+    'accepts an empty successful response from create multipart API',
+    () async {
+      final storage = await _storageWithToken('owner-token');
+      final service = OwnerHorseService(
+        client: _MultipartInspectingClient(
+          expectedMethod: 'POST',
+          expectedUrl: 'http://example.test/owner/horses',
+          expectedFields: {'name': 'Night Wind'},
+          expectedFileFields: const {},
+          responseBody: '',
+          responseStatus: 201,
+        ),
+        baseUrl: 'http://example.test',
+        storage: storage,
+      );
+
+      final detail = await service.createHorse(
+        const OwnerHorseFormData(name: 'Night Wind'),
+      );
+
+      expect(detail, isNull);
+    },
+  );
+
   test('updates owner horse using multipart fields and files', () async {
     final storage = await _storageWithToken('owner-token');
     final files = _TempHorseFiles.create();
@@ -314,7 +360,7 @@ void main() {
       OwnerHorseFormData(color: 'Nâu', documentPath: files.document.path),
     );
 
-    expect(detail.id, '7');
+    expect(detail?.id, '7');
   });
 
   test('deletes owner horse with bearer token', () async {
@@ -426,12 +472,16 @@ class _MultipartInspectingClient extends http.BaseClient {
     required this.expectedUrl,
     required this.expectedFields,
     required this.expectedFileFields,
+    this.responseBody,
+    this.responseStatus = 200,
   });
 
   final String expectedMethod;
   final String expectedUrl;
   final Map<String, String> expectedFields;
   final Set<String> expectedFileFields;
+  final String? responseBody;
+  final int responseStatus;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
@@ -448,8 +498,10 @@ class _MultipartInspectingClient extends http.BaseClient {
     );
 
     return http.StreamedResponse(
-      Stream<List<int>>.value(utf8.encode(_apiObject(_horseDetailJson()))),
-      200,
+      Stream<List<int>>.value(
+        utf8.encode(responseBody ?? _apiObject(_horseDetailJson())),
+      ),
+      responseStatus,
       headers: {'content-type': 'application/json; charset=utf-8'},
     );
   }

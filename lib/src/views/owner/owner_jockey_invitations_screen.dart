@@ -55,9 +55,8 @@ class _OwnerJockeyInvitationsScreenState
   Future<void> _openDetail(OwnerJockeyInvitation invitation) async {
     final changed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => OwnerJockeyInvitationDetailScreen(
-          invitationId: invitation.id,
-        ),
+        builder: (_) =>
+            OwnerJockeyInvitationDetailScreen(invitationId: invitation.id),
       ),
     );
     if (!mounted || changed != true) return;
@@ -186,9 +185,7 @@ class _OwnerJockeyInvitationDetailScreenState
     _ownsViewModel = widget.viewModel == null;
     _viewModel =
         widget.viewModel ??
-        OwnerJockeyInvitationDetailViewModel(
-          invitationId: widget.invitationId,
-        );
+        OwnerJockeyInvitationDetailViewModel(invitationId: widget.invitationId);
     _viewModel.addListener(_onChanged);
     _viewModel.loadDetail();
   }
@@ -286,7 +283,9 @@ class _OwnerJockeyInvitationDetailScreenState
                     AppSpacing.md,
                     AppSpacing.lg,
                     AppSpacing.md,
-                    detail.isPending ? 120 : AppSpacing.contentBottomPadding(context),
+                    detail.isPending
+                        ? 120
+                        : AppSpacing.contentBottomPadding(context),
                   ),
                   children: [
                     Center(
@@ -424,10 +423,7 @@ class _HeaderText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: AppTypography.displayMd(RefereeColors.onSurface),
-        ),
+        Text(title, style: AppTypography.displayMd(RefereeColors.onSurface)),
         const SizedBox(height: 6),
         Text(
           subtitle,
@@ -528,12 +524,10 @@ class _InvitationCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  [
-                    invitation.raceName,
-                    invitation.tournamentName,
-                  ].whereType<String>().where((value) => value.isNotEmpty).join(
-                    ' • ',
-                  ),
+                  [invitation.raceName, invitation.tournamentName]
+                      .whereType<String>()
+                      .where((value) => value.isNotEmpty)
+                      .join(' • '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(RefereeColors.championshipGold),
@@ -542,7 +536,10 @@ class _InvitationCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(Icons.chevron_right, color: RefereeColors.onSurfaceVariant),
+          const Icon(
+            Icons.chevron_right,
+            color: RefereeColors.onSurfaceVariant,
+          ),
         ],
       ),
     );
@@ -660,12 +657,13 @@ class _AcceptedJockeyCard extends StatelessWidget {
                 ),
                 Text(
                   [
-                    jockey.raceName,
-                    jockey.tournamentName,
-                    _formatDate(jockey.acceptedAt),
-                  ].whereType<String>().where((value) => value.isNotEmpty).join(
-                    ' • ',
-                  ),
+                        jockey.raceName,
+                        jockey.tournamentName,
+                        _formatDate(jockey.acceptedAt),
+                      ]
+                      .whereType<String>()
+                      .where((value) => value.isNotEmpty)
+                      .join(' • '),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm(RefereeColors.onSurfaceVariant),

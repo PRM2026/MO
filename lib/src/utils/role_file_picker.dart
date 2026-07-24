@@ -22,10 +22,52 @@ class PickedRoleFile {
   final int sizeBytes;
 }
 
+class PickedUploadFile {
+  const PickedUploadFile({required this.displayName, this.path, this.bytes});
+
+  final String displayName;
+  final String? path;
+  final Uint8List? bytes;
+}
+
 enum _DocumentPickSource { gallery, fileBrowser }
 
 class RoleFilePicker {
   static final _imagePicker = ImagePicker();
+
+  static Future<PickedUploadFile?> pickUpload({
+    required BuildContext context,
+    required String fieldName,
+    required bool imageOnly,
+  }) async {
+    if (kIsWeb) {
+      final result = await FilePicker.pickFiles(
+        type: imageOnly ? FileType.image : FileType.custom,
+        allowedExtensions: imageOnly
+            ? null
+            : const ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+        withData: true,
+        allowMultiple: false,
+      );
+      if (result == null || result.files.isEmpty) return null;
+      final picked = result.files.single;
+      if (picked.bytes == null || picked.bytes!.isEmpty) {
+        throw StateError('Không đọc được dữ liệu tệp đã chọn.');
+      }
+      return PickedUploadFile(displayName: picked.name, bytes: picked.bytes);
+    }
+
+    final picked = await pick(
+      context: context,
+      fieldName: fieldName,
+      imageOnly: imageOnly,
+    );
+    if (picked == null) return null;
+    return PickedUploadFile(
+      displayName: picked.displayName,
+      path: picked.file.path,
+    );
+  }
 
   /// Chọn file upload. Trên Windows/macOS/Linux/Web mở hộp thoại chọn file từ ổ máy.
   static Future<PickedRoleFile?> pick({

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/referee_colors.dart';
 import '../../models/jockey_dashboard_data.dart';
+import '../../repositories/auth_repository.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/app_toast.dart';
+import '../../widgets/common/portal_more_sheet.dart';
 import '../../widgets/jockey/jockey_bottom_nav.dart';
 import 'jockey_dashboard_screen.dart';
 import 'jockey_horses_screen.dart';
@@ -20,6 +21,62 @@ class JockeyShell extends StatefulWidget {
 
 class _JockeyShellState extends State<JockeyShell> {
   JockeyTab _currentTab = JockeyTab.dashboard;
+
+  void _selectTab(JockeyTab tab) {
+    if (tab == JockeyTab.more) {
+      _showMore();
+      return;
+    }
+    setState(() => _currentTab = tab);
+  }
+
+  Future<void> _showMore() {
+    return showPortalMoreSheet(
+      context,
+      portalName: 'Jockey Portal',
+      actions: [
+        PortalMoreAction(
+          icon: Icons.pets_outlined,
+          label: 'Ngựa được giao',
+          onTap: () => setState(() => _currentTab = JockeyTab.assignments),
+        ),
+        PortalMoreAction(
+          icon: Icons.person_outline,
+          label: 'Hồ sơ cá nhân',
+          onTap: () => AppRoutes.openJockeyProfile(context),
+        ),
+        PortalMoreAction(
+          icon: Icons.emoji_events_outlined,
+          label: 'Giải đấu',
+          onTap: () => AppRoutes.openJockeyTournaments(context),
+        ),
+        PortalMoreAction(
+          icon: Icons.leaderboard_outlined,
+          label: 'Bảng xếp hạng',
+          onTap: () => AppRoutes.openJockeyRankings(context),
+        ),
+        PortalMoreAction(
+          icon: Icons.account_balance_wallet_outlined,
+          label: 'Ví của tôi',
+          onTap: () => AppRoutes.openJockeyWallet(context),
+        ),
+        PortalMoreAction(
+          icon: Icons.notifications_outlined,
+          label: 'Thông báo',
+          onTap: () => AppRoutes.openJockeyNotifications(context),
+        ),
+        PortalMoreAction(
+          icon: Icons.logout,
+          label: 'Đăng xuất',
+          destructive: true,
+          onTap: () async {
+            await AuthRepository().logout();
+            if (mounted) AppRoutes.openAfterLogout(context);
+          },
+        ),
+      ],
+    );
+  }
 
   void _handleQuickLink(JockeyDashboardQuickLink link) {
     switch (_quickLinkKey(link)) {
@@ -53,7 +110,7 @@ class _JockeyShellState extends State<JockeyShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: RefereeColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: IndexedStack(
         index: _currentTab.index,
         children: [
@@ -66,7 +123,7 @@ class _JockeyShellState extends State<JockeyShell> {
       ),
       bottomNavigationBar: JockeyBottomNav(
         currentTab: _currentTab,
-        onTabSelected: (tab) => setState(() => _currentTab = tab),
+        onTabSelected: _selectTab,
       ),
     );
   }

@@ -17,16 +17,16 @@ void main() {
       final invitation = OwnerJockeyInvitation.fromJson(_invitationJson());
 
       expect(invitation.id, '17');
-      expect(invitation.ownerId, 3);
+      expect(invitation.ownerId, '3');
       expect(invitation.ownerUsername, 'owner01');
-      expect(invitation.jockeyId, 9);
+      expect(invitation.jockeyId, '9');
       expect(invitation.jockeyUsername, 'jockey09');
-      expect(invitation.jockeyProfileId, 99);
-      expect(invitation.horseId, 7);
+      expect(invitation.jockeyProfileId, '99');
+      expect(invitation.horseId, '7');
       expect(invitation.horseName, 'Night Wind');
-      expect(invitation.raceId, 21);
+      expect(invitation.raceId, '21');
       expect(invitation.raceName, 'Spring Sprint');
-      expect(invitation.tournamentId, 5);
+      expect(invitation.tournamentId, '5');
       expect(invitation.tournamentName, 'Spring Cup');
       expect(invitation.statusCode, 'ACCEPTED');
       expect(invitation.statusLabel, 'Đã nhận');
@@ -130,15 +130,15 @@ void main() {
         });
 
         expect(accepted.id, '17');
-        expect(accepted.jockeyId, 9);
+        expect(accepted.jockeyId, '9');
         expect(accepted.jockeyUsername, 'jockey09');
-        expect(accepted.horseId, 7);
+        expect(accepted.horseId, '7');
         expect(accepted.horseName, 'Night Wind');
         expect(accepted.acceptedAt, isNotNull);
 
-        expect(available.id, 9);
+        expect(available.id, '9');
         expect(available.username, 'jockey09');
-        expect(available.profileId, 99);
+        expect(available.profileId, '99');
         expect(available.fullName, 'Fast Rider');
         expect(available.rating, 4.5);
       },
@@ -160,7 +160,7 @@ void main() {
       final jockeys = await service.getAvailableJockeys();
 
       expect(jockeys, hasLength(1));
-      expect(jockeys.single.id, 9);
+      expect(jockeys.single.id, '9');
       expect(jockeys.single.fullName, 'Fast Rider');
     });
 
@@ -247,10 +247,14 @@ void main() {
     test('fetches accepted jockeys', () async {
       final service = await _service((request) async {
         expect(request.method, 'GET');
-        expect(request.url.toString(), 'http://example.test/owners/me/jockeys');
+        expect(
+          request.url.toString(),
+          'http://example.test/owner/jockey-invitations',
+        );
         return _jsonResponse([
           {
             'id': 17,
+            'status': 'ACCEPTED',
             'jockeyId': 9,
             'jockeyUsername': 'jockey09',
             'horseId': 7,
@@ -262,7 +266,7 @@ void main() {
       final accepted = await service.getAcceptedJockeys();
 
       expect(accepted, hasLength(1));
-      expect(accepted.single.jockeyId, 9);
+      expect(accepted.single.jockeyId, '9');
       expect(accepted.single.horseName, 'Night Wind');
     });
 

@@ -22,9 +22,9 @@ class RoleApplicationService {
     http.Client? client,
     String? baseUrl,
     AuthStorage? storage,
-  })  : _client = client ?? http.Client(),
-        _baseUrl = baseUrl ?? ApiConfig.baseUrl,
-        _storage = storage ?? AuthStorage();
+  }) : _client = client ?? http.Client(),
+       _baseUrl = baseUrl ?? ApiConfig.baseUrl,
+       _storage = storage ?? AuthStorage();
 
   final http.Client _client;
   final String _baseUrl;
@@ -47,11 +47,9 @@ class RoleApplicationService {
     Map<String, String> fields,
     File verificationDocument,
   ) {
-    return _postMultipart(
-      '/role-applications/owner',
-      fields,
-      {'verificationDocument': verificationDocument},
-    );
+    return _postMultipart('/role-applications/owner', fields, {
+      'verificationDocument': verificationDocument,
+    });
   }
 
   Future<Map<String, dynamic>> submitJockey(
@@ -70,11 +68,9 @@ class RoleApplicationService {
     Map<String, String> fields,
     File certificationDocument,
   ) {
-    return _postMultipart(
-      '/role-applications/referee',
-      fields,
-      {'certificationDocument': certificationDocument},
-    );
+    return _postMultipart('/role-applications/referee', fields, {
+      'certificationDocument': certificationDocument,
+    });
   }
 
   Future<Map<String, dynamic>> submitRole(
@@ -86,7 +82,8 @@ class RoleApplicationService {
       case SystemRoleType.spectator:
         return submitSpectator({
           'displayName': textFields['displayName'] ?? '',
-          if (textFields['phone']?.isNotEmpty == true) 'phone': textFields['phone']!,
+          if (textFields['phone']?.isNotEmpty == true)
+            'phone': textFields['phone']!,
           if (textFields['location']?.isNotEmpty == true)
             'location': textFields['location']!,
           if (textFields['favoriteHorseBreed']?.isNotEmpty == true)
@@ -94,16 +91,13 @@ class RoleApplicationService {
           if (textFields['bio']?.isNotEmpty == true) 'bio': textFields['bio']!,
         });
       case SystemRoleType.horseOwner:
-        return submitOwner(
-          {
-            'stableName': textFields['stableName'] ?? '',
-            'address': textFields['address'] ?? '',
-            if (textFields['experienceYears']?.isNotEmpty == true)
-              'experienceYears': textFields['experienceYears']!,
-            if (textFields['bio']?.isNotEmpty == true) 'bio': textFields['bio']!,
-          },
-          files['verificationDocument']!,
-        );
+        return submitOwner({
+          'stableName': textFields['stableName'] ?? '',
+          'address': textFields['address'] ?? '',
+          if (textFields['experienceYears']?.isNotEmpty == true)
+            'experienceYears': textFields['experienceYears']!,
+          if (textFields['bio']?.isNotEmpty == true) 'bio': textFields['bio']!,
+        }, files['verificationDocument']!);
       case SystemRoleType.jockey:
         return submitJockey(
           {
@@ -114,7 +108,8 @@ class RoleApplicationService {
               'heightCm': textFields['heightCm']!,
             if (textFields['weightKg']?.isNotEmpty == true)
               'weightKg': textFields['weightKg']!,
-            if (textFields['bio']?.isNotEmpty == true) 'bio': textFields['bio']!,
+            if (textFields['bio']?.isNotEmpty == true)
+              'bio': textFields['bio']!,
             if (textFields['awards']?.isNotEmpty == true)
               'awards': textFields['awards']!,
             if (textFields['specialties']?.isNotEmpty == true)
@@ -125,16 +120,13 @@ class RoleApplicationService {
           achievements: files['achievements'],
         );
       case SystemRoleType.referee:
-        return submitReferee(
-          {
-            'licenseNumber': textFields['licenseNumber'] ?? '',
-            if (textFields['experienceYears']?.isNotEmpty == true)
-              'experienceYears': textFields['experienceYears']!,
-            'specialty': textFields['specialty'] ?? '',
-            if (textFields['bio']?.isNotEmpty == true) 'bio': textFields['bio']!,
-          },
-          files['certificationDocument']!,
-        );
+        return submitReferee({
+          'licenseNumber': textFields['licenseNumber'] ?? '',
+          if (textFields['experienceYears']?.isNotEmpty == true)
+            'experienceYears': textFields['experienceYears']!,
+          'specialty': textFields['specialty'] ?? '',
+          if (textFields['bio']?.isNotEmpty == true) 'bio': textFields['bio']!,
+        }, files['certificationDocument']!);
     }
   }
 
@@ -143,10 +135,7 @@ class RoleApplicationService {
     final uri = Uri.parse('$_baseUrl$path');
     final response = await _client.get(
       uri,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
     return _decodeResponse(response);
   }
@@ -156,10 +145,7 @@ class RoleApplicationService {
     final uri = Uri.parse('$_baseUrl$path');
     final response = await _client.get(
       uri,
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
     Map<String, dynamic>? decoded;
@@ -182,7 +168,9 @@ class RoleApplicationService {
           .toList();
     }
 
-    throw RoleApplicationApiException(_resolveErrorMessage(decoded, apiResponse.message));
+    throw RoleApplicationApiException(
+      _resolveErrorMessage(decoded, apiResponse.message),
+    );
   }
 
   Future<Map<String, dynamic>> _postJson(

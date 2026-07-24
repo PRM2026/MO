@@ -81,6 +81,26 @@ class _RefereeProfileScreenState extends State<RefereeProfileScreen> {
             ? const Center(
                 child: CircularProgressIndicator(color: RefereeColors.tertiary),
               )
+            : data == null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _viewModel.errorMessage ?? 'Không thể tải hồ sơ.',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: _viewModel.loadData,
+                        child: const Text('Thử lại'),
+                      ),
+                    ],
+                  ),
+                ),
+              )
             : RefreshIndicator(
                 color: RefereeColors.tertiary,
                 onRefresh: _viewModel.loadData,
@@ -101,7 +121,7 @@ class _RefereeProfileScreenState extends State<RefereeProfileScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                RefereeProfileHeader(profile: data!),
+                                RefereeProfileHeader(profile: data),
                                 const SizedBox(height: AppSpacing.lg),
                                 RefereeProfileStatsGrid(stats: data.stats),
                                 const SizedBox(height: AppSpacing.lg),

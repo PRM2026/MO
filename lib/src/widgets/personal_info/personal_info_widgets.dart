@@ -41,7 +41,9 @@ class PersonalInfoHeaderCard extends StatelessWidget {
             ),
             child: Text(
               initial,
-              style: AppTypography.displayLg(Colors.white).copyWith(fontSize: 32),
+              style: AppTypography.displayLg(
+                Colors.white,
+              ).copyWith(fontSize: 32),
             ),
           ),
           const SizedBox(width: 20),
@@ -51,20 +53,25 @@ class PersonalInfoHeaderCard extends StatelessWidget {
               children: [
                 Text(
                   viewModel.displayName,
-                  style: AppTypography.headlineSm(AppColors.onSurface)
-                      .copyWith(fontSize: 24),
+                  style: AppTypography.headlineSm(
+                    AppColors.onSurface,
+                  ).copyWith(fontSize: 24),
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
                     viewModel.roleLabel,
-                    style: AppTypography.labelCaps(AppColors.primary)
-                        .copyWith(fontSize: 11),
+                    style: AppTypography.labelCaps(
+                      AppColors.primary,
+                    ).copyWith(fontSize: 11),
                   ),
                 ),
               ],
@@ -95,13 +102,12 @@ class PersonalInfoDetailsCard extends StatelessWidget {
         children: [
           Text(
             'Thông tin tài khoản',
-            style: AppTypography.headlineSm(AppColors.onSurface).copyWith(fontSize: 20),
+            style: AppTypography.headlineSm(
+              AppColors.onSurface,
+            ).copyWith(fontSize: 20),
           ),
           const SizedBox(height: 20),
-          _InfoRow(
-            label: 'Họ và tên',
-            value: viewModel.displayName,
-          ),
+          _InfoRow(label: 'Họ và tên', value: viewModel.displayName),
           const SizedBox(height: 16),
           _InfoRow(
             label: 'Email',
@@ -110,10 +116,7 @@ class PersonalInfoDetailsCard extends StatelessWidget {
                 : '—',
           ),
           const SizedBox(height: 16),
-          _InfoRow(
-            label: 'Vai trò đã được duyệt',
-            value: viewModel.roleLabel,
-          ),
+          _InfoRow(label: 'Vai trò đã được duyệt', value: viewModel.roleLabel),
           const SizedBox(height: 16),
           _InfoRow(
             label: 'Trạng thái đăng nhập',
@@ -190,8 +193,9 @@ class PersonalInfoLogoutButton extends StatelessWidget {
                   children: [
                     Text(
                       'Đăng xuất',
-                      style: AppTypography.headlineSm(RefereeColors.statusRed)
-                          .copyWith(fontSize: 17),
+                      style: AppTypography.headlineSm(
+                        RefereeColors.statusRed,
+                      ).copyWith(fontSize: 17),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -226,14 +230,16 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.labelCaps(AppColors.onSurfaceVariant)
-              .copyWith(fontWeight: FontWeight.w500),
+          style: AppTypography.labelCaps(
+            AppColors.onSurfaceVariant,
+          ).copyWith(fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: AppTypography.bodyMd(AppColors.onSurface)
-              .copyWith(fontWeight: FontWeight.w600),
+          style: AppTypography.bodyMd(
+            AppColors.onSurface,
+          ).copyWith(fontWeight: FontWeight.w600),
         ),
       ],
     );

@@ -21,16 +21,24 @@ class HomeBottomNav extends StatelessWidget {
 
   static const _guestItems = [
     (HomeTab.home, Icons.home_outlined, Icons.home, 'Trang chủ'),
-    (HomeTab.tournaments, Icons.emoji_events_outlined, Icons.emoji_events,
-        AppConstants.tournamentsTabLabel),
+    (
+      HomeTab.tournaments,
+      Icons.emoji_events_outlined,
+      Icons.emoji_events,
+      AppConstants.tournamentsTabLabel,
+    ),
     (HomeTab.news, Icons.newspaper_outlined, Icons.newspaper, 'Tin tức'),
     (HomeTab.about, Icons.info_outline, Icons.info, 'Giới thiệu'),
   ];
 
   static const _authItems = [
     (HomeTab.home, Icons.home_outlined, Icons.home, 'Trang chủ'),
-    (HomeTab.tournaments, Icons.emoji_events_outlined, Icons.emoji_events,
-        AppConstants.tournamentsTabLabel),
+    (
+      HomeTab.tournaments,
+      Icons.emoji_events_outlined,
+      Icons.emoji_events,
+      AppConstants.tournamentsTabLabel,
+    ),
     (HomeTab.news, Icons.newspaper_outlined, Icons.newspaper, 'Tin tức'),
     (HomeTab.account, Icons.person_outline, Icons.person, 'Tài khoản'),
     (HomeTab.about, Icons.info_outline, Icons.info, 'Giới thiệu'),
@@ -64,11 +72,7 @@ class HomeBottomNav extends StatelessWidget {
             for (final item in items)
               NavigationDestination(
                 icon: Icon(item.$2, size: 22),
-                selectedIcon: Icon(
-                  item.$3,
-                  size: 22,
-                  color: AppColors.primary,
-                ),
+                selectedIcon: Icon(item.$3, size: 22, color: AppColors.primary),
                 label: item.$4,
               ),
           ],

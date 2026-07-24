@@ -5,11 +5,7 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_theme_tokens.dart';
 
 class AboutCtaSection extends StatelessWidget {
-  const AboutCtaSection({
-    super.key,
-    this.onRegister,
-    this.onViewTournaments,
-  });
+  const AboutCtaSection({super.key, this.onRegister, this.onViewTournaments});
 
   final VoidCallback? onRegister;
   final VoidCallback? onViewTournaments;
@@ -23,9 +19,7 @@ class AboutCtaSection extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(32),
-            decoration: const BoxDecoration(
-              gradient: AboutColors.ctaGradient,
-            ),
+            decoration: const BoxDecoration(gradient: AboutColors.ctaGradient),
             child: Column(
               children: [
                 Icon(
@@ -89,16 +83,8 @@ class AboutCtaSection extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
-            top: -32,
-            right: -32,
-            child: _GlowOrb(size: 128),
-          ),
-          Positioned(
-            bottom: -32,
-            left: -32,
-            child: _GlowOrb(size: 128),
-          ),
+          Positioned(top: -32, right: -32, child: _GlowOrb(size: 128)),
+          Positioned(bottom: -32, left: -32, child: _GlowOrb(size: 128)),
         ],
       ),
     );

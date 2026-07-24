@@ -5,7 +5,7 @@ import '../repositories/referee_assigned_races_repository.dart';
 
 class RefereeAssignedRacesViewModel extends ChangeNotifier {
   RefereeAssignedRacesViewModel({RefereeAssignedRacesRepository? repository})
-      : _repository = repository ?? RefereeAssignedRacesRepository();
+    : _repository = repository ?? RefereeAssignedRacesRepository();
 
   final RefereeAssignedRacesRepository _repository;
 

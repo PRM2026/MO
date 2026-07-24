@@ -93,10 +93,7 @@ class _Particle {
 }
 
 class _AmbientParticlePainter extends CustomPainter {
-  _AmbientParticlePainter({
-    required this.particles,
-    required this.tick,
-  });
+  _AmbientParticlePainter({required this.particles, required this.tick});
 
   final List<_Particle> particles;
   final double tick;

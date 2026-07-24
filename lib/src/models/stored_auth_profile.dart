@@ -28,8 +28,7 @@ class StoredAuthProfile {
 
   String get normalizedRole => (role ?? 'USER').trim().toUpperCase();
 
-  String get normalizedPendingRole =>
-      (pendingRole ?? '').trim().toUpperCase();
+  String get normalizedPendingRole => (pendingRole ?? '').trim().toUpperCase();
 
   String get normalizedApprovalStatus =>
       (roleApprovalStatus ?? 'NONE').trim().toUpperCase();
@@ -37,7 +36,7 @@ class StoredAuthProfile {
   bool get isRolePending => normalizedApprovalStatus == 'PENDING';
 
   String get effectiveAppRole => resolveEffectiveAppRole(
-        role: role,
-        roleApprovalStatus: roleApprovalStatus,
-      );
+    role: role,
+    roleApprovalStatus: roleApprovalStatus,
+  );
 }

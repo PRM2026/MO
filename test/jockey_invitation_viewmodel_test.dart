@@ -296,8 +296,8 @@ class _RecordingService extends JockeyInvitationService {
   int detailCalls = 0;
 
   @override
-  Future<JockeyInvitationResponse> getJockeyInvitation(int id) async {
+  Future<JockeyInvitationResponse> getJockeyInvitation(String id) async {
     detailCalls++;
-    return const JockeyInvitationResponse(id: 7);
+    return const JockeyInvitationResponse(id: '7');
   }
 }

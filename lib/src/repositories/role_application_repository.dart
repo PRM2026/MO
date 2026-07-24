@@ -7,8 +7,8 @@ class RoleApplicationRepository {
   RoleApplicationRepository({
     RoleApplicationService? applicationService,
     AuthRepository? authRepository,
-  })  : _applicationService = applicationService ?? RoleApplicationService(),
-        _authRepository = authRepository ?? AuthRepository();
+  }) : _applicationService = applicationService ?? RoleApplicationService(),
+       _authRepository = authRepository ?? AuthRepository();
 
   final RoleApplicationService _applicationService;
   final AuthRepository _authRepository;

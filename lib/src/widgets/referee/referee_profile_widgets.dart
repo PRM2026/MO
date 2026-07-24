@@ -34,14 +34,16 @@ class RefereeProfileHeader extends StatelessWidget {
           );
 
           final info = Column(
-            crossAxisAlignment:
-                isWide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+            crossAxisAlignment: isWide
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               Text(
                 profile.fullName,
                 textAlign: isWide ? TextAlign.start : TextAlign.center,
-                style: AppTypography.displayLg(RefereeColors.onSurface)
-                    .copyWith(fontSize: isWide ? 32 : 28),
+                style: AppTypography.displayLg(
+                  RefereeColors.onSurface,
+                ).copyWith(fontSize: isWide ? 32 : 28),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -83,13 +85,7 @@ class RefereeProfileHeader extends StatelessWidget {
             );
           }
 
-          return Column(
-            children: [
-              avatar,
-              const SizedBox(height: 20),
-              info,
-            ],
-          );
+          return Column(children: [avatar, const SizedBox(height: 20), info]);
         },
       ),
     );
@@ -114,8 +110,9 @@ class _RankBadge extends StatelessWidget {
       ),
       child: Text(
         label.toUpperCase(),
-        style: AppTypography.labelCaps(RefereeColors.secondary)
-            .copyWith(fontSize: 11, letterSpacing: 0.8),
+        style: AppTypography.labelCaps(
+          RefereeColors.secondary,
+        ).copyWith(fontSize: 11, letterSpacing: 0.8),
       ),
     );
   }
@@ -136,8 +133,9 @@ class _RefereeIdBadge extends StatelessWidget {
       ),
       child: Text(
         'ID: $id',
-        style: AppTypography.bodySm(RefereeColors.onSurfaceVariant)
-            .copyWith(fontWeight: FontWeight.w500),
+        style: AppTypography.bodySm(
+          RefereeColors.onSurfaceVariant,
+        ).copyWith(fontWeight: FontWeight.w500),
       ),
     );
   }
@@ -165,8 +163,7 @@ class RefereeProfileStatsGrid extends StatelessWidget {
             childAspectRatio: isWide ? 2.4 : 2.8,
           ),
           itemCount: stats.length,
-          itemBuilder: (context, index) =>
-              _ProfileStatTile(stat: stats[index]),
+          itemBuilder: (context, index) => _ProfileStatTile(stat: stats[index]),
         );
       },
     );
@@ -250,8 +247,9 @@ class RefereeProfileSettingsCard extends StatelessWidget {
             ),
             child: Text(
               'CÀI ĐẶT TÀI KHOẢN',
-              style: AppTypography.labelCaps(RefereeColors.onSurfaceVariant)
-                  .copyWith(letterSpacing: 1.2),
+              style: AppTypography.labelCaps(
+                RefereeColors.onSurfaceVariant,
+              ).copyWith(letterSpacing: 1.2),
             ),
           ),
           for (var i = 0; i < settings.length; i++) ...[
@@ -260,10 +258,7 @@ class RefereeProfileSettingsCard extends StatelessWidget {
               onTap: () => onItemTap?.call(settings[i]),
             ),
             if (i < settings.length - 1)
-              Divider(
-                height: 1,
-                color: Colors.white.withValues(alpha: 0.05),
-              ),
+              Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
           ],
         ],
       ),
@@ -304,10 +299,7 @@ class _SettingsRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
               ],
-              Icon(
-                Icons.chevron_right,
-                color: RefereeColors.onSurfaceVariant,
-              ),
+              Icon(Icons.chevron_right, color: RefereeColors.onSurfaceVariant),
             ],
           ),
         ),
@@ -332,9 +324,7 @@ class RefereeProfileLogoutButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
         foregroundColor: RefereeColors.statusRed,
-        side: BorderSide(
-          color: RefereeColors.statusRed.withValues(alpha: 0.3),
-        ),
+        side: BorderSide(color: RefereeColors.statusRed.withValues(alpha: 0.3)),
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -354,8 +344,9 @@ class RefereeProfileLogoutButton extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'Đăng xuất',
-                  style: AppTypography.headlineSm(RefereeColors.statusRed)
-                      .copyWith(fontSize: 18),
+                  style: AppTypography.headlineSm(
+                    RefereeColors.statusRed,
+                  ).copyWith(fontSize: 18),
                 ),
               ],
             ),

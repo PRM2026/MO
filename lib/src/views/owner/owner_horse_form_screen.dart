@@ -27,14 +27,14 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
   late final TextEditingController _nameController;
   late final TextEditingController _breedController;
   late final TextEditingController _ageController;
-  late final TextEditingController _genderController;
   late final TextEditingController _colorController;
   late final TextEditingController _heightController;
   late final TextEditingController _weightController;
-  String? _imagePath;
+  PickedUploadFile? _image;
   String? _imageName;
-  String? _documentPath;
+  PickedUploadFile? _document;
   String? _documentName;
+  String? _gender;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
     _nameController = TextEditingController(text: detail?.name ?? '');
     _breedController = TextEditingController(text: detail?.breed ?? '');
     _ageController = TextEditingController(text: _formatInt(detail?.age));
-    _genderController = TextEditingController(text: detail?.gender ?? '');
+    _gender = _normalizeGender(detail?.gender);
     _colorController = TextEditingController(text: detail?.color ?? '');
     _heightController = TextEditingController(
       text: _formatNumber(detail?.heightCm),
@@ -63,14 +63,14 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
 
   Future<void> _pickImage() async {
     try {
-      final picked = await RoleFilePicker.pick(
+      final picked = await RoleFilePicker.pickUpload(
         context: context,
         fieldName: 'image',
         imageOnly: true,
       );
       if (picked == null || !mounted) return;
       setState(() {
-        _imagePath = picked.file.path;
+        _image = picked;
         _imageName = picked.displayName;
       });
     } catch (_) {
@@ -80,14 +80,14 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
 
   Future<void> _pickDocument() async {
     try {
-      final picked = await RoleFilePicker.pick(
+      final picked = await RoleFilePicker.pickUpload(
         context: context,
         fieldName: 'document',
         imageOnly: false,
       );
       if (picked == null || !mounted) return;
       setState(() {
-        _documentPath = picked.file.path;
+        _document = picked;
         _documentName = picked.displayName;
       });
     } catch (_) {
@@ -100,12 +100,16 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
       name: _nameController.text,
       breed: _breedController.text,
       age: _ageController.text,
-      gender: _genderController.text,
+      gender: _gender ?? '',
       color: _colorController.text,
       heightCm: _heightController.text,
       weightKg: _weightController.text,
-      imagePath: _imagePath,
-      documentPath: _documentPath,
+      imagePath: _image?.path,
+      imageBytes: _image?.bytes,
+      imageName: _image?.displayName,
+      documentPath: _document?.path,
+      documentBytes: _document?.bytes,
+      documentName: _document?.displayName,
     );
     if (!mounted) return;
 
@@ -131,7 +135,6 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
     _nameController.dispose();
     _breedController.dispose();
     _ageController.dispose();
-    _genderController.dispose();
     _colorController.dispose();
     _heightController.dispose();
     _weightController.dispose();
@@ -187,10 +190,11 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: _OwnerHorseTextField(
-                            controller: _genderController,
-                            label: 'Giới tính',
-                            textInputAction: TextInputAction.next,
+                          child: _OwnerHorseGenderField(
+                            value: _gender,
+                            onChanged: (value) {
+                              setState(() => _gender = value);
+                            },
                           ),
                         ),
                       ],
@@ -240,9 +244,7 @@ class _OwnerHorseFormScreenState extends State<OwnerHorseFormScreen> {
                       title: 'Tài liệu',
                       value:
                           _documentName ??
-                          _existingFileLabel(
-                            widget.initialDetail?.documentUrl,
-                          ),
+                          _existingFileLabel(widget.initialDetail?.documentUrl),
                       onTap: _pickDocument,
                     ),
                     const SizedBox(height: 24),
@@ -324,6 +326,44 @@ class _OwnerHorseTextField extends StatelessWidget {
   }
 }
 
+class _OwnerHorseGenderField extends StatelessWidget {
+  const _OwnerHorseGenderField({required this.value, required this.onChanged});
+
+  final String? value;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DropdownButtonFormField<String>(
+        initialValue: value,
+        onChanged: onChanged,
+        dropdownColor: RefereeColors.background,
+        style: AppTypography.bodyMd(RefereeColors.onSurface),
+        decoration: InputDecoration(
+          labelText: 'Giới tính',
+          labelStyle: AppTypography.bodySm(RefereeColors.onSurfaceVariant),
+          filled: true,
+          fillColor: Colors.white.withValues(alpha: 0.05),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: RefereeColors.championshipGold),
+          ),
+        ),
+        items: const [
+          DropdownMenuItem(value: 'Đực', child: Text('Đực')),
+          DropdownMenuItem(value: 'Cái', child: Text('Cái')),
+        ],
+      ),
+    );
+  }
+}
+
 class _FilePickTile extends StatelessWidget {
   const _FilePickTile({
     required this.icon,
@@ -364,9 +404,7 @@ class _FilePickTile extends StatelessWidget {
                     value!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodySm(
-                      RefereeColors.onSurfaceVariant,
-                    ),
+                    style: AppTypography.bodySm(RefereeColors.onSurfaceVariant),
                   ),
               ],
             ),
@@ -394,4 +432,13 @@ String? _existingFileLabel(String? url) {
   return slash >= 0 && slash < value.length - 1
       ? value.substring(slash + 1)
       : value;
+}
+
+String? _normalizeGender(String? value) {
+  final normalized = value?.trim().toLowerCase();
+  return switch (normalized) {
+    'đực' || 'duc' || 'male' => 'Đực',
+    'cái' || 'cai' || 'female' => 'Cái',
+    _ => null,
+  };
 }

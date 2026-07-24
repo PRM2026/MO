@@ -55,14 +55,15 @@ class RoleApplicationResponse {
     final date = createdAt ?? reviewedAt;
     final formattedDate = date != null
         ? '${date.day.toString().padLeft(2, '0')}/'
-            '${date.month.toString().padLeft(2, '0')}/'
-            '${date.year}'
+              '${date.month.toString().padLeft(2, '0')}/'
+              '${date.year}'
         : '—';
 
     final note = reviewReason?.trim().isNotEmpty == true
         ? reviewReason!.trim()
         : switch (mappedStatus) {
-            RoleHistoryStatus.pending => 'Hồ sơ đang chờ ban quản trị xét duyệt.',
+            RoleHistoryStatus.pending =>
+              'Hồ sơ đang chờ ban quản trị xét duyệt.',
             RoleHistoryStatus.approved => 'Yêu cầu đã được phê duyệt.',
             RoleHistoryStatus.rejected => 'Yêu cầu đã bị từ chối.',
           };

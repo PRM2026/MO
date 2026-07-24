@@ -68,12 +68,19 @@ class OwnerJockeyInvitationService {
   }
 
   Future<List<OwnerAcceptedJockey>> getAcceptedJockeys() {
-    return _run(
-      () => _apiClient.getList(
-        '/owners/me/jockeys',
-        OwnerAcceptedJockey.fromJson,
-      ),
-    );
+    return _run(() async {
+      final invitations = await _apiClient.getList(
+        '/owner/jockey-invitations',
+        (json) => json,
+      );
+      return invitations
+          .where(
+            (item) =>
+                '${item['status'] ?? ''}'.trim().toUpperCase() == 'ACCEPTED',
+          )
+          .map(OwnerAcceptedJockey.fromJson)
+          .toList(growable: false);
+    });
   }
 
   Future<OwnerJockeyInvitation?> cancelInvitation(String id) {

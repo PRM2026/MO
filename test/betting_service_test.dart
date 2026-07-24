@@ -90,16 +90,16 @@ void main() {
 
     final bet = await service.placeBet(
       raceId: '8',
-      participantId: 11,
+      participantId: '11',
       stakeAmount: 50000,
     );
 
     expect(captured.url.path, '/races/8/bets');
     expect(jsonDecode(captured.body), {
-      'participantId': 11,
+      'participantId': '11',
       'stakeAmount': 50000,
     });
-    expect(bet.id, 99);
+    expect(bet.id, '99');
     expect(bet.status, 'PENDING');
   });
 }

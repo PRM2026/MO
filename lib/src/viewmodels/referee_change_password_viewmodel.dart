@@ -5,7 +5,7 @@ import '../utils/password_strength.dart';
 
 class RefereeChangePasswordViewModel extends ChangeNotifier {
   RefereeChangePasswordViewModel({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? AuthRepository();
+    : _authRepository = authRepository ?? AuthRepository();
 
   final AuthRepository _authRepository;
 

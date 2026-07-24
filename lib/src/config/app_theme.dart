@@ -44,6 +44,90 @@ abstract final class AppTheme {
           ),
         ),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: scheme.surface,
+        indicatorColor: scheme.primaryContainer,
+        labelTextStyle: WidgetStatePropertyAll(
+          GoogleFonts.beVietnamPro(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dividerColor: scheme.outlineVariant,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: scheme.surfaceContainerHighest,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: scheme.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: scheme.primary, width: 1.5),
+        ),
+      ),
+    );
+  }
+
+  static ThemeData dark() {
+    const scheme = ColorScheme(
+      brightness: Brightness.dark,
+      primary: Color(0xFFF0C75E),
+      onPrimary: Color(0xFF3A2B00),
+      primaryContainer: Color(0xFF594400),
+      onPrimaryContainer: Color(0xFFFFE08A),
+      secondary: Color(0xFFADC8F5),
+      onSecondary: Color(0xFF163052),
+      secondaryContainer: Color(0xFF2F4A70),
+      onSecondaryContainer: Color(0xFFD5E3FF),
+      surface: Color(0xFF15130F),
+      onSurface: Color(0xFFECE6DF),
+      onSurfaceVariant: Color(0xFFC9C4BC),
+      outline: Color(0xFF938F87),
+      outlineVariant: Color(0xFF48443E),
+      error: Color(0xFFFFB4AB),
+      onError: Color(0xFF690005),
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: scheme.surface,
+      textTheme: GoogleFonts.beVietnamProTextTheme(ThemeData.dark().textTheme),
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: scheme.surface,
+        foregroundColor: scheme.onSurface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF221F1B),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: scheme.outlineVariant),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFF0C1D36),
+        indicatorColor: scheme.primaryContainer,
+        labelTextStyle: WidgetStatePropertyAll(
+          GoogleFonts.beVietnamPro(fontWeight: FontWeight.w600),
+        ),
+      ),
+      dividerColor: scheme.outlineVariant,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF221F1B),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: scheme.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: scheme.primary, width: 1.5),
+        ),
+      ),
     );
   }
 }

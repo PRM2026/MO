@@ -6,7 +6,7 @@ import 'package:horse_racing/src/views/spectator/spectator_home_screen.dart';
 import 'package:horse_racing/src/widgets/spectator/spectator_bottom_nav.dart';
 
 void main() {
-  testWidgets('spectator bottom nav keeps four tabs and stable labels', (
+  testWidgets('spectator bottom nav exposes betting and full portal menu', (
     tester,
   ) async {
     SpectatorTab? selected;
@@ -24,8 +24,9 @@ void main() {
 
     expect(find.text('Trang chu'), findsOneWidget);
     expect(find.text('Cuoc dua'), findsOneWidget);
+    expect(find.text('Đặt cược'), findsOneWidget);
     expect(find.text('Ket qua'), findsOneWidget);
-    expect(find.text('Ho so'), findsOneWidget);
+    expect(find.text('Thêm'), findsOneWidget);
 
     await tester.tap(find.text('Ket qua'));
     await tester.pump();

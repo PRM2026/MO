@@ -37,39 +37,36 @@ class HorseRankingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
-            vertical: AppSpacing.sm,
-          ),
-          child: Row(
-            children: [
-              _RankAvatar(ranking: ranking),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      ranking.name,
-                      style: AppTypography.bodyMd(AppColors.onSurface)
-                          .copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    Text(
-                      'Chủ sở hữu: ${ranking.owner}',
-                      style: AppTypography.labelCaps(
-                        AppColors.onSurfaceVariant,
-                      ).copyWith(fontSize: 11, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.sm,
+        ),
+        child: Row(
+          children: [
+            _RankAvatar(ranking: ranking),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    ranking.name,
+                    style: AppTypography.bodyMd(
+                      AppColors.onSurface,
+                    ).copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    'Chủ sở hữu: ${ranking.owner}',
+                    style: AppTypography.labelCaps(
+                      AppColors.onSurfaceVariant,
+                    ).copyWith(fontSize: 11, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
-              _WinRateChip(label: ranking.winRateLabel),
-            ],
-          ),
+            ),
+            _WinRateChip(label: ranking.winRateLabel),
+          ],
         ),
       ),
     );
@@ -108,10 +105,7 @@ class _RankAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 20,
       backgroundColor: bg,
-      child: Text(
-        '${ranking.rank}',
-        style: AppTypography.labelCaps(fg),
-      ),
+      child: Text('${ranking.rank}', style: AppTypography.labelCaps(fg)),
     );
   }
 }
@@ -132,8 +126,9 @@ class _WinRateChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Text(
           label,
-          style: AppTypography.labelCaps(const Color(0xFF15803D))
-              .copyWith(fontSize: 11),
+          style: AppTypography.labelCaps(
+            const Color(0xFF15803D),
+          ).copyWith(fontSize: 11),
         ),
       ),
     );

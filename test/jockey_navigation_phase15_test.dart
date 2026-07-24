@@ -4,7 +4,7 @@ import 'package:horse_racing/src/widgets/jockey/jockey_bottom_nav.dart';
 import 'package:horse_racing/src/widgets/jockey/jockey_profile_widgets.dart';
 
 void main() {
-  testWidgets('bottom nav uses assignments instead of profile for last tab', (
+  testWidgets('bottom nav exposes complete portal through more tab', (
     tester,
   ) async {
     JockeyTab? selectedTab;
@@ -20,13 +20,13 @@ void main() {
       ),
     );
 
-    expect(find.text('Phân công'), findsOneWidget);
+    expect(find.text('Thêm'), findsOneWidget);
     expect(find.text('Hồ sơ'), findsNothing);
 
-    await tester.tap(find.text('Phân công'));
+    await tester.tap(find.text('Thêm'));
     await tester.pump();
 
-    expect(selectedTab, JockeyTab.assignments);
+    expect(selectedTab, JockeyTab.more);
   });
 
   testWidgets('profile actions expose wallet and notifications entries', (

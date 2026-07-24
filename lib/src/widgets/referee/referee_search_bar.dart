@@ -25,10 +25,7 @@ class RefereeSearchBar extends StatelessWidget {
         hintStyle: AppTypography.bodyMd(
           RefereeColors.onSurfaceVariant.withValues(alpha: 0.8),
         ),
-        prefixIcon: Icon(
-          Icons.search,
-          color: RefereeColors.onSurfaceVariant,
-        ),
+        prefixIcon: Icon(Icons.search, color: RefereeColors.onSurfaceVariant),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
         contentPadding: const EdgeInsets.symmetric(vertical: 14),

@@ -25,12 +25,26 @@ class OwnerRaceRegistrationService {
 
   final ApiClient _apiClient;
 
-  Future<List<OwnerEligibleHorseTeam>> getEligibleTeams() => _run(
-    () => _apiClient.getList(
-      '/owner/horse-teams/eligible',
-      OwnerEligibleHorseTeam.fromJson,
-    ),
-  );
+  Future<List<OwnerEligibleHorseTeam>> getEligibleTeams(
+    String raceId,
+  ) => _run(() async {
+    final invitations = await _apiClient.getList(
+      '/owner/jockey-invitations',
+      (json) => json,
+    );
+    return invitations
+        .where(
+          (item) =>
+              '${item['status'] ?? ''}'.toUpperCase() == 'ACCEPTED' &&
+              '${item['raceId'] ?? ''}' == raceId,
+        )
+        .map(OwnerEligibleHorseTeam.fromJson)
+        .where(
+          (item) =>
+              item.invitationId.isNotEmpty && item.horseId?.isNotEmpty == true,
+        )
+        .toList(growable: false);
+  });
 
   Future<OwnerRaceRegistration> registerRace(
     String raceId,
@@ -74,9 +88,7 @@ class OwnerRaceRegistrationService {
   String _id(String value, String label) {
     final id = value.trim();
     if (id.isEmpty) {
-      throw OwnerRaceRegistrationApiException(
-        'Không xác định được mã $label.',
-      );
+      throw OwnerRaceRegistrationApiException('Không xác định được mã $label.');
     }
     return Uri.encodeComponent(id);
   }

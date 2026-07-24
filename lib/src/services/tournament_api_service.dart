@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../config/api_config.dart';
-import '../models/api_response.dart';
 import '../models/owner_tournament_detail.dart';
 import '../models/tournament_list_item.dart';
 
@@ -31,30 +30,31 @@ class TournamentApiService {
       headers: const {'Accept': 'application/json'},
     );
 
-    Map<String, dynamic> body;
+    dynamic body;
     try {
-      body = jsonDecode(response.body) as Map<String, dynamic>;
+      body = jsonDecode(response.body);
     } catch (_) {
       throw TournamentApiException('Phản hồi từ máy chủ không hợp lệ.');
     }
 
-    final apiResponse = ApiResponse<List<dynamic>>.fromJson(
-      body,
-      (data) => data as List<dynamic>,
-    );
+    final data = body is List
+        ? body
+        : body is Map<String, dynamic> && body['data'] is List
+        ? body['data'] as List
+        : const <dynamic>[];
+    final success = body is List || body is Map && body['success'] != false;
 
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        apiResponse.success) {
-      return (apiResponse.data ?? const [])
+    if (response.statusCode >= 200 && response.statusCode < 300 && success) {
+      return data
           .whereType<Map<String, dynamic>>()
           .map(TournamentListItem.fromJson)
           .toList(growable: false);
     }
 
     throw TournamentApiException(
-      apiResponse.message.isNotEmpty
-          ? apiResponse.message
+      body is Map<String, dynamic> &&
+              '${body['message'] ?? ''}'.trim().isNotEmpty
+          ? '${body['message']}'
           : 'Không thể tải giải đấu.',
     );
   }
@@ -67,21 +67,18 @@ class TournamentApiService {
     );
 
     final body = _decodeResponse(response);
-    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
-      body,
-      (data) => data as Map<String, dynamic>,
-    );
+    final data = body['data'] is Map<String, dynamic>
+        ? body['data'] as Map<String, dynamic>
+        : body;
+    final success = body['success'] != false;
 
-    if (response.statusCode >= 200 &&
-        response.statusCode < 300 &&
-        apiResponse.success &&
-        apiResponse.data != null) {
-      return OwnerTournamentDetail.fromJson(apiResponse.data!);
+    if (response.statusCode >= 200 && response.statusCode < 300 && success) {
+      return OwnerTournamentDetail.fromJson(data);
     }
 
     throw TournamentApiException(
-      apiResponse.message.isNotEmpty
-          ? apiResponse.message
+      '${body['message'] ?? ''}'.trim().isNotEmpty
+          ? '${body['message']}'
           : 'Không thể tải chi tiết giải đấu.',
     );
   }
