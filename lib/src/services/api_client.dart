@@ -114,6 +114,39 @@ class ApiClient {
     return _decodeObject(response, mapper);
   }
 
+  Future<T?> multipartOptionalObject<T>(
+    String method,
+    String path,
+    Map<String, String> fields,
+    Map<String, String> filePaths,
+    T Function(Map<String, dynamic>) mapper, {
+    Map<String, ({List<int> bytes, String filename})> memoryFiles = const {},
+  }) async {
+    final request = http.MultipartRequest(method, _uri(path));
+    request.headers.addAll(await _headers(authenticated: true));
+    request.fields.addAll(fields);
+
+    for (final entry in filePaths.entries) {
+      if (entry.value.isEmpty) continue;
+      request.files.add(
+        await http.MultipartFile.fromPath(entry.key, entry.value),
+      );
+    }
+    for (final entry in memoryFiles.entries) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          entry.key,
+          entry.value.bytes,
+          filename: entry.value.filename,
+        ),
+      );
+    }
+
+    final streamed = await _client.send(request);
+    final response = await http.Response.fromStream(streamed);
+    return _decodeOptionalMultipartObject(response, mapper);
+  }
+
   Future<http.Response> _send(
     String method,
     String path, {
@@ -207,6 +240,29 @@ class ApiClient {
       response,
       (data) => data,
       allowNullData: true,
+    );
+    final data = apiResponse.data;
+    if (data == null) return null;
+    if (data is Map<String, dynamic>) return mapper(data);
+    throw ApiException(
+      'Phan hoi tu may chu khong hop le.',
+      statusCode: response.statusCode,
+    );
+  }
+
+  T? _decodeOptionalMultipartObject<T>(
+    http.Response response,
+    T Function(Map<String, dynamic>) mapper,
+  ) {
+    final isSuccessStatus =
+        response.statusCode >= 200 && response.statusCode < 300;
+    if (isSuccessStatus && response.body.trim().isEmpty) return null;
+
+    final apiResponse = _decodeApiResponse<Object?>(
+      response,
+      (data) => data,
+      allowNullData: true,
+      allowBareResponse: true,
     );
     final data = apiResponse.data;
     if (data == null) return null;

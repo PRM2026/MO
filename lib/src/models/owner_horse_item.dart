@@ -1,4 +1,5 @@
 import '../utils/image_url_resolver.dart';
+import 'dart:typed_data';
 import 'owner_dashboard_data.dart';
 
 class OwnerHorsePerformance {
@@ -233,7 +234,7 @@ class OwnerHorseDetail {
   });
 
   final String id;
-  final int? ownerId;
+  final Object? ownerId;
   final String? ownerUsername;
   final String name;
   final String breed;
@@ -262,7 +263,7 @@ class OwnerHorseDetail {
 
     return OwnerHorseDetail(
       id: '${json['id'] ?? ''}',
-      ownerId: (json['ownerId'] as num?)?.toInt(),
+      ownerId: _readId(json['ownerId']),
       ownerUsername: _readNullableString(json['ownerUsername']),
       name: name.isNotEmpty ? name : 'Ngựa chưa đặt tên',
       breed: breed.isNotEmpty ? breed : '—',
@@ -301,7 +302,11 @@ class OwnerHorseFormData {
     this.heightCm,
     this.weightKg,
     this.imagePath,
+    this.imageBytes,
+    this.imageName,
     this.documentPath,
+    this.documentBytes,
+    this.documentName,
   });
 
   final String? name;
@@ -312,7 +317,11 @@ class OwnerHorseFormData {
   final double? heightCm;
   final double? weightKg;
   final String? imagePath;
+  final Uint8List? imageBytes;
+  final String? imageName;
   final String? documentPath;
+  final Uint8List? documentBytes;
+  final String? documentName;
 
   Map<String, String> toFields({required bool includeEmptyName}) {
     final fields = <String, String>{};
@@ -330,6 +339,23 @@ class OwnerHorseFormData {
     final files = <String, String>{};
     _putString(files, 'image', imagePath);
     _putString(files, 'document', documentPath);
+    return files;
+  }
+
+  Map<String, ({Uint8List bytes, String filename})> toMemoryFiles() {
+    final files = <String, ({Uint8List bytes, String filename})>{};
+    if (imageBytes != null && imageBytes!.isNotEmpty) {
+      files['image'] = (
+        bytes: imageBytes!,
+        filename: imageName ?? 'horse-image.jpg',
+      );
+    }
+    if (documentBytes != null && documentBytes!.isNotEmpty) {
+      files['document'] = (
+        bytes: documentBytes!,
+        filename: documentName ?? 'horse-document',
+      );
+    }
     return files;
   }
 }
@@ -357,6 +383,15 @@ String? _readNullableString(Object? value) {
   if (value == null) return null;
   if (value is String) return value.trim();
   return value.toString();
+}
+
+Object? _readId(Object? value) {
+  if (value is num) return value.toInt();
+  if (value is String) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+  return value;
 }
 
 void _putString(

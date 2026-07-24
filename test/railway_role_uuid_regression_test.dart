@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horse_racing/src/models/betting_models.dart';
 import 'package:horse_racing/src/models/jockey_invitation_response.dart';
+import 'package:horse_racing/src/models/owner_horse_item.dart';
 import 'package:horse_racing/src/models/owner_jockey_invitation.dart';
 import 'package:horse_racing/src/models/referee_race_participant_response.dart';
 import 'package:horse_racing/src/models/referee_race_response.dart';
@@ -45,6 +46,19 @@ void main() {
 
     expect(JockeyInvitationResponse.fromJson(json).raceId, raceId);
     expect(OwnerJockeyInvitation.fromJson(json).horseId, horseId);
+  });
+
+  test('owner horse detail preserves Railway owner ObjectId', () {
+    const ownerId = '6a45ffa2f39ce4024ca749e9';
+    final horse = OwnerHorseDetail.fromJson({
+      'id': horseId,
+      'ownerId': ownerId,
+      'name': 'Hồng Tỷ',
+      'status': 'PENDING',
+    });
+
+    expect(horse.id, horseId);
+    expect(horse.ownerId, ownerId);
   });
 
   test('referee race operations preserve Railway ObjectIds', () {

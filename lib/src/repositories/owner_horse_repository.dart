@@ -15,11 +15,11 @@ class OwnerHorseRepository {
     return _service.getOwnerHorse(id);
   }
 
-  Future<OwnerHorseDetail> createHorse(OwnerHorseFormData data) {
+  Future<OwnerHorseDetail?> createHorse(OwnerHorseFormData data) {
     return _service.createHorse(data);
   }
 
-  Future<OwnerHorseDetail> updateHorse(String id, OwnerHorseFormData data) {
+  Future<OwnerHorseDetail?> updateHorse(String id, OwnerHorseFormData data) {
     return _service.updateHorse(id, data);
   }
 
